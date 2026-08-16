@@ -2,12 +2,18 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Reserve Room</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -87,21 +93,105 @@
       text-align: center;
       font-weight: bold;
     }
+
+
+    /* =========================
+       BOOKING CODE
+       ========================= */
+
+    .reservation-success {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .booking-code-box {
+      margin: 18px auto 8px;
+      padding: 16px 20px;
+      max-width: 300px;
+
+      border: 2px solid #d4af37;
+      border-radius: 14px;
+
+      background: #fffdf5;
+
+      box-shadow:
+        0 0 8px rgba(212, 175, 55, 0.45),
+        0 0 22px rgba(212, 175, 55, 0.18);
+    }
+
+    .booking-code {
+      display: block;
+
+      font-size: 25px;
+      font-weight: bold;
+
+      letter-spacing: 2px;
+
+      color: #222;
+
+      margin-bottom: 10px;
+    }
+
+    .copy-code {
+      width: auto;
+
+      margin-top: 0;
+
+      padding: 9px 18px;
+
+      background: #d4af37;
+      color: white;
+
+      border-radius: 8px;
+
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .copy-code:active {
+      transform: scale(0.97);
+    }
+
+    .check-status-text {
+      display: block;
+
+      margin-top: 10px;
+
+      color: #666;
+
+      font-size: 14px;
+    }
+
   </style>
 
 </head>
 
+
 <body>
+
 
   <div class="container">
 
-    <h1>Reserve Your Room</h1>
+    <h1>
+      Reserve Your Room
+    </h1>
 
-    <div id="roomInfo" class="room-info">
+
+    <!-- ROOM INFORMATION -->
+
+    <div
+      id="roomInfo"
+      class="room-info"
+    >
       Loading room...
     </div>
 
-    <label>Your Name</label>
+
+    <!-- CUSTOMER NAME -->
+
+    <label>
+      Your Name
+    </label>
 
     <input
       id="name"
@@ -109,7 +199,12 @@
       placeholder="Enter your name"
     >
 
-    <label>Phone Number</label>
+
+    <!-- PHONE -->
+
+    <label>
+      Phone Number
+    </label>
 
     <input
       id="phone"
@@ -117,25 +212,47 @@
       placeholder="Enter your phone number"
     >
 
-    <label>Check-in</label>
+
+    <!-- CHECK IN -->
+
+    <label>
+      Check-in
+    </label>
 
     <input
       id="checkIn"
       type="date"
     >
 
-    <label>Check-out</label>
+
+    <!-- CHECK OUT -->
+
+    <label>
+      Check-out
+    </label>
 
     <input
       id="checkOut"
       type="date"
     >
 
+
+    <!-- TOTAL -->
+
     <div class="total">
+
       Total:
-      <span id="total">0</span>
+
+      <span id="total">
+        0
+      </span>
+
       ETB
+
     </div>
+
+
+    <!-- RESERVE -->
 
     <button
       id="reserveButton"
@@ -144,10 +261,16 @@
       Confirm Reservation
     </button>
 
+
+    <!-- MESSAGE -->
+
     <div id="message"></div>
 
   </div>
 
+
+
+  <!-- SUPABASE -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -156,12 +279,20 @@
 
   <script>
 
+    // =========================
+    // SUPABASE
+    // =========================
+
     const supabaseClient =
       window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
       );
 
+
+    // =========================
+    // GET ROOM ID
+    // =========================
 
     const params =
       new URLSearchParams(
@@ -175,6 +306,10 @@
 
     let selectedRoom = null;
 
+
+    // =========================
+    // LOAD ROOM
+    // =========================
 
     async function loadRoom() {
 
@@ -190,11 +325,17 @@
       }
 
 
-      const { data, error } =
+      const {
+        data,
+        error
+      } =
         await supabaseClient
           .from("rooms")
           .select("*")
-          .eq("id", roomId)
+          .eq(
+            "id",
+            roomId
+          )
           .single();
 
 
@@ -219,14 +360,16 @@
         "roomInfo"
       ).innerHTML = `
 
-        <h2>${data.name}</h2>
+        <h2>
+          ${data.name}
+        </h2>
 
         <p>
           Room ${data.room_number}
         </p>
 
         <p>
-          ${data.description}
+          ${data.description || ""}
         </p>
 
         <p>
@@ -242,9 +385,15 @@
     }
 
 
+    // =========================
+    // CALCULATE TOTAL
+    // =========================
+
     function calculateTotal() {
 
-      if (!selectedRoom) return;
+      if (!selectedRoom) {
+        return;
+      }
 
 
       const checkIn =
@@ -259,11 +408,15 @@
         ).value;
 
 
-      if (!checkIn || !checkOut) {
+      if (
+        !checkIn ||
+        !checkOut
+      ) {
 
         document.getElementById(
           "total"
-        ).textContent = "0";
+        ).textContent =
+          "0";
 
         return;
 
@@ -280,8 +433,15 @@
 
       const nights =
         Math.ceil(
-          (end - start) /
-          (1000 * 60 * 60 * 24)
+          (
+            end - start
+          ) /
+          (
+            1000 *
+            60 *
+            60 *
+            24
+          )
         );
 
 
@@ -289,7 +449,8 @@
 
         document.getElementById(
           "total"
-        ).textContent = "0";
+        ).textContent =
+          "0";
 
         return;
 
@@ -298,7 +459,9 @@
 
       const total =
         nights *
-        Number(selectedRoom.price);
+        Number(
+          selectedRoom.price
+        );
 
 
       document.getElementById(
@@ -308,6 +471,10 @@
 
     }
 
+
+    // =========================
+    // CREATE RESERVATION
+    // =========================
 
     async function makeReservation() {
 
@@ -341,6 +508,16 @@
         );
 
 
+      const button =
+        document.getElementById(
+          "reserveButton"
+        );
+
+
+      // =========================
+      // VALIDATION
+      // =========================
+
       if (
         !name ||
         !phone ||
@@ -366,8 +543,15 @@
 
       const nights =
         Math.ceil(
-          (end - start) /
-          (1000 * 60 * 60 * 24)
+          (
+            end - start
+          ) /
+          (
+            1000 *
+            60 *
+            60 *
+            24
+          )
         );
 
 
@@ -383,8 +567,14 @@
 
       const total =
         nights *
-        Number(selectedRoom.price);
+        Number(
+          selectedRoom.price
+        );
 
+
+      // =========================
+      // RESERVATION CODE
+      // =========================
 
       const reservationCode =
         "HTL-" +
@@ -394,17 +584,16 @@
           .toUpperCase();
 
 
-      const button =
-        document.getElementById(
-          "reserveButton"
-        );
-
-
       button.disabled = true;
+
 
       message.textContent =
         "Creating reservation...";
 
+
+      // =========================
+      // CREATE CUSTOMER
+      // =========================
 
       const {
         data: customer,
@@ -425,7 +614,9 @@
 
       if (customerError) {
 
-        console.error(customerError);
+        console.error(
+          customerError
+        );
 
         message.textContent =
           "❌ Could not create customer.";
@@ -436,6 +627,10 @@
 
       }
 
+
+      // =========================
+      // CREATE RESERVATION
+      // =========================
 
       const {
         data: reservation,
@@ -473,7 +668,9 @@
 
       if (reservationError) {
 
-        console.error(reservationError);
+        console.error(
+          reservationError
+        );
 
         message.textContent =
           "❌ Could not create reservation.";
@@ -485,24 +682,69 @@
       }
 
 
+      // =========================
+      // SUCCESS SCREEN
+      // =========================
+
       message.innerHTML = `
 
-        ✅ Reservation created!
+        <div class="reservation-success">
 
-        <br><br>
+          <strong>
+            ✅ Reservation created!
+          </strong>
 
-        Reservation ID:
+          <p>
+            Your reservation ID is:
+          </p>
 
-        <strong>
-          ${reservation.reservation_code}
-        </strong>
 
-        <br><br>
+          <div class="booking-code-box">
 
-        Redirecting to payment...
+            <span
+              id="bookingCode"
+              class="booking-code"
+            >
+              ${reservation.reservation_code}
+            </span>
+
+
+            <button
+              class="copy-code"
+              onclick="copyBookingCode()"
+            >
+              📋 Copy
+            </button>
+
+          </div>
+
+
+          <span class="check-status-text">
+
+            📋 Copy this to check
+            your reservation status
+
+          </span>
+
+
+          <p>
+            Redirecting to payment...
+          </p>
+
+        </div>
 
       `;
 
+
+      // Save code for copy button
+
+      window.currentBookingCode =
+        reservation.reservation_code;
+
+
+      // =========================
+      // REDIRECT TO PAYMENT
+      // =========================
 
       setTimeout(() => {
 
@@ -512,13 +754,72 @@
             reservation.reservation_code
           );
 
-      }, 1500);
+      }, 2500);
 
     }
 
 
+    // =========================
+    // COPY BOOKING CODE
+    // =========================
+
+    function copyBookingCode() {
+
+      if (
+        !window.currentBookingCode
+      ) {
+        return;
+      }
+
+
+      navigator.clipboard
+        .writeText(
+          window.currentBookingCode
+        )
+        .then(() => {
+
+          const button =
+            document.querySelector(
+              ".copy-code"
+            );
+
+
+          if (!button) {
+            return;
+          }
+
+
+          button.textContent =
+            "✅ Copied!";
+
+
+          setTimeout(() => {
+
+            button.textContent =
+              "📋 Copy";
+
+          }, 1500);
+
+        })
+        .catch(() => {
+
+          alert(
+            "Could not copy automatically. Please copy the code manually."
+          );
+
+        });
+
+    }
+
+
+    // =========================
+    // DATE EVENTS
+    // =========================
+
     document
-      .getElementById("checkIn")
+      .getElementById(
+        "checkIn"
+      )
       .addEventListener(
         "change",
         calculateTotal
@@ -526,12 +827,18 @@
 
 
     document
-      .getElementById("checkOut")
+      .getElementById(
+        "checkOut"
+      )
       .addEventListener(
         "change",
         calculateTotal
       );
 
+
+    // =========================
+    // START
+    // =========================
 
     loadRoom();
 
