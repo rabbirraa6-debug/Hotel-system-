@@ -32,6 +32,24 @@
       margin-top: 35px;
     }
 
+    .controls {
+      max-width: 700px;
+      margin: 20px auto;
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
     .card {
       background: white;
       padding: 20px;
@@ -84,6 +102,13 @@
       color: white;
     }
 
+    .refresh {
+      background: #333;
+      color: white;
+      width: 100%;
+      margin-top: 10px;
+    }
+
     a {
       display: inline-block;
       margin-top: 8px;
@@ -94,6 +119,8 @@
       padding: 20px;
       background: white;
       border-radius: 10px;
+      max-width: 700px;
+      margin: 15px auto;
     }
 
   </style>
@@ -104,6 +131,54 @@
 <body>
 
   <h1>🏨 Hotel Admin</h1>
+
+
+  <!-- SEARCH -->
+
+  <div class="controls">
+
+    <strong>🔎 Search Reservations</strong>
+
+    <input
+      id="search"
+      type="text"
+      placeholder="Reservation ID, name, phone or room..."
+      oninput="filterReservations()"
+    >
+
+
+    <select
+      id="statusFilter"
+      onchange="filterReservations()"
+    >
+
+      <option value="all">
+        All statuses
+      </option>
+
+      <option value="pending">
+        🟡 Pending
+      </option>
+
+      <option value="confirmed">
+        ✅ Confirmed
+      </option>
+
+      <option value="rejected">
+        ❌ Rejected
+      </option>
+
+    </select>
+
+
+    <button
+      class="refresh"
+      onclick="loadEverything()"
+    >
+      🔄 Refresh
+    </button>
+
+  </div>
 
 
   <!-- RESERVATIONS -->
@@ -136,6 +211,9 @@
         SUPABASE_URL,
         SUPABASE_KEY
       );
+
+
+    let allReservations = [];
 
 
     // =========================
@@ -182,10 +260,103 @@
       }
 
 
-      if (!data.length) {
+      allReservations = data || [];
+
+      filterReservations();
+
+    }
+
+
+    // =========================
+    // FILTER RESERVATIONS
+    // =========================
+
+    function filterReservations() {
+
+      const search =
+        document
+          .getElementById("search")
+          .value
+          .toLowerCase()
+          .trim();
+
+
+      const status =
+        document
+          .getElementById("statusFilter")
+          .value;
+
+
+      const filtered =
+        allReservations.filter(
+          reservation => {
+
+            const customer =
+              reservation.customers || {};
+
+            const room =
+              reservation.rooms || {};
+
+
+            const searchable = `
+
+              ${reservation.reservation_code}
+
+              ${customer.name || ""}
+
+              ${customer.phone || ""}
+
+              ${room.room_number || ""}
+
+              ${room.name || ""}
+
+            `.toLowerCase();
+
+
+            const matchesSearch =
+              !search ||
+              searchable.includes(search);
+
+
+            const matchesStatus =
+              status === "all" ||
+              reservation.status === status;
+
+
+            return (
+              matchesSearch &&
+              matchesStatus
+            );
+
+          }
+        );
+
+
+      displayReservations(
+        filtered
+      );
+
+    }
+
+
+    // =========================
+    // DISPLAY RESERVATIONS
+    // =========================
+
+    function displayReservations(
+      reservations
+    ) {
+
+      const container =
+        document.getElementById(
+          "reservations"
+        );
+
+
+      if (!reservations.length) {
 
         container.innerHTML =
-          '<div class="empty">No reservations yet.</div>';
+          '<div class="empty">No matching reservations.</div>';
 
         return;
 
@@ -195,84 +366,117 @@
       container.innerHTML = "";
 
 
-      data.forEach(reservation => {
+      reservations.forEach(
+        reservation => {
 
-        container.innerHTML += `
+          const customer =
+            reservation.customers || {};
 
-          <div class="card">
+          const room =
+            reservation.rooms || {};
 
-            <h3>
-              ${reservation.reservation_code}
-            </h3>
 
-            <div class="row">
-              <span class="label">
-                Customer:
-              </span>
+          container.innerHTML += `
 
-              ${reservation.customers.name}
+            <div class="card">
+
+              <h3>
+                ${reservation.reservation_code}
+              </h3>
+
+              <div class="row">
+
+                <span class="label">
+                  Customer:
+                </span>
+
+                ${customer.name || "—"}
+
+              </div>
+
+
+              <div class="row">
+
+                <span class="label">
+                  Phone:
+                </span>
+
+                ${customer.phone || "—"}
+
+              </div>
+
+
+              <div class="row">
+
+                <span class="label">
+                  Room:
+                </span>
+
+                ${room.name || "—"}
+                (${room.room_number || "—"})
+
+              </div>
+
+
+              <div class="row">
+
+                <span class="label">
+                  Check-in:
+                </span>
+
+                ${formatDate(
+                  reservation.check_in
+                )}
+
+              </div>
+
+
+              <div class="row">
+
+                <span class="label">
+                  Check-out:
+                </span>
+
+                ${formatDate(
+                  reservation.check_out
+                )}
+
+              </div>
+
+
+              <div class="row">
+
+                <span class="label">
+                  Total:
+                </span>
+
+                ${Number(
+                  reservation.total_amount
+                ).toFixed(2)} ETB
+
+              </div>
+
+
+              <div class="row">
+
+                <span class="label">
+                  Status:
+                </span>
+
+                <span
+                  class="status ${reservation.status}"
+                >
+                  ${reservation.status}
+                </span>
+
+              </div>
+
             </div>
 
-            <div class="row">
-              <span class="label">
-                Phone:
-              </span>
+          `;
 
-              ${reservation.customers.phone}
-            </div>
-
-            <div class="row">
-              <span class="label">
-                Room:
-              </span>
-
-              ${reservation.rooms.name}
-              (${reservation.rooms.room_number})
-            </div>
-
-            <div class="row">
-              <span class="label">
-                Check-in:
-              </span>
-
-              ${reservation.check_in}
-            </div>
-
-            <div class="row">
-              <span class="label">
-                Check-out:
-              </span>
-
-              ${reservation.check_out}
-            </div>
-
-            <div class="row">
-              <span class="label">
-                Total:
-              </span>
-
-              ${Number(
-                reservation.total_amount
-              ).toFixed(2)} ETB
-            </div>
-
-            <div class="row">
-
-              <span class="label">
-                Status:
-              </span>
-
-              <span class="status ${reservation.status}">
-                ${reservation.status}
-              </span>
-
-            </div>
-
-          </div>
-
-        `;
-
-      });
+        }
+      );
 
     }
 
@@ -317,7 +521,7 @@
       }
 
 
-      if (!data.length) {
+      if (!data || !data.length) {
 
         container.innerHTML =
           '<div class="empty">No payments yet.</div>';
@@ -332,13 +536,18 @@
 
       data.forEach(payment => {
 
+        const reservation =
+          payment.reservations || {};
+
+
         container.innerHTML += `
 
           <div class="card">
 
             <h3>
-              ${payment.reservations.reservation_code}
+              ${reservation.reservation_code || "Unknown reservation"}
             </h3>
+
 
             <div class="row">
 
@@ -359,7 +568,9 @@
                 Status:
               </span>
 
-              <span class="status ${payment.status}">
+              <span
+                class="status ${payment.status}"
+              >
                 ${payment.status}
               </span>
 
@@ -374,6 +585,7 @@
               🔗 Open Receipt
             </a>
 
+
             <br>
 
 
@@ -386,7 +598,7 @@
                   class="confirm"
                   onclick="updatePayment(
                     ${payment.id},
-                    ${payment.reservations.id},
+                    ${reservation.id},
                     'confirmed'
                   )"
                 >
@@ -398,7 +610,7 @@
                   class="reject"
                   onclick="updatePayment(
                     ${payment.id},
-                    ${payment.reservations.id},
+                    ${reservation.id},
                     'rejected'
                   )"
                 >
@@ -421,7 +633,7 @@
 
 
     // =========================
-    // UPDATE PAYMENT + RESERVATION
+    // UPDATE PAYMENT
     // =========================
 
     async function updatePayment(
@@ -479,8 +691,7 @@
           "⚠️ Payment updated, but reservation could not be updated."
         );
 
-        loadPayments();
-        loadReservations();
+        loadEverything();
 
         return;
 
@@ -492,20 +703,43 @@
       );
 
 
-      loadPayments();
-
-      loadReservations();
+      loadEverything();
 
     }
 
 
     // =========================
-    // START
+    // DATE FORMAT
     // =========================
 
-    loadReservations();
+    function formatDate(date) {
 
-    loadPayments();
+      if (!date) {
+        return "—";
+      }
+
+
+      return new Date(
+        date
+      ).toLocaleDateString();
+
+    }
+
+
+    // =========================
+    // LOAD EVERYTHING
+    // =========================
+
+    function loadEverything() {
+
+      loadReservations();
+
+      loadPayments();
+
+    }
+
+
+    loadEverything();
 
   </script>
 
