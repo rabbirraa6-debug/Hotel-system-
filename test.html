@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hotel System Test</title>
+</head>
+<body>
+
+  <h1>Hotel System</h1>
+  <p id="status">Testing connection...</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+
+  <script>
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    async function testConnection() {
+      const { error } = await supabaseClient
+        .from("rooms")
+        .select("id")
+        .limit(1);
+
+      if (error) {
+        document.getElementById("status").textContent =
+          "❌ Connection/database error: " + error.message;
+      } else {
+        document.getElementById("status").textContent =
+          "✅ Database connected successfully!";
+      }
+    }
+
+    testConnection();
+  </script>
+
+</body>
+</html>
