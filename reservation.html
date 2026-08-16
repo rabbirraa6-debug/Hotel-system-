@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -94,74 +93,6 @@
       font-weight: bold;
     }
 
-
-    /* =========================
-       BOOKING CODE
-       ========================= */
-
-    .reservation-success {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .booking-code-box {
-      margin: 18px auto 8px;
-      padding: 16px 20px;
-      max-width: 300px;
-
-      border: 2px solid #d4af37;
-      border-radius: 14px;
-
-      background: #fffdf5;
-
-      box-shadow:
-        0 0 8px rgba(212, 175, 55, 0.45),
-        0 0 22px rgba(212, 175, 55, 0.18);
-    }
-
-    .booking-code {
-      display: block;
-
-      font-size: 25px;
-      font-weight: bold;
-
-      letter-spacing: 2px;
-
-      color: #222;
-
-      margin-bottom: 10px;
-    }
-
-    .copy-code {
-      width: auto;
-
-      margin-top: 0;
-
-      padding: 9px 18px;
-
-      background: #d4af37;
-      color: white;
-
-      border-radius: 8px;
-
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .copy-code:active {
-      transform: scale(0.97);
-    }
-
-    .check-status-text {
-      display: block;
-
-      margin-top: 10px;
-
-      color: #666;
-
-      font-size: 14px;
-    }
-
   </style>
 
 </head>
@@ -177,8 +108,6 @@
     </h1>
 
 
-    <!-- ROOM INFORMATION -->
-
     <div
       id="roomInfo"
       class="room-info"
@@ -186,8 +115,6 @@
       Loading room...
     </div>
 
-
-    <!-- CUSTOMER NAME -->
 
     <label>
       Your Name
@@ -200,8 +127,6 @@
     >
 
 
-    <!-- PHONE -->
-
     <label>
       Phone Number
     </label>
@@ -213,8 +138,6 @@
     >
 
 
-    <!-- CHECK IN -->
-
     <label>
       Check-in
     </label>
@@ -225,8 +148,6 @@
     >
 
 
-    <!-- CHECK OUT -->
-
     <label>
       Check-out
     </label>
@@ -236,8 +157,6 @@
       type="date"
     >
 
-
-    <!-- TOTAL -->
 
     <div class="total">
 
@@ -252,8 +171,6 @@
     </div>
 
 
-    <!-- RESERVE -->
-
     <button
       id="reserveButton"
       onclick="makeReservation()"
@@ -262,15 +179,11 @@
     </button>
 
 
-    <!-- MESSAGE -->
-
     <div id="message"></div>
 
   </div>
 
 
-
-  <!-- SUPABASE -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -279,20 +192,12 @@
 
   <script>
 
-    // =========================
-    // SUPABASE
-    // =========================
-
     const supabaseClient =
       window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
       );
 
-
-    // =========================
-    // GET ROOM ID
-    // =========================
 
     const params =
       new URLSearchParams(
@@ -306,10 +211,6 @@
 
     let selectedRoom = null;
 
-
-    // =========================
-    // LOAD ROOM
-    // =========================
 
     async function loadRoom() {
 
@@ -384,10 +285,6 @@
 
     }
 
-
-    // =========================
-    // CALCULATE TOTAL
-    // =========================
 
     function calculateTotal() {
 
@@ -472,10 +369,6 @@
     }
 
 
-    // =========================
-    // CREATE RESERVATION
-    // =========================
-
     async function makeReservation() {
 
       const name =
@@ -513,10 +406,6 @@
           "reserveButton"
         );
 
-
-      // =========================
-      // VALIDATION
-      // =========================
 
       if (
         !name ||
@@ -572,10 +461,6 @@
         );
 
 
-      // =========================
-      // RESERVATION CODE
-      // =========================
-
       const reservationCode =
         "HTL-" +
         Math.random()
@@ -590,10 +475,6 @@
       message.textContent =
         "Creating reservation...";
 
-
-      // =========================
-      // CREATE CUSTOMER
-      // =========================
 
       const {
         data: customer,
@@ -627,10 +508,6 @@
 
       }
 
-
-      // =========================
-      // CREATE RESERVATION
-      // =========================
 
       const {
         data: reservation,
@@ -682,69 +559,23 @@
       }
 
 
-      // =========================
-      // SUCCESS SCREEN
-      // =========================
-
       message.innerHTML = `
 
-        <div class="reservation-success">
+        <strong>
+          ✅ Reservation created!
+        </strong>
 
-          <strong>
-            ✅ Reservation created!
-          </strong>
+        <p>
+          Reservation ID:
+          ${reservation.reservation_code}
+        </p>
 
-          <p>
-            Your reservation ID is:
-          </p>
-
-
-          <div class="booking-code-box">
-
-            <span
-              id="bookingCode"
-              class="booking-code"
-            >
-              ${reservation.reservation_code}
-            </span>
-
-
-            <button
-              class="copy-code"
-              onclick="copyBookingCode()"
-            >
-              📋 Copy
-            </button>
-
-          </div>
-
-
-          <span class="check-status-text">
-
-            📋 Copy this to check
-            your reservation status
-
-          </span>
-
-
-          <p>
-            Redirecting to payment...
-          </p>
-
-        </div>
+        <p>
+          Redirecting to payment...
+        </p>
 
       `;
 
-
-      // Save code for copy button
-
-      window.currentBookingCode =
-        reservation.reservation_code;
-
-
-      // =========================
-      // REDIRECT TO PAYMENT
-      // =========================
 
       setTimeout(() => {
 
@@ -754,67 +585,10 @@
             reservation.reservation_code
           );
 
-      }, 2500);
+      }, 1500);
 
     }
 
-
-    // =========================
-    // COPY BOOKING CODE
-    // =========================
-
-    function copyBookingCode() {
-
-      if (
-        !window.currentBookingCode
-      ) {
-        return;
-      }
-
-
-      navigator.clipboard
-        .writeText(
-          window.currentBookingCode
-        )
-        .then(() => {
-
-          const button =
-            document.querySelector(
-              ".copy-code"
-            );
-
-
-          if (!button) {
-            return;
-          }
-
-
-          button.textContent =
-            "✅ Copied!";
-
-
-          setTimeout(() => {
-
-            button.textContent =
-              "📋 Copy";
-
-          }, 1500);
-
-        })
-        .catch(() => {
-
-          alert(
-            "Could not copy automatically. Please copy the code manually."
-          );
-
-        });
-
-    }
-
-
-    // =========================
-    // DATE EVENTS
-    // =========================
 
     document
       .getElementById(
@@ -835,10 +609,6 @@
         calculateTotal
       );
 
-
-    // =========================
-    // START
-    // =========================
 
     loadRoom();
 
