@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Hotel Admin</title>
+
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .payment {
+      background: white;
+      padding: 20px;
+      margin: 15px auto;
+      max-width: 600px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.1);
+    }
+
+    .payment a {
+      display: inline-block;
+      margin: 10px 0;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .confirm {
+      background: #2e9d50;
+      color: white;
+    }
+
+    .reject {
+      background: #d33;
+      color: white;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <h1>🏨 Hotel Admin</h1>
+
+  <div id="payments">
+    Loading payments...
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="config.js"></script>
+
+
+  <script>
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    async function loadPayments() {
+
+      const container =
+        document.getElementById(
+          "payments"
+        );
+
+
+      const { data, error } =
+        await supabaseClient
+          .from("payments")
+          .select(`
+            *,
+            reservations (
+              reservation_code,
+              check_in,
+              check_out
+            )
+          `)
+          .order(
+            "created_at",
+            { ascending: false }
+          );
+
+
+      if (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+          "❌ Could not load payments.";
+
+        return;
+
+      }
+
+
+      if (!data.length) {
+
+        container.innerHTML =
+          "No payments yet.";
+
+        return;
+
+      }
+
+
+      container.innerHTML = "";
+
+
+      data.forEach(payment => {
+
+        container.innerHTML += `
+
+          <div class="payment">
+
+            <h2>
+              ${payment.reservations.reservation_code}
+            </h2>
+
+            <p>
+              Amount:
+              <strong>
+                ${Number(payment.amount).toFixed(2)}
+                ETB
+              </strong>
+            </p>
+
+            <p>
+              Status:
+              <span class="status">
+                ${payment.status}
+              </span>
+            </p>
+
+            <a
+              href="${payment.receipt_url}"
+              target="_blank"
+            >
+              🔗 Open Receipt
+            </a>
+
+            <br>
+
+            <button
+              class="confirm"
+              onclick="updatePayment(
+                ${payment.id},
+                'confirmed'
+              )"
+            >
+              ✅ Confirm
+            </button>
+
+            <button
+              class="reject"
+              onclick="updatePayment(
+                ${payment.id},
+                'rejected'
+              )"
+            >
+              ❌ Reject
+            </button>
+
+          </div>
+
+        `;
+
+      });
+
+    }
+
+
+    async function updatePayment(
+      paymentId,
+      newStatus
+    ) {
+
+      const { error } =
+        await supabaseClient
+          .from("payments")
+          .update({
+            status: newStatus
+          })
+          .eq(
+            "id",
+            paymentId
+          );
+
+
+      if (error) {
+
+        alert(
+          "❌ Could not update payment."
+        );
+
+        console.error(error);
+
+        return;
+
+      }
+
+
+      alert(
+        "Payment updated successfully."
+      );
+
+
+      loadPayments();
+
+    }
+
+
+    loadPayments();
+
+  </script>
+
+</body>
+
+</html>
