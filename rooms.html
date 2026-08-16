@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Rooms</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f5f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #rooms {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: 30px auto;
+    }
+
+    .room {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    }
+
+    .room h2 {
+      margin-top: 0;
+    }
+
+    .price {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Available Rooms</h1>
+
+  <div id="rooms">
+    Loading rooms...
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+
+  <script>
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    async function loadRooms() {
+
+      const { data, error } = await supabaseClient
+        .from("rooms")
+        .select("*")
+        .eq("available", true);
+
+      const container = document.getElementById("rooms");
+
+      if (error) {
+        container.innerHTML = "❌ Could not load rooms.";
+        console.error(error);
+        return;
+      }
+
+      container.innerHTML = "";
+
+      data.forEach(room => {
+
+        container.innerHTML += `
+          <div class="room">
+            <h2>${room.name}</h2>
+            <p>Room ${room.room_number}</p>
+            <p>${room.description}</p>
+            <p>👥 ${room.capacity} guests</p>
+            <p class="price">${room.price} ETB / night</p>
+          </div>
+        `;
+
+      });
+    }
+
+    loadRooms();
+  </script>
+
+</body>
+</html>
