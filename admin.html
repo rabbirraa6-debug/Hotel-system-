@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -296,6 +295,7 @@
           .select(`
             *,
             reservations (
+              id,
               reservation_code
             )
           `)
@@ -386,6 +386,7 @@
                   class="confirm"
                   onclick="updatePayment(
                     ${payment.id},
+                    ${payment.reservations.id},
                     'confirmed'
                   )"
                 >
@@ -397,6 +398,7 @@
                   class="reject"
                   onclick="updatePayment(
                     ${payment.id},
+                    ${payment.reservations.id},
                     'rejected'
                   )"
                 >
@@ -419,15 +421,16 @@
 
 
     // =========================
-    // UPDATE PAYMENT
+    // UPDATE PAYMENT + RESERVATION
     // =========================
 
     async function updatePayment(
       paymentId,
+      reservationId,
       newStatus
     ) {
 
-      const { error } =
+      const paymentResult =
         await supabaseClient
           .from("payments")
           .update({
@@ -439,9 +442,11 @@
           );
 
 
-      if (error) {
+      if (paymentResult.error) {
 
-        console.error(error);
+        console.error(
+          paymentResult.error
+        );
 
         alert(
           "❌ Could not update payment."
@@ -452,12 +457,44 @@
       }
 
 
+      const reservationResult =
+        await supabaseClient
+          .from("reservations")
+          .update({
+            status: newStatus
+          })
+          .eq(
+            "id",
+            reservationId
+          );
+
+
+      if (reservationResult.error) {
+
+        console.error(
+          reservationResult.error
+        );
+
+        alert(
+          "⚠️ Payment updated, but reservation could not be updated."
+        );
+
+        loadPayments();
+        loadReservations();
+
+        return;
+
+      }
+
+
       alert(
-        "Payment updated successfully."
+        "✅ Payment and reservation updated."
       );
 
 
       loadPayments();
+
+      loadReservations();
 
     }
 
