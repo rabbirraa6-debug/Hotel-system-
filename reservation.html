@@ -2,18 +2,12 @@
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Reserve Room</title>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
@@ -93,7 +87,6 @@
       text-align: center;
       font-weight: bold;
     }
-
   </style>
 
 </head>
@@ -104,10 +97,7 @@
 
     <h1>Reserve Your Room</h1>
 
-    <div
-      id="roomInfo"
-      class="room-info"
-    >
+    <div id="roomInfo" class="room-info">
       Loading room...
     </div>
 
@@ -142,7 +132,9 @@
     >
 
     <div class="total">
-      Total: <span id="total">0</span> ETB
+      Total:
+      <span id="total">0</span>
+      ETB
     </div>
 
     <button
@@ -188,7 +180,9 @@
 
       if (!roomId) {
 
-        document.getElementById("roomInfo").innerHTML =
+        document.getElementById(
+          "roomInfo"
+        ).innerHTML =
           "❌ No room selected.";
 
         return;
@@ -206,10 +200,12 @@
 
       if (error) {
 
-        document.getElementById("roomInfo").innerHTML =
-          "❌ Could not load room.";
-
         console.error(error);
+
+        document.getElementById(
+          "roomInfo"
+        ).innerHTML =
+          "❌ Could not load room.";
 
         return;
 
@@ -219,7 +215,9 @@
       selectedRoom = data;
 
 
-      document.getElementById("roomInfo").innerHTML = `
+      document.getElementById(
+        "roomInfo"
+      ).innerHTML = `
 
         <h2>${data.name}</h2>
 
@@ -250,17 +248,22 @@
 
 
       const checkIn =
-        document.getElementById("checkIn").value;
+        document.getElementById(
+          "checkIn"
+        ).value;
 
 
       const checkOut =
-        document.getElementById("checkOut").value;
+        document.getElementById(
+          "checkOut"
+        ).value;
 
 
       if (!checkIn || !checkOut) {
 
-        document.getElementById("total").textContent =
-          "0";
+        document.getElementById(
+          "total"
+        ).textContent = "0";
 
         return;
 
@@ -275,21 +278,18 @@
         new Date(checkOut);
 
 
-      const difference =
-        end - start;
-
-
       const nights =
         Math.ceil(
-          difference /
+          (end - start) /
           (1000 * 60 * 60 * 24)
         );
 
 
       if (nights <= 0) {
 
-        document.getElementById("total").textContent =
-          "0";
+        document.getElementById(
+          "total"
+        ).textContent = "0";
 
         return;
 
@@ -297,10 +297,13 @@
 
 
       const total =
-        nights * Number(selectedRoom.price);
+        nights *
+        Number(selectedRoom.price);
 
 
-      document.getElementById("total").textContent =
+      document.getElementById(
+        "total"
+      ).textContent =
         total.toFixed(2);
 
     }
@@ -309,23 +312,33 @@
     async function makeReservation() {
 
       const name =
-        document.getElementById("name").value.trim();
+        document.getElementById(
+          "name"
+        ).value.trim();
 
 
       const phone =
-        document.getElementById("phone").value.trim();
+        document.getElementById(
+          "phone"
+        ).value.trim();
 
 
       const checkIn =
-        document.getElementById("checkIn").value;
+        document.getElementById(
+          "checkIn"
+        ).value;
 
 
       const checkOut =
-        document.getElementById("checkOut").value;
+        document.getElementById(
+          "checkOut"
+        ).value;
 
 
       const message =
-        document.getElementById("message");
+        document.getElementById(
+          "message"
+        );
 
 
       if (
@@ -393,9 +406,10 @@
         "Creating reservation...";
 
 
-      // Create customer
-
-      const { data: customer, error: customerError } =
+      const {
+        data: customer,
+        error: customerError
+      } =
         await supabaseClient
           .from("customers")
           .insert({
@@ -405,9 +419,7 @@
             phone: phone
 
           })
-
           .select()
-
           .single();
 
 
@@ -425,9 +437,10 @@
       }
 
 
-      // Create reservation
-
-      const { data: reservation, error: reservationError } =
+      const {
+        data: reservation,
+        error: reservationError
+      } =
         await supabaseClient
           .from("reservations")
           .insert({
@@ -454,9 +467,7 @@
               "pending"
 
           })
-
           .select()
-
           .single();
 
 
@@ -476,9 +487,11 @@
 
       message.innerHTML = `
 
-        ✅ Reservation created!<br><br>
+        ✅ Reservation created!
 
-        Reservation ID:<br>
+        <br><br>
+
+        Reservation ID:
 
         <strong>
           ${reservation.reservation_code}
@@ -486,16 +499,20 @@
 
         <br><br>
 
-        Total:
-        <strong>
-          ${total.toFixed(2)} ETB
-        </strong>
+        Redirecting to payment...
 
       `;
 
 
-      button.style.display =
-        "none";
+      setTimeout(() => {
+
+        window.location.href =
+          "payment.html?reservation=" +
+          encodeURIComponent(
+            reservation.reservation_code
+          );
+
+      }, 1500);
 
     }
 
