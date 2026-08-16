@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Rooms</title>
+  <title>Available Rooms</title>
 
   <style>
     body {
@@ -41,6 +41,20 @@
       font-size: 20px;
       font-weight: bold;
     }
+
+    button {
+      background: #d4af37;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    button:active {
+      transform: scale(.97);
+    }
   </style>
 </head>
 
@@ -56,6 +70,7 @@
   <script src="config.js"></script>
 
   <script>
+
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_KEY
@@ -71,7 +86,8 @@
       const container = document.getElementById("rooms");
 
       if (error) {
-        container.innerHTML = "❌ Could not load rooms.";
+        container.innerHTML =
+          "❌ Could not load rooms.";
         console.error(error);
         return;
       }
@@ -82,18 +98,44 @@
 
         container.innerHTML += `
           <div class="room">
+
             <h2>${room.name}</h2>
-            <p>Room ${room.room_number}</p>
-            <p>${room.description}</p>
-            <p>👥 ${room.capacity} guests</p>
-            <p class="price">${room.price} ETB / night</p>
+
+            <p>
+              Room ${room.room_number}
+            </p>
+
+            <p>
+              ${room.description}
+            </p>
+
+            <p>
+              👥 ${room.capacity} guests
+            </p>
+
+            <p class="price">
+              ${room.price} ETB / night
+            </p>
+
+            <button onclick="reserveRoom(${room.id})">
+              Reserve
+            </button>
+
           </div>
         `;
 
       });
     }
 
+    function reserveRoom(roomId) {
+
+      window.location.href =
+        "reservation.html?room=" + roomId;
+
+    }
+
     loadRooms();
+
   </script>
 
 </body>
