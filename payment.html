@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Payment</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f5f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .box {
+      background: #f1eee6;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: #d4af37;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Payment</h1>
+
+    <div id="reservationInfo" class="box">
+      Loading reservation...
+    </div>
+
+    <div class="box">
+      <strong>Payment instructions</strong>
+
+      <p>
+        Payment method and account information
+        will be provided by the hotel.
+      </p>
+
+      <p>
+        After completing your payment,
+        paste the receipt link below.
+      </p>
+    </div>
+
+    <label>Receipt Link</label>
+
+    <input
+      id="receiptUrl"
+      type="url"
+      placeholder="Paste your receipt link here"
+    >
+
+    <button
+      id="submitButton"
+      onclick="submitPayment()"
+    >
+      Submit Payment
+    </button>
+
+    <div id="message"></div>
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+
+  <script>
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const reservationCode =
+      params.get("reservation");
+
+
+    let reservation = null;
+
+
+    async function loadReservation() {
+
+      if (!reservationCode) {
+
+        document.getElementById(
+          "reservationInfo"
+        ).innerHTML =
+          "❌ No reservation found.";
+
+        return;
+      }
+
+
+      const { data, error } =
+        await supabaseClient
+          .from("reservations")
+          .select(`
+            *,
+            rooms (
+              name,
+              room_number
+            )
+          `)
+          .eq(
+            "reservation_code",
+            reservationCode
+          )
+          .single();
+
+
+      if (error) {
+
+        console.error(error);
+
+        document.getElementById(
+          "reservationInfo"
+        ).innerHTML =
+          "❌ Could not load reservation.";
+
+        return;
+      }
+
+
+      reservation = data;
+
+
+      document.getElementById(
+        "reservationInfo"
+      ).innerHTML = `
+
+        <p>
+          <strong>Reservation:</strong>
+          ${data.reservation_code}
+        </p>
+
+        <p>
+          <strong>Room:</strong>
+          ${data.rooms.name}
+          (${data.rooms.room_number})
+        </p>
+
+        <p>
+          <strong>Total:</strong>
+          ${Number(data.total_amount).toFixed(2)}
+          ETB
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+          ${data.status}
+        </p>
+
+      `;
+
+    }
+
+
+    async function submitPayment() {
+
+      const receiptUrl =
+        document
+          .getElementById("receiptUrl")
+          .value
+          .trim();
+
+
+      const message =
+        document.getElementById(
+          "message"
+        );
+
+
+      const button =
+        document.getElementById(
+          "submitButton"
+        );
+
+
+      if (!receiptUrl) {
+
+        message.textContent =
+          "❌ Please enter the receipt link.";
+
+        return;
+      }
+
+
+      try {
+
+        new URL(receiptUrl);
+
+      } catch {
+
+        message.textContent =
+          "❌ Please enter a valid URL.";
+
+        return;
+      }
+
+
+      button.disabled = true;
+
+      message.textContent =
+        "Submitting payment...";
+
+
+      const { error } =
+        await supabaseClient
+          .from("payments")
+          .insert({
+
+            reservation_id:
+              reservation.id,
+
+            amount:
+              reservation.total_amount,
+
+            receipt_url:
+              receiptUrl,
+
+            status:
+              "pending"
+
+          });
+
+
+      if (error) {
+
+        console.error(error);
+
+        message.textContent =
+          "❌ Could not submit payment.";
+
+        button.disabled = false;
+
+        return;
+      }
+
+
+      message.innerHTML = `
+
+        ✅ Payment receipt submitted!
+
+        <br><br>
+
+        Your payment is now waiting
+        for admin verification.
+
+      `;
+
+
+      button.style.display =
+        "none";
+
+    }
+
+
+    loadReservation();
+
+  </script>
+
+</body>
+
+</html>
