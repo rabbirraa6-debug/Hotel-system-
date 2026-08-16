@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Reserve Room</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f5f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .room-info {
+      background: #f1eee6;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .total {
+      margin-top: 20px;
+      padding: 15px;
+      background: #111;
+      color: white;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: #d4af37;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+    }
+
+    #message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Reserve Your Room</h1>
+
+    <div
+      id="roomInfo"
+      class="room-info"
+    >
+      Loading room...
+    </div>
+
+    <label>Your Name</label>
+
+    <input
+      id="name"
+      type="text"
+      placeholder="Enter your name"
+    >
+
+    <label>Phone Number</label>
+
+    <input
+      id="phone"
+      type="tel"
+      placeholder="Enter your phone number"
+    >
+
+    <label>Check-in</label>
+
+    <input
+      id="checkIn"
+      type="date"
+    >
+
+    <label>Check-out</label>
+
+    <input
+      id="checkOut"
+      type="date"
+    >
+
+    <div class="total">
+      Total: <span id="total">0</span> ETB
+    </div>
+
+    <button
+      id="reserveButton"
+      onclick="makeReservation()"
+    >
+      Confirm Reservation
+    </button>
+
+    <div id="message"></div>
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="config.js"></script>
+
+
+  <script>
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const roomId =
+      params.get("room");
+
+
+    let selectedRoom = null;
+
+
+    async function loadRoom() {
+
+      if (!roomId) {
+
+        document.getElementById("roomInfo").innerHTML =
+          "❌ No room selected.";
+
+        return;
+
+      }
+
+
+      const { data, error } =
+        await supabaseClient
+          .from("rooms")
+          .select("*")
+          .eq("id", roomId)
+          .single();
+
+
+      if (error) {
+
+        document.getElementById("roomInfo").innerHTML =
+          "❌ Could not load room.";
+
+        console.error(error);
+
+        return;
+
+      }
+
+
+      selectedRoom = data;
+
+
+      document.getElementById("roomInfo").innerHTML = `
+
+        <h2>${data.name}</h2>
+
+        <p>
+          Room ${data.room_number}
+        </p>
+
+        <p>
+          ${data.description}
+        </p>
+
+        <p>
+          👥 ${data.capacity} guests
+        </p>
+
+        <strong>
+          ${data.price} ETB / night
+        </strong>
+
+      `;
+
+    }
+
+
+    function calculateTotal() {
+
+      if (!selectedRoom) return;
+
+
+      const checkIn =
+        document.getElementById("checkIn").value;
+
+
+      const checkOut =
+        document.getElementById("checkOut").value;
+
+
+      if (!checkIn || !checkOut) {
+
+        document.getElementById("total").textContent =
+          "0";
+
+        return;
+
+      }
+
+
+      const start =
+        new Date(checkIn);
+
+
+      const end =
+        new Date(checkOut);
+
+
+      const difference =
+        end - start;
+
+
+      const nights =
+        Math.ceil(
+          difference /
+          (1000 * 60 * 60 * 24)
+        );
+
+
+      if (nights <= 0) {
+
+        document.getElementById("total").textContent =
+          "0";
+
+        return;
+
+      }
+
+
+      const total =
+        nights * Number(selectedRoom.price);
+
+
+      document.getElementById("total").textContent =
+        total.toFixed(2);
+
+    }
+
+
+    async function makeReservation() {
+
+      const name =
+        document.getElementById("name").value.trim();
+
+
+      const phone =
+        document.getElementById("phone").value.trim();
+
+
+      const checkIn =
+        document.getElementById("checkIn").value;
+
+
+      const checkOut =
+        document.getElementById("checkOut").value;
+
+
+      const message =
+        document.getElementById("message");
+
+
+      if (
+        !name ||
+        !phone ||
+        !checkIn ||
+        !checkOut
+      ) {
+
+        message.textContent =
+          "❌ Please fill in all fields.";
+
+        return;
+
+      }
+
+
+      const start =
+        new Date(checkIn);
+
+
+      const end =
+        new Date(checkOut);
+
+
+      const nights =
+        Math.ceil(
+          (end - start) /
+          (1000 * 60 * 60 * 24)
+        );
+
+
+      if (nights <= 0) {
+
+        message.textContent =
+          "❌ Check-out must be after check-in.";
+
+        return;
+
+      }
+
+
+      const total =
+        nights *
+        Number(selectedRoom.price);
+
+
+      const reservationCode =
+        "HTL-" +
+        Math.random()
+          .toString(36)
+          .substring(2, 8)
+          .toUpperCase();
+
+
+      const button =
+        document.getElementById(
+          "reserveButton"
+        );
+
+
+      button.disabled = true;
+
+      message.textContent =
+        "Creating reservation...";
+
+
+      // Create customer
+
+      const { data: customer, error: customerError } =
+        await supabaseClient
+          .from("customers")
+          .insert({
+
+            name: name,
+
+            phone: phone
+
+          })
+
+          .select()
+
+          .single();
+
+
+      if (customerError) {
+
+        console.error(customerError);
+
+        message.textContent =
+          "❌ Could not create customer.";
+
+        button.disabled = false;
+
+        return;
+
+      }
+
+
+      // Create reservation
+
+      const { data: reservation, error: reservationError } =
+        await supabaseClient
+          .from("reservations")
+          .insert({
+
+            reservation_code:
+              reservationCode,
+
+            customer_id:
+              customer.id,
+
+            room_id:
+              selectedRoom.id,
+
+            check_in:
+              checkIn,
+
+            check_out:
+              checkOut,
+
+            total_amount:
+              total,
+
+            status:
+              "pending"
+
+          })
+
+          .select()
+
+          .single();
+
+
+      if (reservationError) {
+
+        console.error(reservationError);
+
+        message.textContent =
+          "❌ Could not create reservation.";
+
+        button.disabled = false;
+
+        return;
+
+      }
+
+
+      message.innerHTML = `
+
+        ✅ Reservation created!<br><br>
+
+        Reservation ID:<br>
+
+        <strong>
+          ${reservation.reservation_code}
+        </strong>
+
+        <br><br>
+
+        Total:
+        <strong>
+          ${total.toFixed(2)} ETB
+        </strong>
+
+      `;
+
+
+      button.style.display =
+        "none";
+
+    }
+
+
+    document
+      .getElementById("checkIn")
+      .addEventListener(
+        "change",
+        calculateTotal
+      );
+
+
+    document
+      .getElementById("checkOut")
+      .addEventListener(
+        "change",
+        calculateTotal
+      );
+
+
+    loadRoom();
+
+  </script>
+
+</body>
+
+</html>
