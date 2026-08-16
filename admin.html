@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -12,6 +13,10 @@
   <title>Hotel Admin</title>
 
   <style>
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       font-family: Arial, sans-serif;
@@ -24,18 +29,41 @@
       text-align: center;
     }
 
-    .payment {
+    h2 {
+      margin-top: 35px;
+    }
+
+    .card {
       background: white;
       padding: 20px;
       margin: 15px auto;
-      max-width: 600px;
+      max-width: 700px;
       border-radius: 12px;
       box-shadow: 0 3px 15px rgba(0,0,0,.1);
     }
 
-    .payment a {
-      display: inline-block;
-      margin: 10px 0;
+    .row {
+      margin: 8px 0;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .pending {
+      color: #d68b00;
+    }
+
+    .confirmed {
+      color: #16833b;
+    }
+
+    .rejected {
+      color: #c62828;
     }
 
     button {
@@ -44,7 +72,7 @@
       border-radius: 7px;
       cursor: pointer;
       font-weight: bold;
-      margin-right: 8px;
+      margin: 8px 5px 0 0;
     }
 
     .confirm {
@@ -57,17 +85,40 @@
       color: white;
     }
 
-    .status {
-      font-weight: bold;
+    a {
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
     }
 
   </style>
 
 </head>
 
+
 <body>
 
   <h1>🏨 Hotel Admin</h1>
+
+
+  <!-- RESERVATIONS -->
+
+  <h2>📋 Reservations</h2>
+
+  <div id="reservations">
+    Loading reservations...
+  </div>
+
+
+  <!-- PAYMENTS -->
+
+  <h2>💳 Payments</h2>
 
   <div id="payments">
     Loading payments...
@@ -88,6 +139,149 @@
       );
 
 
+    // =========================
+    // LOAD RESERVATIONS
+    // =========================
+
+    async function loadReservations() {
+
+      const container =
+        document.getElementById(
+          "reservations"
+        );
+
+
+      const { data, error } =
+        await supabaseClient
+          .from("reservations")
+          .select(`
+            *,
+            customers (
+              name,
+              phone
+            ),
+            rooms (
+              name,
+              room_number
+            )
+          `)
+          .order(
+            "created_at",
+            { ascending: false }
+          );
+
+
+      if (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+          "❌ Could not load reservations.";
+
+        return;
+
+      }
+
+
+      if (!data.length) {
+
+        container.innerHTML =
+          '<div class="empty">No reservations yet.</div>';
+
+        return;
+
+      }
+
+
+      container.innerHTML = "";
+
+
+      data.forEach(reservation => {
+
+        container.innerHTML += `
+
+          <div class="card">
+
+            <h3>
+              ${reservation.reservation_code}
+            </h3>
+
+            <div class="row">
+              <span class="label">
+                Customer:
+              </span>
+
+              ${reservation.customers.name}
+            </div>
+
+            <div class="row">
+              <span class="label">
+                Phone:
+              </span>
+
+              ${reservation.customers.phone}
+            </div>
+
+            <div class="row">
+              <span class="label">
+                Room:
+              </span>
+
+              ${reservation.rooms.name}
+              (${reservation.rooms.room_number})
+            </div>
+
+            <div class="row">
+              <span class="label">
+                Check-in:
+              </span>
+
+              ${reservation.check_in}
+            </div>
+
+            <div class="row">
+              <span class="label">
+                Check-out:
+              </span>
+
+              ${reservation.check_out}
+            </div>
+
+            <div class="row">
+              <span class="label">
+                Total:
+              </span>
+
+              ${Number(
+                reservation.total_amount
+              ).toFixed(2)} ETB
+            </div>
+
+            <div class="row">
+
+              <span class="label">
+                Status:
+              </span>
+
+              <span class="status ${reservation.status}">
+                ${reservation.status}
+              </span>
+
+            </div>
+
+          </div>
+
+        `;
+
+      });
+
+    }
+
+
+    // =========================
+    // LOAD PAYMENTS
+    // =========================
+
     async function loadPayments() {
 
       const container =
@@ -102,9 +296,7 @@
           .select(`
             *,
             reservations (
-              reservation_code,
-              check_in,
-              check_out
+              reservation_code
             )
           `)
           .order(
@@ -128,7 +320,7 @@
       if (!data.length) {
 
         container.innerHTML =
-          "No payments yet.";
+          '<div class="empty">No payments yet.</div>';
 
         return;
 
@@ -142,55 +334,80 @@
 
         container.innerHTML += `
 
-          <div class="payment">
+          <div class="card">
 
-            <h2>
+            <h3>
               ${payment.reservations.reservation_code}
-            </h2>
+            </h3>
 
-            <p>
-              Amount:
-              <strong>
-                ${Number(payment.amount).toFixed(2)}
-                ETB
-              </strong>
-            </p>
+            <div class="row">
 
-            <p>
-              Status:
-              <span class="status">
+              <span class="label">
+                Amount:
+              </span>
+
+              ${Number(
+                payment.amount
+              ).toFixed(2)} ETB
+
+            </div>
+
+
+            <div class="row">
+
+              <span class="label">
+                Status:
+              </span>
+
+              <span class="status ${payment.status}">
                 ${payment.status}
               </span>
-            </p>
+
+            </div>
+
 
             <a
               href="${payment.receipt_url}"
               target="_blank"
+              rel="noopener"
             >
               🔗 Open Receipt
             </a>
 
             <br>
 
-            <button
-              class="confirm"
-              onclick="updatePayment(
-                ${payment.id},
-                'confirmed'
-              )"
-            >
-              ✅ Confirm
-            </button>
 
-            <button
-              class="reject"
-              onclick="updatePayment(
-                ${payment.id},
-                'rejected'
-              )"
-            >
-              ❌ Reject
-            </button>
+            ${
+              payment.status === "pending"
+
+              ? `
+
+                <button
+                  class="confirm"
+                  onclick="updatePayment(
+                    ${payment.id},
+                    'confirmed'
+                  )"
+                >
+                  ✅ Confirm
+                </button>
+
+
+                <button
+                  class="reject"
+                  onclick="updatePayment(
+                    ${payment.id},
+                    'rejected'
+                  )"
+                >
+                  ❌ Reject
+                </button>
+
+              `
+
+              : ""
+
+            }
 
           </div>
 
@@ -200,6 +417,10 @@
 
     }
 
+
+    // =========================
+    // UPDATE PAYMENT
+    // =========================
 
     async function updatePayment(
       paymentId,
@@ -220,11 +441,11 @@
 
       if (error) {
 
+        console.error(error);
+
         alert(
           "❌ Could not update payment."
         );
-
-        console.error(error);
 
         return;
 
@@ -240,6 +461,12 @@
 
     }
 
+
+    // =========================
+    // START
+    // =========================
+
+    loadReservations();
 
     loadPayments();
 
