@@ -1,83 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
 <title>Hotel Admin</title>
+
 <style>
-*{box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px}
-h1{text-align:center}
-h2{margin-top:35px}
-.controls{max-width:700px;margin:20px auto;background:white;padding:15px;border-radius:12px}
-input,select{width:100%;padding:12px;margin-top:8px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-.card{background:white;padding:20px;margin:15px auto;max-width:700px;border-radius:12px;box-shadow:0 3px 15px rgba(0,0,0,.1)}
-.row{margin:8px 0}
-.label{font-weight:bold}
-.status{font-weight:bold}
-.pending{color:#d68b00}
-.confirmed,.approved{color:#16833b}
-.rejected{color:#c62828}
-.cancelled{color:#c62828}
-button{padding:10px 15px;border:none;border-radius:7px;cursor:pointer;font-weight:bold;margin:8px 5px 0 0}
-.confirm{background:#2e9d50;color:white}
-.reject{background:#d33;color:white}
-.refresh{background:#333;color:white;width:100%;margin-top:10px}
-.receipt{display:inline-block;margin-top:8px}
-.section-title{font-size:17px;font-weight:bold;margin-top:18px;padding-top:15px;border-top:1px solid #eee}
-.empty{text-align:center;padding:20px;background:white;border-radius:10px;max-width:700px;margin:15px auto}
-.notice{padding:12px;background:#fff4d6;border-radius:8px;margin-top:12px}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f5f5f5;
+  margin:0;
+  padding:20px;
+}
+
+h1{
+  text-align:center;
+}
+
+h2{
+  margin-top:35px;
+}
+
+.controls{
+  max-width:700px;
+  margin:20px auto;
+  background:white;
+  padding:15px;
+  border-radius:12px;
+}
+
+input,
+select{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  margin:15px auto;
+  max-width:700px;
+  border-radius:12px;
+  box-shadow:0 3px 15px rgba(0,0,0,.1);
+}
+
+.row{
+  margin:8px 0;
+}
+
+.label{
+  font-weight:bold;
+}
+
+.status{
+  font-weight:bold;
+  text-transform:capitalize;
+}
+
+.pending{
+  color:#d68b00;
+}
+
+.confirmed,
+.approved{
+  color:#16833b;
+}
+
+.rejected{
+  color:#c62828;
+}
+
+.cancelled{
+  color:#c62828;
+}
+
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:7px;
+  cursor:pointer;
+  font-weight:bold;
+  margin:8px 5px 0 0;
+}
+
+.confirm{
+  background:#2e9d50;
+  color:white;
+}
+
+.reject{
+  background:#d33;
+  color:white;
+}
+
+.refresh{
+  background:#333;
+  color:white;
+  width:100%;
+  margin-top:10px;
+}
+
+.receipt{
+  display:inline-block;
+  margin-top:8px;
+  color:#9b7b12;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.section-title{
+  font-size:17px;
+  font-weight:bold;
+  margin-top:18px;
+  padding-top:15px;
+  border-top:1px solid #eee;
+}
+
+.empty{
+  text-align:center;
+  padding:20px;
+  background:white;
+  border-radius:10px;
+  max-width:700px;
+  margin:15px auto;
+}
+
+.notice{
+  padding:12px;
+  background:#fff4d6;
+  border-radius:8px;
+  margin-top:12px;
+}
+
+.items-box{
+  background:#fafafa;
+  border:1px solid #eee;
+  border-radius:8px;
+  padding:10px;
+  margin-top:10px;
+}
+
+.order-item{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px solid #eee;
+}
+
+.order-item:last-child{
+  border-bottom:none;
+}
+
+.order-total{
+  font-size:18px;
+  font-weight:bold;
+  margin-top:12px;
+  text-align:right;
+}
+
+.order-card{
+  border-left:5px solid #d4af37;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:6px;
+  background:#fff4d6;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
 </style>
+
 </head>
 
 <body>
 
+
 <h1>🏨 Hotel Admin</h1>
+
 
 <div class="controls">
 
-<strong>🔎 Search Reservations</strong>
+<strong>
+🔎 Search
+</strong>
+
 
 <input
 id="search"
 type="text"
-placeholder="Reservation ID, name, phone or room..."
+placeholder="Reservation ID, order ID, name, phone, room or table..."
 oninput="filterCards()"
 >
 
-<select id="statusFilter" onchange="filterCards()">
-<option value="all">All statuses</option>
-<option value="pending">🟡 Pending</option>
-<option value="confirmed">✅ Confirmed</option>
-<option value="rejected">❌ Rejected</option>
-<option value="approved">✅ Approved</option>
-<option value="cancelled">❌ Cancelled</option>
+
+<select
+id="statusFilter"
+onchange="filterCards()"
+>
+
+<option value="all">
+All statuses
+</option>
+
+<option value="pending">
+🟡 Pending
+</option>
+
+<option value="confirmed">
+✅ Confirmed
+</option>
+
+<option value="rejected">
+❌ Rejected
+</option>
+
+<option value="approved">
+✅ Approved
+</option>
+
+<option value="cancelled">
+❌ Cancelled
+</option>
+
 </select>
 
-<select id="typeFilter" onchange="filterCards()">
-<option value="all">All Type</option>
-<option value="reservation">🏨 Reservation</option>
-<option value="payment">💳 Payment</option>
-<option value="cancellation">❌ Cancellation</option>
+
+<select
+id="typeFilter"
+onchange="filterCards()"
+>
+
+<option value="all">
+All Types
+</option>
+
+<option value="reservation">
+🏨 Room Reservation
+</option>
+
+<option value="payment">
+💳 Room Payment
+</option>
+
+<option value="order">
+🍽️ Food & Table Order
+</option>
+
+<option value="cancellation">
+❌ Cancellation
+</option>
+
 </select>
 
-<button class="refresh" onclick="loadEverything()">
+
+<button
+class="refresh"
+onclick="loadEverything()"
+>
+
 🔄 Refresh
+
 </button>
 
 </div>
 
-<h2>📋 Reservations</h2>
+
+<h2>
+📋 Room Reservations
+</h2>
+
 
 <div id="reservations">
 Loading reservations...
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<h2>
+🍽️ Food & Table Orders
+</h2>
+
+
+<div id="orders">
+Loading orders...
+</div>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
 <script src="config.js"></script>
 
+
 <script>
+
 
 const supabaseClient =
 window.supabase.createClient(
@@ -86,7 +322,9 @@ SUPABASE_KEY
 );
 
 
-let allCards=[];
+let allCards = [];
+
+let allOrders = [];
 
 
 // =========================
@@ -95,24 +333,38 @@ let allCards=[];
 
 async function loadEverything(){
 
-const container =
-document.getElementById("reservations");
-
-container.innerHTML =
+document.getElementById(
+"reservations"
+).innerHTML =
 "Loading reservations...";
 
 
+document.getElementById(
+"orders"
+).innerHTML =
+"Loading orders...";
+
+
+/* =========================
+   RESERVATIONS
+   ========================= */
+
 const reservationResult =
 await supabaseClient
+
 .from("reservations")
+
 .select(`
 *,
 customers(name,phone),
 rooms(name,room_number)
 `)
+
 .order(
 "created_at",
-{ascending:false}
+{
+ascending:false
+}
 );
 
 
@@ -122,77 +374,74 @@ console.error(
 reservationResult.error
 );
 
-container.innerHTML =
+document.getElementById(
+"reservations"
+).innerHTML =
 "❌ Could not load reservations.";
 
-return;
-
-}
-
+}else{
 
 const reservations =
 reservationResult.data || [];
 
 
+/* =========================
+   PAYMENTS
+   ========================= */
+
 const paymentResult =
 await supabaseClient
+
 .from("payments")
+
 .select("*")
+
 .order(
 "created_at",
-{ascending:false}
-);
-
-
-if(paymentResult.error){
-
-console.error(
-paymentResult.error
-);
-
-container.innerHTML =
-"❌ Could not load payments.";
-
-return;
-
+{
+ascending:false
 }
+);
 
 
 const payments =
-paymentResult.data || [];
+paymentResult.error
+? []
+: (
+paymentResult.data || []
+);
 
+
+/* =========================
+   CANCELLATIONS
+   ========================= */
 
 const cancellationResult =
 await supabaseClient
+
 .from("cancellations")
+
 .select("*")
+
 .order(
 "created_at",
-{ascending:false}
-);
-
-
-if(cancellationResult.error){
-
-console.error(
-cancellationResult.error
-);
-
-container.innerHTML =
-"❌ Could not load cancellations.";
-
-return;
-
+{
+ascending:false
 }
+);
 
 
 const cancellations =
-cancellationResult.data || [];
+cancellationResult.error
+? []
+: (
+cancellationResult.data || []
+);
 
 
 allCards =
 reservations.map(
-reservation=>{
+reservation => {
 
 const payment =
 payments.find(
@@ -210,7 +459,7 @@ reservation.id
 );
 
 
-return{
+return {
 
 reservation,
 payment,
@@ -219,6 +468,48 @@ cancellation
 };
 
 });
+
+}
+
+
+/* =========================
+   ORDERS
+   ========================= */
+
+const orderResult =
+await supabaseClient
+
+.from("orders")
+
+.select("*")
+
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if(orderResult.error){
+
+console.error(
+orderResult.error
+);
+
+document.getElementById(
+"orders"
+).innerHTML =
+"❌ Could not load food orders.";
+
+allOrders = [];
+
+}else{
+
+allOrders =
+orderResult.data || [];
+
+}
 
 
 filterCards();
@@ -252,9 +543,13 @@ document
 .value;
 
 
-const filtered =
+/* =========================
+   RESERVATIONS
+   ========================= */
+
+const filteredReservations =
 allCards.filter(
-item=>{
+item => {
 
 const r =
 item.reservation;
@@ -297,19 +592,11 @@ return false;
 }
 
 
-// TYPE FILTER
+if(type === "reservation"){
 
-if(type==="reservation"){
+if(status !== "all"){
 
-if(!r.status)
-return false;
-
-if(
-status!=="all" &&
-r.status!==status
-){
-
-return false;
+return r.status === status;
 
 }
 
@@ -318,17 +605,17 @@ return true;
 }
 
 
-if(type==="payment"){
+if(type === "payment"){
 
-if(!p)
-return false;
-
-if(
-status!=="all" &&
-p.status!==status
-){
+if(!p){
 
 return false;
+
+}
+
+if(status !== "all"){
+
+return p.status === status;
 
 }
 
@@ -337,17 +624,17 @@ return true;
 }
 
 
-if(type==="cancellation"){
+if(type === "cancellation"){
 
-if(!x)
-return false;
-
-if(
-status!=="all" &&
-x.status!==status
-){
+if(!x){
 
 return false;
+
+}
+
+if(status !== "all"){
+
+return x.status === status;
 
 }
 
@@ -356,32 +643,99 @@ return true;
 }
 
 
-// STATUS ONLY
+if(type === "order"){
 
-if(status==="all")
+return false;
+
+}
+
+
+if(status === "all"){
+
 return true;
 
+}
 
-return(
 
-r.status===status ||
+return (
 
-(p && p.status===status) ||
+r.status === status ||
 
-(x && x.status===status)
+(p && p.status === status) ||
+
+(x && x.status === status)
 
 );
 
 });
 
 
-displayCards(filtered);
+displayCards(
+filteredReservations
+);
+
+
+/* =========================
+   ORDERS
+   ========================= */
+
+const filteredOrders =
+allOrders.filter(
+order => {
+
+const searchable = `
+
+${order.order_code || ""}
+
+${order.table_number || ""}
+
+${order.arrival_time || ""}
+
+`.toLowerCase();
+
+
+if(
+search &&
+!searchable.includes(search)
+){
+
+return false;
+
+}
+
+
+if(type !== "all" &&
+type !== "order"){
+
+return false;
+
+}
+
+
+if(
+status !== "all" &&
+order.status !== status
+){
+
+return false;
+
+}
+
+
+return true;
+
+});
+
+
+displayOrders(
+filteredOrders
+);
 
 }
 
 
 // =========================
-// DISPLAY CARDS
+// DISPLAY RESERVATIONS
 // =========================
 
 function displayCards(cards){
@@ -395,18 +749,18 @@ document.getElementById(
 if(!cards.length){
 
 container.innerHTML =
-'<div class="empty">No matching records.</div>';
+'<div class="empty">No matching room reservations.</div>';
 
 return;
 
 }
 
 
-container.innerHTML="";
+container.innerHTML = "";
 
 
 cards.forEach(
-item=>{
+item => {
 
 const r =
 item.reservation;
@@ -424,25 +778,27 @@ const x =
 item.cancellation;
 
 
-let paymentHTML="";
+let paymentHTML = "";
 
 
 if(p){
 
-paymentHTML=`
+paymentHTML = `
 
 <div class="section-title">
-🏨 Reservation & 💳 Payment
+💳 Payment
 </div>
 
 <div class="row">
+
 <span class="label">
 Amount:
 </span>
 
 ${Number(
 p.amount || 0
-).toFixed(2)} ETB
+).toFixed(2)}
+ETB
 
 </div>
 
@@ -454,26 +810,51 @@ Status:
 </span>
 
 <span
-class="status ${p.status}"
+class="status ${escapeHTML(p.status)}"
 >
-${p.status}
+
+${escapeHTML(p.status)}
+
 </span>
 
 </div>
 
 
+${
+p.receipt_url
+
+?
+
+`
+
 <a
 class="receipt"
-href="${p.receipt_url || "#"}"
+href="${escapeAttribute(p.receipt_url)}"
 target="_blank"
 rel="noopener"
 >
+
 🔗 Open Receipt
+
 </a>
+
+`
+
+:
+
+`
+
+<div class="notice">
+No receipt URL submitted.
+</div>
+
+`
+
+}
 
 
 ${
-p.status==="pending"
+p.status === "pending"
 
 ?
 
@@ -489,7 +870,9 @@ ${r.id},
 'confirmed'
 )"
 >
+
 ✅ Confirm
+
 </button>
 
 
@@ -501,7 +884,9 @@ ${r.id},
 'rejected'
 )"
 >
+
 ❌ Reject
+
 </button>
 
 `
@@ -516,7 +901,7 @@ ${r.id},
 
 }else{
 
-paymentHTML=`
+paymentHTML = `
 
 <div class="section-title">
 💳 Payment
@@ -531,12 +916,12 @@ No payment submitted yet.
 }
 
 
-let cancellationHTML="";
+let cancellationHTML = "";
 
 
 if(x){
 
-cancellationHTML=`
+cancellationHTML = `
 
 <div class="section-title">
 ❌ Cancellation Request
@@ -564,7 +949,8 @@ Refund:
 
 ${Number(
 x.refund_amount || 0
-).toFixed(2)} ETB
+).toFixed(2)}
+ETB
 
 </div>
 
@@ -576,16 +962,18 @@ Status:
 </span>
 
 <span
-class="status ${x.status}"
+class="status ${escapeHTML(x.status)}"
 >
-${x.status}
+
+${escapeHTML(x.status)}
+
 </span>
 
 </div>
 
 
 ${
-x.status==="pending"
+x.status === "pending"
 
 ?
 
@@ -599,7 +987,9 @@ ${r.id},
 'approved'
 )"
 >
+
 ✅ Approve
+
 </button>
 
 
@@ -611,7 +1001,9 @@ ${r.id},
 'rejected'
 )"
 >
+
 ❌ Reject
+
 </button>
 
 `
@@ -716,7 +1108,8 @@ Total:
 
 ${Number(
 r.total_amount || 0
-).toFixed(2)} ETB
+).toFixed(2)}
+ETB
 
 </div>
 
@@ -728,9 +1121,11 @@ Reservation:
 </span>
 
 <span
-class="status ${r.status}"
+class="status ${escapeHTML(r.status)}"
 >
-${r.status}
+
+${escapeHTML(r.status)}
+
 </span>
 
 </div>
@@ -750,6 +1145,382 @@ ${cancellationHTML}
 
 
 // =========================
+// DISPLAY FOOD ORDERS
+// =========================
+
+function displayOrders(orders){
+
+const container =
+document.getElementById(
+"orders"
+);
+
+
+if(!orders.length){
+
+container.innerHTML =
+'<div class="empty">No matching food & table orders.</div>';
+
+return;
+
+}
+
+
+container.innerHTML = "";
+
+
+orders.forEach(
+order => {
+
+const status =
+order.status ||
+"pending";
+
+
+let items = [];
+
+
+try{
+
+if(Array.isArray(order.items)){
+
+items =
+order.items;
+
+}
+
+else if(
+typeof order.items === "string"
+){
+
+items =
+JSON.parse(order.items);
+
+}
+
+}catch(error){
+
+console.error(
+"Could not read order items:",
+error
+);
+
+items = [];
+
+}
+
+
+let itemsHTML =
+"";
+
+
+if(items.length){
+
+itemsHTML = items.map(
+item => {
+
+const quantity =
+Number(
+item.quantity || 0
+);
+
+const price =
+Number(
+item.price || 0
+);
+
+const amount =
+quantity * price;
+
+
+const icon =
+item.type === "drink"
+? "🥤"
+: "🍽️";
+
+
+return `
+
+<div class="order-item">
+
+<span>
+
+${icon}
+${escapeHTML(
+item.name || "Item"
+)}
+× ${quantity}
+
+</span>
+
+<span>
+
+${amount.toFixed(2)}
+ETB
+
+</span>
+
+</div>
+
+`;
+
+}).join("");
+
+}else{
+
+itemsHTML = `
+<div class="notice">
+No items found.
+</div>
+`;
+
+}
+
+
+const receiptHTML =
+order.receipt_url
+
+?
+
+`
+
+<a
+class="receipt"
+href="${escapeAttribute(order.receipt_url)}"
+target="_blank"
+rel="noopener"
+>
+
+🔗 Open Payment Receipt
+
+</a>
+
+`
+
+:
+
+`
+
+<div class="notice">
+💳 No payment receipt submitted yet.
+</div>
+
+`;
+
+
+const actionHTML =
+status === "pending"
+
+?
+
+`
+
+<button
+class="confirm"
+onclick="updateOrder(
+${order.id},
+'confirmed'
+)"
+>
+
+✅ Confirm Order
+
+</button>
+
+
+<button
+class="reject"
+onclick="updateOrder(
+${order.id},
+'rejected'
+)"
+>
+
+❌ Reject Order
+
+</button>
+
+`
+
+:
+
+"";
+
+
+container.innerHTML += `
+
+<div class="card order-card">
+
+<div class="badge">
+🍽️ FOOD & TABLE ORDER
+</div>
+
+
+<h3>
+
+📋 ${escapeHTML(
+order.order_code ||
+"Unknown"
+)}
+
+</h3>
+
+
+<div class="row">
+
+<span class="label">
+Table:
+</span>
+
+🪑 Table ${escapeHTML(
+String(
+order.table_number || "—"
+)
+)}
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
+Estimated Arrival:
+</span>
+
+🕐 ${escapeHTML(
+order.arrival_time || "—"
+)}
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
+Status:
+</span>
+
+<span
+class="status ${escapeHTML(status)}"
+>
+
+${escapeHTML(status)}
+
+</span>
+
+</div>
+
+
+<div class="section-title">
+
+🍽️ Ordered Items
+
+</div>
+
+
+<div class="items-box">
+
+${itemsHTML}
+
+<div class="order-total">
+
+Total:
+${Number(
+order.total_amount || 0
+).toFixed(2)}
+ETB
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+
+💳 Payment
+
+</div>
+
+
+${receiptHTML}
+
+
+<div>
+
+${actionHTML}
+
+</div>
+
+
+</div>
+
+`;
+
+});
+
+}
+
+
+// =========================
+// UPDATE ORDER
+// =========================
+
+async function updateOrder(
+orderId,
+newStatus
+){
+
+const result =
+await supabaseClient
+
+.from("orders")
+
+.update({
+status:newStatus
+})
+
+.eq(
+"id",
+orderId
+);
+
+
+if(result.error){
+
+console.error(
+result.error
+);
+
+alert(
+"❌ Could not update order."
+);
+
+return;
+
+}
+
+
+alert(
+
+newStatus === "confirmed"
+
+?
+
+"✅ Food & table order confirmed."
+
+:
+
+"❌ Food & table order rejected."
+
+);
+
+
+loadEverything();
+
+}
+
+
+// =========================
 // UPDATE PAYMENT
 // =========================
 
@@ -759,14 +1530,15 @@ reservationId,
 newStatus
 ){
 
-// UPDATE PAYMENT
-
 const paymentResult =
 await supabaseClient
+
 .from("payments")
+
 .update({
 status:newStatus
 })
+
 .eq(
 "id",
 paymentId
@@ -788,14 +1560,15 @@ return;
 }
 
 
-// UPDATE RESERVATION
-
 const reservationResult =
 await supabaseClient
+
 .from("reservations")
+
 .update({
 status:newStatus
 })
+
 .eq(
 "id",
 reservationId
@@ -819,19 +1592,25 @@ return;
 }
 
 
-// GET CUSTOMER
+/* =========================
+   GET CUSTOMER
+   ========================= */
 
 const customerResult =
 await supabaseClient
+
 .from("reservations")
+
 .select(`
 customer_id,
 reservation_code
 `)
+
 .eq(
 "id",
 reservationId
 )
+
 .single();
 
 
@@ -852,10 +1631,12 @@ return;
 }
 
 
-// CREATE NOTIFICATION
+/* =========================
+   CREATE NOTIFICATION
+   ========================= */
 
 const title =
-newStatus==="confirmed"
+newStatus === "confirmed"
 
 ?
 
@@ -867,7 +1648,7 @@ newStatus==="confirmed"
 
 
 const message =
-newStatus==="confirmed"
+newStatus === "confirmed"
 
 ?
 
@@ -880,7 +1661,9 @@ newStatus==="confirmed"
 
 const notificationResult =
 await supabaseClient
+
 .from("notifications")
+
 .insert({
 
 customer_id:
@@ -923,7 +1706,7 @@ return;
 
 alert(
 
-newStatus==="confirmed"
+newStatus === "confirmed"
 
 ?
 
@@ -953,10 +1736,13 @@ newStatus
 
 const cancellationResult =
 await supabaseClient
+
 .from("cancellations")
+
 .update({
 status:newStatus
 })
+
 .eq(
 "id",
 cancellationId
@@ -978,14 +1764,17 @@ return;
 }
 
 
-if(newStatus==="approved"){
+if(newStatus === "approved"){
 
 const reservationResult =
 await supabaseClient
+
 .from("reservations")
+
 .update({
 status:"cancelled"
 })
+
 .eq(
 "id",
 reservationId
@@ -1013,7 +1802,6 @@ alert(
 "✅ Cancellation approved and reservation cancelled."
 );
 
-
 }else{
 
 alert(
@@ -1034,8 +1822,11 @@ loadEverything();
 
 function formatDate(date){
 
-if(!date)
+if(!date){
+
 return "—";
+
+}
 
 
 return new Date(
@@ -1080,6 +1871,41 @@ return String(value)
 
 }
 
+
+// =========================
+// ESCAPE URL
+// =========================
+
+function escapeAttribute(value){
+
+return String(value)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+);
+
+}
+
+
+// =========================
+// START
+// =========================
 
 loadEverything();
 
