@@ -3,258 +3,165 @@
 
 <head>
 
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Check Reservation Status</title>
-
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-
-    body {
-
-      font-family: Arial, sans-serif;
-
-      background: #f7f5f0;
-
-      margin: 0;
-
-      padding: 20px;
-
-    }
-
-
-    .container {
-
-      max-width: 500px;
-
-      margin: 40px auto;
-
-      background: white;
-
-      padding: 25px;
-
-      border-radius: 15px;
-
-      box-shadow:
-        0 4px 20px
-        rgba(0,0,0,.1);
-
-    }
-
-
-    h1 {
-
-      text-align: center;
-
-      margin-bottom: 25px;
-
-    }
-
-
-    label {
-
-      display: block;
-
-      margin-bottom: 7px;
-
-      font-weight: bold;
-
-    }
-
-
-    input {
-
-      width: 100%;
-
-      padding: 14px;
-
-      border: 1px solid #ccc;
-
-      border-radius: 8px;
-
-      font-size: 17px;
-
-      text-transform: uppercase;
-
-      letter-spacing: 1px;
-
-    }
-
-
-    .search-button {
-
-      width: 100%;
-
-      margin-top: 15px;
-
-      padding: 14px;
-
-      background: #d4af37;
-
-      color: white;
-
-      border: none;
-
-      border-radius: 8px;
-
-      font-size: 16px;
-
-      font-weight: bold;
-
-      cursor: pointer;
-
-    }
-
-
-    .search-button:disabled {
-
-      opacity: .6;
-
-    }
-
-
-    #message {
-
-      margin-top: 18px;
-
-      text-align: center;
-
-      font-weight: bold;
-
-    }
-
-
-    .result {
-
-      margin-top: 25px;
-
-      padding: 20px;
-
-      border-radius: 12px;
-
-      background: #fafafa;
-
-      border: 1px solid #ddd;
-
-    }
-
-
-    .booking-code {
-
-      text-align: center;
-
-      font-size: 23px;
-
-      font-weight: bold;
-
-      letter-spacing: 2px;
-
-      margin-bottom: 18px;
-
-    }
-
-
-    .status-box {
-
-      padding: 15px;
-
-      border-radius: 10px;
-
-      text-align: center;
-
-      font-size: 20px;
-
-      font-weight: bold;
-
-      margin-bottom: 20px;
-
-    }
-
-
-    .pending {
-
-      background: #fff4d6;
-
-      color: #a66a00;
-
-      border: 1px solid #e6b84a;
-
-    }
-
-
-    .confirmed {
-
-      background: #e4f7ea;
-
-      color: #16833b;
-
-      border: 1px solid #55b875;
-
-    }
-
-
-    .rejected {
-
-      background: #fde7e7;
-
-      color: #c62828;
-
-      border: 1px solid #e57373;
-
-    }
-
-
-    .info {
-
-      margin: 10px 0;
-
-      padding-bottom: 8px;
-
-      border-bottom: 1px solid #eee;
-
-    }
-
-
-    .label {
-
-      font-weight: bold;
-
-    }
-
-
-    .refresh {
-
-      width: 100%;
-
-      margin-top: 18px;
-
-      padding: 12px;
-
-      background: #222;
-
-      color: white;
-
-      border: none;
-
-      border-radius: 8px;
-
-      font-weight: bold;
-
-      cursor: pointer;
-
-    }
-
-  </style>
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Check Status</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f5f0;
+  margin:0;
+  padding:20px;
+}
+
+.container{
+  max-width:500px;
+  margin:40px auto;
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 4px 20px rgba(0,0,0,.1);
+}
+
+h1{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+label{
+  display:block;
+  margin-bottom:7px;
+  font-weight:bold;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:17px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.search-button{
+  width:100%;
+  margin-top:15px;
+  padding:14px;
+  background:#d4af37;
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.search-button:disabled{
+  opacity:.6;
+}
+
+#message{
+  margin-top:18px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.result{
+  margin-top:25px;
+  padding:20px;
+  border-radius:12px;
+  background:#fafafa;
+  border:1px solid #ddd;
+}
+
+.booking-code{
+  text-align:center;
+  font-size:23px;
+  font-weight:bold;
+  letter-spacing:2px;
+  margin-bottom:18px;
+}
+
+.type-box{
+  text-align:center;
+  margin-bottom:15px;
+  color:#777;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.status-box{
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+  margin-bottom:20px;
+}
+
+.pending{
+  background:#fff4d6;
+  color:#a66a00;
+  border:1px solid #e6b84a;
+}
+
+.confirmed,
+.approved{
+  background:#e4f7ea;
+  color:#16833b;
+  border:1px solid #55b875;
+}
+
+.rejected,
+.cancelled{
+  background:#fde7e7;
+  color:#c62828;
+  border:1px solid #e57373;
+}
+
+.info{
+  margin:10px 0;
+  padding-bottom:8px;
+  border-bottom:1px solid #eee;
+}
+
+.label{
+  font-weight:bold;
+}
+
+.item{
+  padding:8px;
+  background:white;
+  border-radius:7px;
+  margin:6px 0;
+  border:1px solid #eee;
+}
+
+.refresh{
+  width:100%;
+  margin-top:18px;
+  padding:12px;
+  background:#222;
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+</style>
 
 </head>
 
@@ -262,406 +169,826 @@
 <body>
 
 
-  <div class="container">
+<div class="container">
 
 
-    <h1>
-      🔎 Check Reservation
-    </h1>
+<h1>
+🔎 Check Status
+</h1>
 
 
-    <label>
-      Reservation ID
-    </label>
+<label>
+Reservation / Order ID
+</label>
 
 
-    <input
-      id="reservationCode"
-      placeholder="HTL-G8E0KL"
-      maxlength="10"
-    >
+<input
+id="reservationCode"
+placeholder="HTL-G8E0KL or ORD-7K3P9M"
+maxlength="20"
+>
 
 
-    <button
-      id="searchButton"
-      class="search-button"
-      onclick="checkReservation()"
-    >
-      Check Status
-    </button>
+<button
+id="searchButton"
+class="search-button"
+onclick="checkStatus()"
+>
+Check Status
+</button>
 
 
-    <div id="message"></div>
+<div id="message"></div>
 
 
-    <div
-      id="result"
-      class="result"
-      style="display:none;"
-    >
+<div
+id="result"
+class="result"
+style="display:none;"
+>
 
-      <div
-        id="bookingCode"
-        class="booking-code"
-      ></div>
 
+<div
+id="bookingCode"
+class="booking-code"
+></div>
 
-      <div
-        id="statusBox"
-        class="status-box"
-      ></div>
 
+<div
+id="typeBox"
+class="type-box"
+></div>
 
-      <div
-        id="details"
-      ></div>
 
+<div
+id="statusBox"
+class="status-box"
+></div>
 
-      <button
-        class="refresh"
-        onclick="checkReservation()"
-      >
-        🔄 Refresh Status
-      </button>
 
-    </div>
+<div id="details"></div>
 
-  </div>
 
+<button
+class="refresh"
+onclick="checkStatus()"
+>
+🔄 Refresh Status
+</button>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</div>
 
-  <script src="config.js"></script>
 
+</div>
 
-  <script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    // =========================
-    // SUPABASE
-    // =========================
+<script src="config.js"></script>
 
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+<script>
 
 
-    // =========================
-    // CHECK URL
-    // =========================
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
 
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
+/* =========================
+   URL PARAMETERS
+   ========================= */
 
+const params =
+new URLSearchParams(
+window.location.search
+);
 
-    const urlCode =
-      params.get(
-        "reservation"
-      );
 
+/*
+Existing room link:
 
-    if (urlCode) {
+check-status.html?reservation=HTL-G8E0KL
 
-      document.getElementById(
-        "reservationCode"
-      ).value =
-        urlCode;
+New food link:
 
-    }
+check-status.html?order=ORD-7K3P9M
+*/
 
 
-    // =========================
-    // CHECK RESERVATION
-    // =========================
+const urlReservation =
+params.get("reservation");
 
+const urlOrder =
+params.get("order");
 
-    async function checkReservation() {
 
+if(urlReservation){
 
-      const input =
-        document.getElementById(
-          "reservationCode"
-        );
+document.getElementById(
+"reservationCode"
+).value =
+urlReservation;
 
+}
 
-      const message =
-        document.getElementById(
-          "message"
-        );
 
+else if(urlOrder){
 
-      const result =
-        document.getElementById(
-          "result"
-        );
+document.getElementById(
+"reservationCode"
+).value =
+urlOrder;
 
+}
 
-      const button =
-        document.getElementById(
-          "searchButton"
-        );
 
+/* =========================
+   MAIN CHECK FUNCTION
+   ========================= */
 
-      const code =
-        input.value
-          .trim()
-          .toUpperCase();
+async function checkStatus(){
 
+const input =
+document.getElementById(
+"reservationCode"
+);
 
-      if (!code) {
+const message =
+document.getElementById(
+"message"
+);
 
-        message.textContent =
-          "❌ Please enter your reservation ID.";
+const result =
+document.getElementById(
+"result"
+);
 
-        result.style.display =
-          "none";
+const button =
+document.getElementById(
+"searchButton"
+);
 
-        return;
 
-      }
+const code =
+input.value
+.trim()
+.toUpperCase();
 
 
-      button.disabled = true;
+if(!code){
 
-      button.textContent =
-        "Checking...";
+message.textContent =
+"❌ Please enter your Reservation or Order ID.";
 
-      message.textContent =
-        "";
+result.style.display =
+"none";
 
+return;
 
-      // =========================
-      // GET RESERVATION
-      // =========================
+}
 
 
-      const {
-        data: reservation,
-        error
-      } =
-        await supabaseClient
+button.disabled=true;
 
-          .from("reservations")
+button.textContent=
+"Checking...";
 
-          .select(`
-            *,
-            rooms (
-              name,
-              room_number
-            )
-          `)
+message.textContent="";
 
-          .eq(
-            "reservation_code",
-            code
-          )
 
-          .single();
+/*
+================================
+ROOM RESERVATION
+================================
+*/
 
+if(code.startsWith("HTL-")){
 
-      if (error || !reservation) {
+await checkReservation(
+code,
+message,
+result,
+button
+);
 
-        console.error(error);
+return;
 
-        message.textContent =
-          "❌ Reservation not found. Check the ID and try again.";
+}
 
-        result.style.display =
-          "none";
 
-        button.disabled = false;
+/*
+================================
+FOOD / TABLE ORDER
+================================
+*/
 
-        button.textContent =
-          "Check Status";
+if(code.startsWith("ORD-")){
 
-        return;
+await checkOrder(
+code,
+message,
+result,
+button
+);
 
-      }
+return;
 
+}
 
-      // =========================
-      // DISPLAY CODE
-      // =========================
 
+/*
+================================
+UNKNOWN ID
+================================
+*/
 
-      document.getElementById(
-        "bookingCode"
-      ).textContent =
-        reservation.reservation_code;
+message.textContent =
+"❌ Invalid ID. Please enter a valid HTL- or ORD- ID.";
 
+result.style.display=
+"none";
 
-      // =========================
-      // STATUS
-      // =========================
+button.disabled=false;
 
+button.textContent=
+"Check Status";
 
-      const status =
-        reservation.status ||
-        "pending";
+}
 
 
-      const statusBox =
-        document.getElementById(
-          "statusBox"
-        );
+/* =========================
+   ROOM RESERVATION
+   ========================= */
 
+async function checkReservation(
+code,
+message,
+result,
+button
+){
 
-      statusBox.className =
-        "status-box " +
-        status;
+const {
+data:reservation,
+error
+}=
+await supabaseClient
 
+.from("reservations")
 
-      if (
-        status === "confirmed"
-      ) {
+.select(`
+*,
+rooms (
+name,
+room_number
+)
+`)
 
-        statusBox.textContent =
-          "✅ Reservation Confirmed";
+.eq(
+"reservation_code",
+code
+)
 
-      }
+.single();
 
-      else if (
-        status === "rejected"
-      ) {
 
-        statusBox.textContent =
-          "❌ Reservation Rejected";
+if(error||!reservation){
 
-      }
+console.error(error);
 
-      else {
+message.textContent =
+"❌ Reservation not found. Check the ID and try again.";
 
-        statusBox.textContent =
-          "🟡 Reservation Pending";
+result.style.display=
+"none";
 
-      }
+button.disabled=false;
 
+button.textContent=
+"Check Status";
 
-      // =========================
-      // DETAILS
-      // =========================
+return;
 
+}
 
-      const room =
-        reservation.rooms ||
-        {};
 
+/* CODE */
 
-      document.getElementById(
-        "details"
-      ).innerHTML = `
+document.getElementById(
+"bookingCode"
+).textContent =
+reservation.reservation_code;
 
-        <div class="info">
 
-          <span class="label">
-            Room:
-          </span>
+/* TYPE */
 
-          ${room.name || "—"}
+document.getElementById(
+"typeBox"
+).textContent =
+"🏨 ROOM RESERVATION";
 
-          ${
-            room.room_number
-              ? `(${room.room_number})`
-              : ""
-          }
 
-        </div>
+/* STATUS */
 
+const status =
+reservation.status ||
+"pending";
 
-        <div class="info">
 
-          <span class="label">
-            Check-in:
-          </span>
+const statusBox =
+document.getElementById(
+"statusBox"
+);
 
-          ${formatDate(
-            reservation.check_in
-          )}
 
-        </div>
+statusBox.className =
+"status-box "+
+status;
 
 
-        <div class="info">
+if(status==="confirmed"){
 
-          <span class="label">
-            Check-out:
-          </span>
+statusBox.textContent =
+"✅ Reservation Confirmed";
 
-          ${formatDate(
-            reservation.check_out
-          )}
+}
 
-        </div>
+else if(status==="rejected"){
 
+statusBox.textContent =
+"❌ Reservation Rejected";
 
-        <div class="info">
+}
 
-          <span class="label">
-            Total:
-          </span>
+else if(status==="cancelled"){
 
-          ${Number(
-            reservation.total_amount
-          ).toFixed(2)}
+statusBox.textContent =
+"❌ Reservation Cancelled";
 
-          ETB
+}
 
-        </div>
+else{
 
+statusBox.textContent =
+"🟡 Reservation Pending";
 
-        <div class="info">
+}
 
-          <span class="label">
-            Reservation status:
-          </span>
 
-          ${reservation.status}
+/* DETAILS */
 
-        </div>
+const room =
+reservation.rooms||{};
 
-      `;
 
+document.getElementById(
+"details"
+).innerHTML=`
 
-      result.style.display =
-        "block";
+<div class="info">
 
+<span class="label">
+Room:
+</span>
 
-      button.disabled = false;
+${escapeHTML(room.name||"—")}
 
-      button.textContent =
-        "Check Status";
+${
+room.room_number
+?
+`(${escapeHTML(room.room_number)})`
+:
+""
+}
 
-    }
+</div>
 
 
-    // =========================
-    // DATE FORMAT
-    // =========================
+<div class="info">
 
+<span class="label">
+Check-in:
+</span>
 
-    function formatDate(date) {
+${formatDate(
+reservation.check_in
+)}
 
-      if (!date) {
-        return "—";
-      }
+</div>
 
 
-      return new Date(
-        date
-      ).toLocaleDateString();
+<div class="info">
 
-    }
+<span class="label">
+Check-out:
+</span>
 
+${formatDate(
+reservation.check_out
+)}
 
-  </script>
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Total:
+</span>
+
+${Number(
+reservation.total_amount||0
+).toFixed(2)}
+
+ETB
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Reservation status:
+</span>
+
+${escapeHTML(
+reservation.status||"pending"
+)}
+
+</div>
+
+`;
+
+
+result.style.display=
+"block";
+
+button.disabled=false;
+
+button.textContent=
+"Check Status";
+
+}
+
+
+/* =========================
+   FOOD / TABLE ORDER
+   ========================= */
+
+async function checkOrder(
+code,
+message,
+result,
+button
+){
+
+const {
+data:order,
+error
+}=
+await supabaseClient
+
+.from("orders")
+
+.select("*")
+
+.eq(
+"order_code",
+code
+)
+
+.single();
+
+
+if(error||!order){
+
+console.error(error);
+
+message.textContent =
+"❌ Order not found. Check the Order ID and try again.";
+
+result.style.display=
+"none";
+
+button.disabled=false;
+
+button.textContent=
+"Check Status";
+
+return;
+
+}
+
+
+/* CODE */
+
+document.getElementById(
+"bookingCode"
+).textContent =
+order.order_code;
+
+
+/* TYPE */
+
+document.getElementById(
+"typeBox"
+).textContent =
+"🍽️ FOOD & TABLE ORDER";
+
+
+/* STATUS */
+
+const status =
+order.status||
+"pending";
+
+
+const statusBox =
+document.getElementById(
+"statusBox"
+);
+
+
+statusBox.className =
+"status-box "+
+status;
+
+
+if(status==="confirmed"){
+
+statusBox.textContent =
+"✅ Order Confirmed";
+
+}
+
+else if(status==="approved"){
+
+statusBox.textContent =
+"✅ Order Approved";
+
+}
+
+else if(status==="rejected"){
+
+statusBox.textContent =
+"❌ Order Rejected";
+
+}
+
+else if(status==="cancelled"){
+
+statusBox.textContent =
+"❌ Order Cancelled";
+
+}
+
+else{
+
+statusBox.textContent =
+"🟡 Order Pending";
+
+}
+
+
+/* ITEMS */
+
+let itemsHTML="";
+
+const items =
+Array.isArray(order.items)
+?
+order.items
+:
+[];
+
+
+items.forEach(item=>{
+
+const icon =
+item.type==="drink"
+?
+"🥤"
+:
+"🍽️";
+
+
+const amount =
+Number(item.price||0)*
+Number(item.quantity||0);
+
+
+itemsHTML+=`
+
+<div class="item">
+
+${icon}
+
+<strong>
+${escapeHTML(item.name||"Item")}
+</strong>
+
+× ${Number(
+item.quantity||0
+)}
+
+<span style="float:right">
+
+${amount.toFixed(2)} ETB
+
+</span>
+
+</div>
+
+`;
+
+});
+
+
+if(!itemsHTML){
+
+itemsHTML=
+'<div class="info">No items found.</div>';
+
+}
+
+
+/* DETAILS */
+
+document.getElementById(
+"details"
+).innerHTML=`
+
+<div class="info">
+
+<span class="label">
+Table:
+</span>
+
+Table ${String(
+order.table_number
+).padStart(2,"0")}
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Estimated arrival:
+</span>
+
+${formatTime(
+order.arrival_time
+)}
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Items:
+</span>
+
+</div>
+
+${itemsHTML}
+
+
+<div class="info">
+
+<span class="label">
+Total:
+</span>
+
+${Number(
+order.total_amount||0
+).toFixed(2)}
+
+ETB
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Order status:
+</span>
+
+${escapeHTML(
+order.status||"pending"
+)}
+
+</div>
+
+`;
+
+
+result.style.display=
+"block";
+
+button.disabled=false;
+
+button.textContent=
+"Check Status";
+
+}
+
+
+/* =========================
+   DATE
+   ========================= */
+
+function formatDate(date){
+
+if(!date){
+return "—";
+}
+
+return new Date(date)
+.toLocaleDateString();
+
+}
+
+
+/* =========================
+   TIME
+   ========================= */
+
+function formatTime(time){
+
+if(!time){
+return "—";
+}
+
+const parts =
+String(time).split(":");
+
+if(parts.length<2){
+return time;
+}
+
+let hour =
+parseInt(parts[0],10);
+
+const minute =
+parts[1];
+
+const ampm =
+hour>=12
+?
+"PM"
+:
+"AM";
+
+hour =
+hour%12||12;
+
+return `${hour}:${minute} ${ampm}`;
+
+}
+
+
+/* =========================
+   SECURITY
+   ========================= */
+
+function escapeHTML(value){
+
+return String(value)
+
+.replace(/&/g,"&amp;")
+
+.replace(/</g,"&lt;")
+
+.replace(/>/g,"&gt;")
+
+.replace(/"/g,"&quot;")
+
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   AUTO CHECK
+   ========================= */
+
+if(urlReservation||urlOrder){
+
+setTimeout(
+checkStatus,
+300
+);
+
+}
+
+</script>
 
 </body>
 
-  </html>
+</html>
