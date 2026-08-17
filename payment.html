@@ -3,768 +3,550 @@
 
 <head>
 
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Payment</title>
-
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-
-    body {
-
-      font-family: Arial, sans-serif;
-
-      background: #f7f5f0;
-
-      margin: 0;
-
-      padding: 20px;
-
-    }
-
-
-    .container {
-
-      max-width: 500px;
-
-      margin: 30px auto;
-
-      background: white;
-
-      padding: 25px;
-
-      border-radius: 15px;
-
-      box-shadow:
-        0 4px 20px
-        rgba(0,0,0,.1);
-
-    }
-
-
-    h1 {
-
-      text-align: center;
-
-      margin-bottom: 25px;
-
-    }
-
-
-    /* =========================
-       BOOKING CODE
-       ========================= */
-
-
-    .booking-box {
-
-      margin: 0 auto 25px;
-
-      padding: 18px;
-
-      max-width: 330px;
-
-      text-align: center;
-
-      border: 2px solid #d4af37;
-
-      border-radius: 15px;
-
-      background: #fffdf5;
-
-      box-shadow:
-        0 0 8px
-        rgba(212,175,55,.5),
-
-        0 0 25px
-        rgba(212,175,55,.2);
-
-    }
-
-
-    .booking-label {
-
-      display: block;
-
-      font-size: 13px;
-
-      color: #777;
-
-      margin-bottom: 8px;
-
-    }
-
-
-    .booking-code {
-
-      display: block;
-
-      font-size: 25px;
-
-      font-weight: bold;
-
-      letter-spacing: 2px;
-
-      color: #222;
-
-      margin-bottom: 12px;
-
-    }
-
-
-    .copy-button {
-
-      width: auto;
-
-      margin: 0;
-
-      padding: 9px 18px;
-
-      background: #d4af37;
-
-      color: white;
-
-      border: none;
-
-      border-radius: 8px;
-
-      font-weight: bold;
-
-      cursor: pointer;
-
-    }
-
-
-    .copy-button:active {
-
-      transform: scale(.97);
-
-    }
-
-
-    .check-status {
-
-      display: block;
-
-      margin-top: 10px;
-
-      color: #666;
-
-      font-size: 13px;
-
-    }
-
-
-    /* =========================
-       FORM
-       ========================= */
-
-
-    label {
-
-      display: block;
-
-      margin-top: 18px;
-
-      margin-bottom: 7px;
-
-      font-weight: bold;
-
-    }
-
-
-    input {
-
-      width: 100%;
-
-      padding: 13px;
-
-      border: 1px solid #ccc;
-
-      border-radius: 8px;
-
-      font-size: 16px;
-
-    }
-
-
-    .submit {
-
-      width: 100%;
-
-      margin-top: 22px;
-
-      padding: 14px;
-
-      background: #d4af37;
-
-      color: white;
-
-      border: none;
-
-      border-radius: 8px;
-
-      font-size: 16px;
-
-      font-weight: bold;
-
-      cursor: pointer;
-
-    }
-
-
-    button:disabled {
-
-      opacity: .6;
-
-      cursor: not-allowed;
-
-    }
-
-
-    #message {
-
-      margin-top: 18px;
-
-      text-align: center;
-
-      font-weight: bold;
-
-    }
-
-
-    /* =========================
-       SUCCESS BUTTONS
-       ========================= */
-
-
-    .success-actions {
-
-      display: flex;
-
-      flex-direction: column;
-
-      gap: 10px;
-
-      margin-top: 20px;
-
-    }
-
-
-    .action-button {
-
-      display: block;
-
-      width: 100%;
-
-      padding: 13px;
-
-      border-radius: 8px;
-
-      text-decoration: none;
-
-      font-weight: bold;
-
-      text-align: center;
-
-    }
-
-
-    .status-button {
-
-      background: #d4af37;
-
-      color: white;
-
-    }
-
-
-    .home-button {
-
-      background: #111;
-
-      color: white;
-
-    }
-
-  </style>
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Payment</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f5f0;
+  margin:0;
+  padding:20px;
+}
+
+.container{
+  max-width:500px;
+  margin:30px auto;
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 4px 20px rgba(0,0,0,.1);
+}
+
+h1{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.booking-box{
+  margin:0 auto 25px;
+  padding:18px;
+  max-width:330px;
+  text-align:center;
+  border:2px solid #d4af37;
+  border-radius:15px;
+  background:#fffdf5;
+  box-shadow:
+    0 0 8px rgba(212,175,55,.5),
+    0 0 25px rgba(212,175,55,.2);
+}
+
+.booking-label{
+  display:block;
+  font-size:13px;
+  color:#777;
+  margin-bottom:8px;
+}
+
+.booking-code{
+  display:block;
+  font-size:25px;
+  font-weight:bold;
+  letter-spacing:2px;
+  color:#222;
+  margin-bottom:12px;
+}
+
+.copy-button{
+  width:auto;
+  margin:0;
+  padding:9px 18px;
+  background:#d4af37;
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.copy-button:active{
+  transform:scale(.97);
+}
+
+.check-status{
+  display:block;
+  margin-top:10px;
+  color:#666;
+  font-size:13px;
+}
+
+label{
+  display:block;
+  margin-top:18px;
+  margin-bottom:7px;
+  font-weight:bold;
+}
+
+input{
+  width:100%;
+  padding:13px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
+}
+
+.submit{
+  width:100%;
+  margin-top:22px;
+  padding:14px;
+  background:#d4af37;
+  color:white;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+#message{
+  margin-top:18px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.success-actions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:20px;
+}
+
+.action-button{
+  display:block;
+  width:100%;
+  padding:13px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:bold;
+  text-align:center;
+}
+
+.status-button{
+  background:#d4af37;
+  color:white;
+}
+
+.home-button{
+  background:#111;
+  color:white;
+}
+
+</style>
 
 </head>
 
-
 <body>
 
+<div class="container">
 
-  <div class="container">
+<h1>
+💳 Payment
+</h1>
 
 
-    <h1>
-      💳 Payment
-    </h1>
+<!-- RESERVATION CODE -->
 
+<div
+  id="bookingBox"
+  class="booking-box"
+>
 
-    <!-- =========================
-         RESERVATION CODE
-         ========================= -->
+<span class="booking-label">
+Reservation ID
+</span>
 
+<span
+  id="bookingCode"
+  class="booking-code"
+>
+Loading...
+</span>
 
-    <div
-      id="bookingBox"
-      class="booking-box"
-    >
+<button
+  id="copyButton"
+  class="copy-button"
+  onclick="copyBookingCode()"
+>
+📋 Copy
+</button>
 
-      <span class="booking-label">
+<span class="check-status">
+📋 Copy this to check your
+reservation status
+</span>
 
-        Reservation ID
+</div>
 
-      </span>
 
+<!-- RECEIPT URL -->
 
-      <span
-        id="bookingCode"
-        class="booking-code"
-      >
+<label>
+Payment Receipt URL
+</label>
 
-        Loading...
+<input
+  id="receiptUrl"
+  type="url"
+  placeholder="Paste your receipt link here"
+/>
 
-      </span>
+<button
+  id="submitButton"
+  class="submit"
+  onclick="submitPayment()"
+>
+Submit Payment
+</button>
 
+<div id="message"></div>
 
-      <button
-        id="copyButton"
-        class="copy-button"
-        onclick="copyBookingCode()"
-      >
+</div>
 
-        📋 Copy
 
-      </button>
+<!-- SUPABASE -->
 
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
-      <span class="check-status">
+<script src="config.js"></script>
 
-        📋 Copy this to check your
-        reservation status
+<script>
 
-      </span>
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-    </div>
 
+// GET RESERVATION CODE
 
-    <!-- =========================
-         RECEIPT URL
-         ========================= -->
+const params =
+new URLSearchParams(
+  window.location.search
+);
 
+const reservationCode =
+params.get("reservation");
 
-    <label>
-      Payment Receipt URL
-    </label>
+let reservation=null;
 
 
-    <input
-      id="receiptUrl"
-      type="url"
-      placeholder="Paste your receipt link here"
-    />
+// LOAD RESERVATION
 
+async function loadReservation(){
 
-    <button
-      id="submitButton"
-      class="submit"
-      onclick="submitPayment()"
-    >
+if(!reservationCode){
 
-      Submit Payment
+document.getElementById(
+  "bookingCode"
+).textContent="Missing ID";
 
-    </button>
+document.getElementById(
+  "message"
+).textContent=
+"❌ No reservation was provided.";
 
+document.getElementById(
+  "submitButton"
+).disabled=true;
 
-    <div id="message"></div>
+return;
 
+}
 
-  </div>
+document.getElementById(
+  "bookingCode"
+).textContent=
+reservationCode;
 
 
+const {
+data,
+error
+}=
+await supabaseClient
 
-  <!-- SUPABASE -->
+.from("reservations")
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
+.select("*")
 
-  <script src="config.js"></script>
+.eq(
+  "reservation_code",
+  reservationCode
+)
 
+.single();
 
-  <script>
 
+if(error){
 
-    // =========================
-    // SUPABASE
-    // =========================
+console.error(error);
 
+document.getElementById(
+  "message"
+).textContent=
+"❌ Reservation not found.";
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+document.getElementById(
+  "submitButton"
+).disabled=true;
 
+return;
 
-    // =========================
-    // GET RESERVATION CODE
-    // =========================
+}
 
+reservation=data;
 
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
+}
 
 
-    const reservationCode =
-      params.get(
-        "reservation"
-      );
+// COPY BOOKING CODE
 
+function copyBookingCode(){
 
-    let reservation = null;
+if(!reservationCode){
+return;
+}
 
+navigator.clipboard
 
-    // =========================
-    // LOAD RESERVATION
-    // =========================
+.writeText(
+  reservationCode
+)
 
+.then(()=>{
 
-    async function loadReservation() {
+const button=
+document.getElementById(
+  "copyButton"
+);
 
+button.textContent=
+"✅ Copied!";
 
-      if (!reservationCode) {
+setTimeout(()=>{
 
-        document.getElementById(
-          "bookingCode"
-        ).textContent =
-          "Missing ID";
+button.textContent=
+"📋 Copy";
 
+},1500);
 
-        document.getElementById(
-          "message"
-        ).textContent =
-          "❌ No reservation was provided.";
+})
 
+.catch(()=>{
 
-        document.getElementById(
-          "submitButton"
-        ).disabled = true;
+alert(
+"Could not copy automatically. Please copy the reservation ID manually."
+);
 
+});
 
-        return;
+}
 
-      }
 
+// SUBMIT PAYMENT
 
-      document.getElementById(
-        "bookingCode"
-      ).textContent =
-        reservationCode;
+async function submitPayment(){
 
+const receiptUrl=
+document.getElementById(
+  "receiptUrl"
+).value.trim();
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
+const message=
+document.getElementById(
+  "message"
+);
 
-          .from("reservations")
+const button=
+document.getElementById(
+  "submitButton"
+);
 
-          .select("*")
 
-          .eq(
-            "reservation_code",
-            reservationCode
-          )
+if(!receiptUrl){
 
-          .single();
+message.textContent=
+"❌ Please enter your receipt URL.";
 
+return;
 
-      if (error) {
+}
 
-        console.error(error);
 
+if(!reservation){
 
-        document.getElementById(
-          "message"
-        ).textContent =
-          "❌ Reservation not found.";
+message.textContent=
+"❌ Reservation could not be found.";
 
+return;
 
-        document.getElementById(
-          "submitButton"
-        ).disabled = true;
+}
 
 
-        return;
+button.disabled=true;
 
-      }
+message.textContent=
+"Submitting payment...";
 
 
-      reservation = data;
+// CREATE PAYMENT
 
-    }
+const {
+error
+}=
+await supabaseClient
 
+.from("payments")
 
-    // =========================
-    // COPY BOOKING CODE
-    // =========================
+.insert({
 
+reservation_id:
+reservation.id,
 
-    function copyBookingCode() {
+amount:
+reservation.total_amount,
 
+receipt_url:
+receiptUrl,
 
-      if (!reservationCode) {
+status:
+"pending"
 
-        return;
+});
 
-      }
 
+if(error){
 
-      navigator.clipboard
+console.error(error);
 
-        .writeText(
-          reservationCode
-        )
+message.textContent=
+"❌ Could not submit payment.";
 
-        .then(() => {
+button.disabled=false;
 
+return;
 
-          const button =
-            document.getElementById(
-              "copyButton"
-            );
+}
 
 
-          button.textContent =
-            "✅ Copied!";
+// SUCCESS
 
+message.innerHTML=`
 
-          setTimeout(() => {
+<div>
 
-            button.textContent =
-              "📋 Copy";
+<div
+style="
+color:#16833b;
+font-size:18px;
+margin-bottom:8px;
+"
+>
 
-          }, 1500);
+✅ Payment receipt submitted!
 
+</div>
 
-        })
 
-        .catch(() => {
+<p
+style="
+font-size:14px;
+color:#666;
+font-weight:normal;
+line-height:1.5;
+"
+>
 
-          alert(
-            "Could not copy automatically. Please copy the reservation ID manually."
-          );
+Your payment receipt has been
+received successfully.
 
-        });
+<br><br>
 
-    }
+⏳ <strong>
+Please allow 10–30 minutes
+</strong>
+for the hotel to review your
+payment and update your
+reservation status.
 
+</p>
 
-    // =========================
-    // SUBMIT PAYMENT
-    // =========================
 
+<div class="success-actions">
 
-    async function submitPayment() {
+<a
+class="action-button status-button"
+href="check-status.html?reservation=${encodeURIComponent(
+  reservationCode
+)}"
+>
 
+🔎 Check Reservation Status
 
-      const receiptUrl =
-        document.getElementById(
-          "receiptUrl"
-        ).value.trim();
+</a>
 
 
-      const message =
-        document.getElementById(
-          "message"
-        );
+<a
+class="action-button home-button"
+href="index.html"
+>
 
+🏠 Back to Home
 
-      const button =
-        document.getElementById(
-          "submitButton"
-        );
+</a>
 
+</div>
 
-      if (!receiptUrl) {
+</div>
 
-        message.textContent =
-          "❌ Please enter your receipt URL.";
+`;
 
-        return;
 
-      }
+// DISABLE FORM
 
+document.getElementById(
+  "receiptUrl"
+).disabled=true;
 
-      if (!reservation) {
+button.style.display="none";
 
-        message.textContent =
-          "❌ Reservation could not be found.";
+}
 
-        return;
 
-      }
+// START
 
+loadReservation();
 
-      button.disabled = true;
-
-
-      message.textContent =
-        "Submitting payment...";
-
-
-      // =========================
-      // CREATE PAYMENT
-      // =========================
-
-
-      const {
-        error
-      } =
-        await supabaseClient
-
-          .from("payments")
-
-          .insert({
-
-            reservation_id:
-              reservation.id,
-
-            amount:
-              reservation.total_amount,
-
-            receipt_url:
-              receiptUrl,
-
-            status:
-              "pending"
-
-          });
-
-
-      if (error) {
-
-        console.error(error);
-
-
-        message.textContent =
-          "❌ Could not submit payment.";
-
-
-        button.disabled = false;
-
-
-        return;
-
-      }
-
-
-      // =========================
-      // SUCCESS
-      // =========================
-
-
-      message.innerHTML = `
-
-        <div>
-
-          <div
-            style="
-              color:#16833b;
-              font-size:18px;
-              margin-bottom:8px;
-            "
-          >
-
-            ✅ Payment receipt submitted!
-
-          </div>
-
-
-          <p
-            style="
-              font-size:14px;
-              color:#666;
-              font-weight:normal;
-            "
-          >
-
-            The hotel will review your
-            payment and update your
-            reservation status.
-
-          </p>
-
-
-          <div class="success-actions">
-
-            <a
-              class="action-button status-button"
-              href="check-status.html?reservation=${encodeURIComponent(
-                reservationCode
-              )}"
-            >
-
-              🔎 Check Reservation Status
-
-            </a>
-
-
-            <a
-              class="action-button home-button"
-              href="index.html"
-            >
-
-              🏠 Back to Home
-
-            </a>
-
-          </div>
-
-        </div>
-
-      `;
-
-
-      // Disable form after submission
-
-      document.getElementById(
-        "receiptUrl"
-      ).disabled = true;
-
-
-      button.style.display =
-        "none";
-
-    }
-
-
-    // =========================
-    // START
-    // =========================
-
-
-    loadReservation();
-
-  </script>
+</script>
 
 </body>
-
 </html>
