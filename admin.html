@@ -1,748 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Hotel Admin</title>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    h2 {
-      margin-top: 35px;
-    }
-
-    .controls {
-      max-width: 700px;
-      margin: 20px auto;
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
-    }
-
-    input,
-    select {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      margin: 15px auto;
-      max-width: 700px;
-      border-radius: 12px;
-      box-shadow: 0 3px 15px rgba(0,0,0,.1);
-    }
-
-    .row {
-      margin: 8px 0;
-    }
-
-    .label {
-      font-weight: bold;
-    }
-
-    .status {
-      font-weight: bold;
-    }
-
-    .pending {
-      color: #d68b00;
-    }
-
-    .confirmed {
-      color: #16833b;
-    }
-
-    .rejected {
-      color: #c62828;
-    }
-
-    button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      font-weight: bold;
-      margin: 8px 5px 0 0;
-    }
-
-    .confirm {
-      background: #2e9d50;
-      color: white;
-    }
-
-    .reject {
-      background: #d33;
-      color: white;
-    }
-
-    .refresh {
-      background: #333;
-      color: white;
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    a {
-      display: inline-block;
-      margin-top: 8px;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      max-width: 700px;
-      margin: 15px auto;
-    }
-
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hotel Admin</title>
+<style>
+*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px}h1{text-align:center}h2{margin-top:35px}.top{max-width:700px;margin:15px auto;text-align:center}.home{display:inline-block;background:#111;color:white;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:bold}.controls{max-width:700px;margin:20px auto;background:white;padding:15px;border-radius:12px}input,select{width:100%;padding:12px;margin-top:8px;border:1px solid #ccc;border-radius:8px;font-size:16px}.card{background:white;padding:20px;margin:15px auto;max-width:700px;border-radius:12px;box-shadow:0 3px 15px rgba(0,0,0,.1)}.row{margin:8px 0}.label{font-weight:bold}.status{font-weight:bold}.pending{color:#d68b00}.confirmed{color:#16833b}.rejected{color:#c62828}button{padding:10px 15px;border:none;border-radius:7px;cursor:pointer;font-weight:bold;margin:8px 5px 0 0}.confirm{background:#2e9d50;color:white}.reject{background:#d33;color:white}.refresh{background:#333;color:white;width:100%;margin-top:10px}a.receipt{display:inline-block;margin-top:8px}.empty{text-align:center;padding:20px;background:white;border-radius:10px;max-width:700px;margin:15px auto}
+</style>
 </head>
-
-
 <body>
 
-  <h1>🏨 Hotel Admin</h1>
-
-
-  <!-- SEARCH -->
-
-  <div class="controls">
-
-    <strong>🔎 Search Reservations</strong>
-
-    <input
-      id="search"
-      type="text"
-      placeholder="Reservation ID, name, phone or room..."
-      oninput="filterReservations()"
-    >
-
-
-    <select
-      id="statusFilter"
-      onchange="filterReservations()"
-    >
-
-      <option value="all">
-        All statuses
-      </option>
-
-      <option value="pending">
-        🟡 Pending
-      </option>
-
-      <option value="confirmed">
-        ✅ Confirmed
-      </option>
-
-      <option value="rejected">
-        ❌ Rejected
-      </option>
-
-    </select>
-
-
-    <button
-      class="refresh"
-      onclick="loadEverything()"
-    >
-      🔄 Refresh
-    </button>
-
-  </div>
-
-
-  <!-- RESERVATIONS -->
-
-  <h2>📋 Reservations</h2>
-
-  <div id="reservations">
-    Loading reservations...
-  </div>
-
-
-  <!-- PAYMENTS -->
-
-  <h2>💳 Payments</h2>
-
-  <div id="payments">
-    Loading payments...
-  </div>
-
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script src="config.js"></script>
-
-
-  <script>
-
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
-
-
-    let allReservations = [];
-
-
-    // =========================
-    // LOAD RESERVATIONS
-    // =========================
-
-    async function loadReservations() {
-
-      const container =
-        document.getElementById(
-          "reservations"
-        );
-
-
-      const { data, error } =
-        await supabaseClient
-          .from("reservations")
-          .select(`
-            *,
-            customers (
-              name,
-              phone
-            ),
-            rooms (
-              name,
-              room_number
-            )
-          `)
-          .order(
-            "created_at",
-            { ascending: false }
-          );
-
-
-      if (error) {
-
-        console.error(error);
-
-        container.innerHTML =
-          "❌ Could not load reservations.";
-
-        return;
-
-      }
-
-
-      allReservations = data || [];
-
-      filterReservations();
-
-    }
-
-
-    // =========================
-    // FILTER RESERVATIONS
-    // =========================
-
-    function filterReservations() {
-
-      const search =
-        document
-          .getElementById("search")
-          .value
-          .toLowerCase()
-          .trim();
-
-
-      const status =
-        document
-          .getElementById("statusFilter")
-          .value;
-
-
-      const filtered =
-        allReservations.filter(
-          reservation => {
-
-            const customer =
-              reservation.customers || {};
-
-            const room =
-              reservation.rooms || {};
-
-
-            const searchable = `
-
-              ${reservation.reservation_code}
-
-              ${customer.name || ""}
-
-              ${customer.phone || ""}
-
-              ${room.room_number || ""}
-
-              ${room.name || ""}
-
-            `.toLowerCase();
-
-
-            const matchesSearch =
-              !search ||
-              searchable.includes(search);
-
-
-            const matchesStatus =
-              status === "all" ||
-              reservation.status === status;
-
-
-            return (
-              matchesSearch &&
-              matchesStatus
-            );
-
-          }
-        );
-
-
-      displayReservations(
-        filtered
-      );
-
-    }
-
-
-    // =========================
-    // DISPLAY RESERVATIONS
-    // =========================
-
-    function displayReservations(
-      reservations
-    ) {
-
-      const container =
-        document.getElementById(
-          "reservations"
-        );
-
-
-      if (!reservations.length) {
-
-        container.innerHTML =
-          '<div class="empty">No matching reservations.</div>';
-
-        return;
-
-      }
-
-
-      container.innerHTML = "";
-
-
-      reservations.forEach(
-        reservation => {
-
-          const customer =
-            reservation.customers || {};
-
-          const room =
-            reservation.rooms || {};
-
-
-          container.innerHTML += `
-
-            <div class="card">
-
-              <h3>
-                ${reservation.reservation_code}
-              </h3>
-
-              <div class="row">
-
-                <span class="label">
-                  Customer:
-                </span>
-
-                ${customer.name || "—"}
-
-              </div>
-
-
-              <div class="row">
-
-                <span class="label">
-                  Phone:
-                </span>
-
-                ${customer.phone || "—"}
-
-              </div>
-
-
-              <div class="row">
-
-                <span class="label">
-                  Room:
-                </span>
-
-                ${room.name || "—"}
-                (${room.room_number || "—"})
-
-              </div>
-
-
-              <div class="row">
-
-                <span class="label">
-                  Check-in:
-                </span>
-
-                ${formatDate(
-                  reservation.check_in
-                )}
-
-              </div>
-
-
-              <div class="row">
-
-                <span class="label">
-                  Check-out:
-                </span>
-
-                ${formatDate(
-                  reservation.check_out
-                )}
-
-              </div>
-
-
-              <div class="row">
-
-                <span class="label">
-                  Total:
-                </span>
-
-                ${Number(
-                  reservation.total_amount
-                ).toFixed(2)} ETB
-
-              </div>
-
-
-              <div class="row">
-
-                <span class="label">
-                  Status:
-                </span>
-
-                <span
-                  class="status ${reservation.status}"
-                >
-                  ${reservation.status}
-                </span>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      );
-
-    }
-
-
-    // =========================
-    // LOAD PAYMENTS
-    // =========================
-
-    async function loadPayments() {
-
-      const container =
-        document.getElementById(
-          "payments"
-        );
-
-
-      const { data, error } =
-        await supabaseClient
-          .from("payments")
-          .select(`
-            *,
-            reservations (
-              id,
-              reservation_code
-            )
-          `)
-          .order(
-            "created_at",
-            { ascending: false }
-          );
-
-
-      if (error) {
-
-        console.error(error);
-
-        container.innerHTML =
-          "❌ Could not load payments.";
-
-        return;
-
-      }
-
-
-      if (!data || !data.length) {
-
-        container.innerHTML =
-          '<div class="empty">No payments yet.</div>';
-
-        return;
-
-      }
-
-
-      container.innerHTML = "";
-
-
-      data.forEach(payment => {
-
-        const reservation =
-          payment.reservations || {};
-
-
-        container.innerHTML += `
-
-          <div class="card">
-
-            <h3>
-              ${reservation.reservation_code || "Unknown reservation"}
-            </h3>
-
-
-            <div class="row">
-
-              <span class="label">
-                Amount:
-              </span>
-
-              ${Number(
-                payment.amount
-              ).toFixed(2)} ETB
-
-            </div>
-
-
-            <div class="row">
-
-              <span class="label">
-                Status:
-              </span>
-
-              <span
-                class="status ${payment.status}"
-              >
-                ${payment.status}
-              </span>
-
-            </div>
-
-
-            <a
-              href="${payment.receipt_url}"
-              target="_blank"
-              rel="noopener"
-            >
-              🔗 Open Receipt
-            </a>
-
-
-            <br>
-
-
-            ${
-              payment.status === "pending"
-
-              ? `
-
-                <button
-                  class="confirm"
-                  onclick="updatePayment(
-                    ${payment.id},
-                    ${reservation.id},
-                    'confirmed'
-                  )"
-                >
-                  ✅ Confirm
-                </button>
-
-
-                <button
-                  class="reject"
-                  onclick="updatePayment(
-                    ${payment.id},
-                    ${reservation.id},
-                    'rejected'
-                  )"
-                >
-                  ❌ Reject
-                </button>
-
-              `
-
-              : ""
-
-            }
-
-          </div>
-
-        `;
-
-      });
-
-    }
-
-
-    // =========================
-    // UPDATE PAYMENT
-    // =========================
-
-    async function updatePayment(
-      paymentId,
-      reservationId,
-      newStatus
-    ) {
-
-      const paymentResult =
-        await supabaseClient
-          .from("payments")
-          .update({
-            status: newStatus
-          })
-          .eq(
-            "id",
-            paymentId
-          );
-
-
-      if (paymentResult.error) {
-
-        console.error(
-          paymentResult.error
-        );
-
-        alert(
-          "❌ Could not update payment."
-        );
-
-        return;
-
-      }
-
-
-      const reservationResult =
-        await supabaseClient
-          .from("reservations")
-          .update({
-            status: newStatus
-          })
-          .eq(
-            "id",
-            reservationId
-          );
-
-
-      if (reservationResult.error) {
-
-        console.error(
-          reservationResult.error
-        );
-
-        alert(
-          "⚠️ Payment updated, but reservation could not be updated."
-        );
-
-        loadEverything();
-
-        return;
-
-      }
-
-
-      alert(
-        "✅ Payment and reservation updated."
-      );
-
-
-      loadEverything();
-
-    }
-
-
-    // =========================
-    // DATE FORMAT
-    // =========================
-
-    function formatDate(date) {
-
-      if (!date) {
-        return "—";
-      }
-
-
-      return new Date(
-        date
-      ).toLocaleDateString();
-
-    }
-
-
-    // =========================
-    // LOAD EVERYTHING
-    // =========================
-
-    function loadEverything() {
-
-      loadReservations();
-
-      loadPayments();
-
-    }
-
-
-    loadEverything();
-
-  </script>
-
+<h1>🏨 Hotel Admin</h1>
+
+<div class="top">
+<a href="index.html" class="home">🏠 Back to Home</a>
+</div>
+
+<div class="controls">
+<strong>🔎 Search Reservations</strong>
+<input id="search" type="text" placeholder="Reservation ID, name, phone or room..." oninput="filterReservations()">
+<select id="statusFilter" onchange="filterReservations()">
+<option value="all">All statuses</option>
+<option value="pending">🟡 Pending</option>
+<option value="confirmed">✅ Confirmed</option>
+<option value="rejected">❌ Rejected</option>
+</select>
+<button class="refresh" onclick="loadEverything()">🔄 Refresh</button>
+</div>
+
+<h2>📋 Reservations</h2>
+<div id="reservations">Loading reservations...</div>
+
+<h2>💳 Payments</h2>
+<div id="payments">Loading payments...</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let allReservations=[];
+
+async function loadReservations(){
+const container=document.getElementById("reservations");
+const {data,error}=await supabaseClient.from("reservations").select(`
+*,customers(name,phone),rooms(name,room_number)
+`).order("created_at",{ascending:false});
+if(error){console.error(error);container.innerHTML="❌ Could not load reservations.";return}
+allReservations=data||[];filterReservations();
+}
+
+function filterReservations(){
+const search=document.getElementById("search").value.toLowerCase().trim();
+const status=document.getElementById("statusFilter").value;
+const filtered=allReservations.filter(r=>{
+const c=r.customers||{},room=r.rooms||{};
+const searchable=`${r.reservation_code} ${c.name||""} ${c.phone||""} ${room.room_number||""} ${room.name||""}`.toLowerCase();
+return(!search||searchable.includes(search))&&(status==="all"||r.status===status);
+});
+displayReservations(filtered);
+}
+
+function displayReservations(reservations){
+const container=document.getElementById("reservations");
+if(!reservations.length){container.innerHTML='<div class="empty">No matching reservations.</div>';return}
+container.innerHTML="";
+reservations.forEach(r=>{
+const c=r.customers||{},room=r.rooms||{};
+container.innerHTML+=`
+<div class="card">
+<h3>${r.reservation_code}</h3>
+<div class="row"><span class="label">Customer:</span> ${c.name||"—"}</div>
+<div class="row"><span class="label">Phone:</span> ${c.phone||"—"}</div>
+<div class="row"><span class="label">Room:</span> ${room.name||"—"} (${room.room_number||"—"})</div>
+<div class="row"><span class="label">Check-in:</span> ${formatDate(r.check_in)}</div>
+<div class="row"><span class="label">Check-out:</span> ${formatDate(r.check_out)}</div>
+<div class="row"><span class="label">Total:</span> ${Number(r.total_amount).toFixed(2)} ETB</div>
+<div class="row"><span class="label">Status:</span> <span class="status ${r.status}">${r.status}</span></div>
+</div>`;
+});
+}
+
+async function loadPayments(){
+const container=document.getElementById("payments");
+const {data,error}=await supabaseClient.from("payments").select(`
+*,reservations(id,reservation_code)
+`).order("created_at",{ascending:false});
+if(error){console.error(error);container.innerHTML="❌ Could not load payments.";return}
+if(!data||!data.length){container.innerHTML='<div class="empty">No payments yet.</div>';return}
+
+data.sort((a,b)=>{
+if(a.status==="pending"&&b.status!=="pending")return-1;
+if(a.status!=="pending"&&b.status==="pending")return 1;
+return 0;
+});
+
+container.innerHTML="";
+data.forEach(payment=>{
+const r=payment.reservations||{};
+container.innerHTML+=`
+<div class="card">
+<h3>${r.reservation_code||"Unknown reservation"}</h3>
+<div class="row"><span class="label">Amount:</span> ${Number(payment.amount).toFixed(2)} ETB</div>
+<div class="row"><span class="label">Status:</span> <span class="status ${payment.status}">${payment.status}</span></div>
+<a class="receipt" href="${payment.receipt_url}" target="_blank" rel="noopener">🔗 Open Receipt</a><br>
+${payment.status==="pending"?`
+<button class="confirm" onclick="updatePayment(${payment.id},${r.id},'confirmed')">✅ Confirm</button>
+<button class="reject" onclick="updatePayment(${payment.id},${r.id},'rejected')">❌ Reject</button>`:""}
+</div>`;
+});
+}
+
+async function updatePayment(paymentId,reservationId,newStatus){
+const paymentResult=await supabaseClient.from("payments").update({status:newStatus}).eq("id",paymentId);
+if(paymentResult.error){console.error(paymentResult.error);alert("❌ Could not update payment.");return}
+
+const reservationResult=await supabaseClient.from("reservations").update({status:newStatus}).eq("id",reservationId);
+if(reservationResult.error){console.error(reservationResult.error);alert("⚠️ Payment updated, but reservation could not be updated.");loadEverything();return}
+
+alert("✅ Payment and reservation updated.");
+loadEverything();
+}
+
+function formatDate(date){
+if(!date)return"—";
+return new Date(date).toLocaleDateString();
+}
+
+function loadEverything(){
+loadReservations();
+loadPayments();
+}
+
+loadEverything();
+</script>
 </body>
-
 </html>
