@@ -61,6 +61,11 @@
     }
 
 
+    /* =========================
+       BOOKING CODE
+       ========================= */
+
+
     .booking-box {
 
       margin: 0 auto 25px;
@@ -160,6 +165,11 @@
     }
 
 
+    /* =========================
+       FORM
+       ========================= */
+
+
     label {
 
       display: block;
@@ -188,7 +198,7 @@
     }
 
 
-    button.submit {
+    .submit {
 
       width: 100%;
 
@@ -217,6 +227,8 @@
 
       opacity: .6;
 
+      cursor: not-allowed;
+
     }
 
 
@@ -227,6 +239,61 @@
       text-align: center;
 
       font-weight: bold;
+
+    }
+
+
+    /* =========================
+       SUCCESS BUTTONS
+       ========================= */
+
+
+    .success-actions {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 10px;
+
+      margin-top: 20px;
+
+    }
+
+
+    .action-button {
+
+      display: block;
+
+      width: 100%;
+
+      padding: 13px;
+
+      border-radius: 8px;
+
+      text-decoration: none;
+
+      font-weight: bold;
+
+      text-align: center;
+
+    }
+
+
+    .status-button {
+
+      background: #d4af37;
+
+      color: white;
+
+    }
+
+
+    .home-button {
+
+      background: #111;
+
+      color: white;
 
     }
 
@@ -331,7 +398,9 @@
 
   <!-- SUPABASE -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
   <script src="config.js"></script>
 
@@ -386,14 +455,17 @@
         ).textContent =
           "Missing ID";
 
+
         document.getElementById(
           "message"
         ).textContent =
           "❌ No reservation was provided.";
 
+
         document.getElementById(
           "submitButton"
         ).disabled = true;
+
 
         return;
 
@@ -412,9 +484,7 @@
       } =
         await supabaseClient
 
-          .from(
-            "reservations"
-          )
+          .from("reservations")
 
           .select("*")
 
@@ -430,14 +500,17 @@
 
         console.error(error);
 
+
         document.getElementById(
           "message"
         ).textContent =
           "❌ Reservation not found.";
 
+
         document.getElementById(
           "submitButton"
         ).disabled = true;
+
 
         return;
 
@@ -445,7 +518,6 @@
 
 
       reservation = data;
-
 
     }
 
@@ -459,11 +531,14 @@
 
 
       if (!reservationCode) {
+
         return;
+
       }
 
 
       navigator.clipboard
+
         .writeText(
           reservationCode
         )
@@ -588,10 +663,13 @@
 
         console.error(error);
 
+
         message.textContent =
           "❌ Could not submit payment.";
 
+
         button.disabled = false;
+
 
         return;
 
@@ -605,33 +683,75 @@
 
       message.innerHTML = `
 
-        <span style="color:#16833b">
+        <div>
 
-          ✅ Payment receipt submitted!
+          <div
+            style="
+              color:#16833b;
+              font-size:18px;
+              margin-bottom:8px;
+            "
+          >
 
-        </span>
+            ✅ Payment receipt submitted!
 
-        <p style="
-          font-size:14px;
-          color:#666;
-        ">
+          </div>
 
-          The hotel will review your
-          payment and update your
-          reservation status.
 
-        </p>
+          <p
+            style="
+              font-size:14px;
+              color:#666;
+              font-weight:normal;
+            "
+          >
+
+            The hotel will review your
+            payment and update your
+            reservation status.
+
+          </p>
+
+
+          <div class="success-actions">
+
+            <a
+              class="action-button status-button"
+              href="check-status.html?reservation=${encodeURIComponent(
+                reservationCode
+              )}"
+            >
+
+              🔎 Check Reservation Status
+
+            </a>
+
+
+            <a
+              class="action-button home-button"
+              href="index.html"
+            >
+
+              🏠 Back to Home
+
+            </a>
+
+          </div>
+
+        </div>
 
       `;
 
+
+      // Disable form after submission
 
       document.getElementById(
         "receiptUrl"
       ).disabled = true;
 
 
-      button.disabled = true;
-
+      button.style.display =
+        "none";
 
     }
 
@@ -642,7 +762,6 @@
 
 
     loadReservation();
-
 
   </script>
 
