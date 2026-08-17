@@ -11,17 +11,21 @@ body{font-family:Arial,sans-serif;background:#f7f5f0;margin:0;padding:20px;color
 h1{text-align:center;margin-bottom:20px}
 .warning{background:#fff0f0;border:2px solid #c62828;color:#b71c1c;padding:18px;border-radius:12px;margin-bottom:20px}
 .warning h3{margin:0 0 10px}
-.booking{background:#fffdf5;border:2px solid #d4af37;border-radius:12px;padding:15px;text-align:center;margin-bottom:20px}
+label{display:block;font-weight:bold;margin:15px 0 7px}
+input,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+textarea{min-height:100px;resize:vertical}
+.find{width:100%;padding:13px;margin-top:12px;background:#111;color:white;border:0;border-radius:8px;font-weight:bold;cursor:pointer}
+.booking{background:#fffdf5;border:2px solid #d4af37;border-radius:12px;padding:15px;text-align:center;margin:20px 0}
 .code{font-size:23px;font-weight:bold;letter-spacing:2px}
 .info{padding:12px 0;border-bottom:1px solid #eee}
 .label{font-weight:bold}
 .refund{background:#f3fff5;border:1px solid #55b875;padding:15px;border-radius:10px;margin-top:15px}
 .refund strong{color:#16833b}
-label{display:block;font-weight:bold;margin-top:20px;margin-bottom:7px}
-textarea{width:100%;min-height:100px;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:15px;resize:vertical}
 .cancel{width:100%;padding:14px;margin-top:20px;background:#c62828;color:white;border:0;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer}
 .cancel:disabled{opacity:.6;cursor:not-allowed}
 .home{display:block;text-align:center;margin-top:12px;padding:12px;background:#111;color:white;text-decoration:none;border-radius:8px;font-weight:bold}
+#details{display:none}
+#reasonBox{display:none}
 #message{text-align:center;margin-top:18px;font-weight:bold}
 </style>
 </head>
@@ -32,25 +36,27 @@ textarea{width:100%;min-height:100px;padding:12px;border:1px solid #ccc;border-r
 
 <div class="warning">
 <h3>🔴 Cancellation Notice</h3>
-<p>Cancellation of this reservation will result in a <strong>75% refund</strong> of the confirmed payment amount.</p>
+<p>Cancellation will result in a <strong>75% refund</strong> of the confirmed payment amount.</p>
 <p>The remaining <strong>25%</strong> will be retained as the cancellation fee.</p>
 </div>
 
-<div class="booking">
-<div style="font-size:13px;color:#777;margin-bottom:7px">Reservation ID</div>
-<div id="reservationCode" class="code">Loading...</div>
-</div>
+<label for="reservationCodeInput">Reservation ID</label>
+<input id="reservationCodeInput" type="text" placeholder="Example: HTL-G8E0KL" autocomplete="off">
+<button class="find" onclick="findReservation()">🔎 Find Reservation</button>
 
 <div id="details">
-Loading reservation details...
+<div class="booking">
+<div style="font-size:13px;color:#777;margin-bottom:7px">Reservation ID</div>
+<div id="reservationCode" class="code"></div>
+</div>
+<div id="paymentDetails"></div>
 </div>
 
+<div id="reasonBox">
 <label for="reason">Reason for cancellation</label>
 <textarea id="reason" placeholder="Tell us why you want to cancel..."></textarea>
-
-<button id="cancelButton" class="cancel" onclick="requestCancellation()" disabled>
-❌ Request Cancellation
-</button>
+<button id="cancelButton" class="cancel" onclick="requestCancellation()">❌ Request Cancellation</button>
+</div>
 
 <div id="message"></div>
 
@@ -62,36 +68,43 @@ Loading reservation details...
 
 <script>
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const params=new URLSearchParams(window.location.search);
-const reservationCode=params.get("reservation");
 let reservation=null;
 let payment=null;
 
-async function loadCancellationData(){
-const codeElement=document.getElementById("reservationCode");
+async function findReservation(){
+const input=document.getElementById("reservationCodeInput");
 const details=document.getElementById("details");
-const button=document.getElementById("cancelButton");
+const paymentDetails=document.getElementById("paymentDetails");
+const reasonBox=document.getElementById("reasonBox");
 const message=document.getElementById("message");
+const code=input.value.trim().toUpperCase();
 
-if(!reservationCode){
-codeElement.textContent="Missing ID";
-details.innerHTML="";
-message.textContent="❌ No reservation was provided.";
+details.style.display="none";
+reasonBox.style.display="none";
+message.textContent="";
+paymentDetails.innerHTML="";
+
+if(!code){
+message.textContent="❌ Please enter your reservation ID.";
 return;
 }
 
-codeElement.textContent=reservationCode;
+message.textContent="🔎 Finding reservation...";
 
 const reservationResult=await supabaseClient
 .from("reservations")
 .select("*")
-.eq("reservation_code",reservationCode)
-.single();
+.eq("reservation_code",code)
+.maybeSingle();
 
-if(reservationResult.error||!reservationResult.data){
+if(reservationResult.error){
 console.error(reservationResult.error);
-details.innerHTML="";
-message.textContent="❌ Reservation not found.";
+message.textContent="❌ Could not find the reservation.";
+return;
+}
+
+if(!reservationResult.data){
+message.textContent="❌ Reservation not found. Check your reservation ID.";
 return;
 }
 
@@ -107,7 +120,6 @@ const paymentResult=await supabaseClient
 
 if(paymentResult.error){
 console.error(paymentResult.error);
-details.innerHTML="";
 message.textContent="❌ Could not load payment information.";
 return;
 }
@@ -115,34 +127,27 @@ return;
 payment=paymentResult.data;
 
 if(!payment){
-details.innerHTML="";
 message.textContent="❌ No payment was found for this reservation.";
 return;
 }
 
 const amount=Number(payment.amount)||0;
-const refund=amount*0.75;
-const fee=amount*0.25;
+const refund=amount*.75;
+const fee=amount*.25;
 
-details.innerHTML=`
-<div class="info">
-<span class="label">Payment amount:</span>
-${amount.toFixed(2)} ETB
-</div>
+document.getElementById("reservationCode").textContent=reservation.reservation_code;
+
+paymentDetails.innerHTML=`
+<div class="info"><span class="label">Payment amount:</span> ${amount.toFixed(2)} ETB</div>
+<div class="info"><span class="label">Payment status:</span> ${payment.status}</div>
 <div class="refund">
-<div class="info">
-<span class="label">Expected refund (75%):</span>
-<strong>${refund.toFixed(2)} ETB</strong>
-</div>
-<div class="info">
-<span class="label">Cancellation fee (25%):</span>
-${fee.toFixed(2)} ETB
-</div>
-<p style="font-size:13px;color:#666;margin-bottom:0">
-The refund amount is calculated automatically from your payment.
-</p>
+<div class="info"><span class="label">Expected refund (75%):</span> <strong>${refund.toFixed(2)} ETB</strong></div>
+<div class="info"><span class="label">Cancellation fee (25%):</span> ${fee.toFixed(2)} ETB</div>
+<p style="font-size:13px;color:#666;margin:10px 0 0">The refund amount is calculated automatically from your payment.</p>
 </div>
 `;
+
+details.style.display="block";
 
 if(reservation.status==="cancelled"){
 message.textContent="⚠️ This reservation has already been cancelled.";
@@ -150,11 +155,12 @@ return;
 }
 
 if(payment.status!=="confirmed"){
-message.textContent="⚠️ Cancellation is available after the payment has been confirmed.";
+message.textContent="⚠️ Cancellation is available after your payment has been confirmed.";
 return;
 }
 
-button.disabled=false;
+reasonBox.style.display="block";
+message.textContent="";
 }
 
 async function requestCancellation(){
@@ -173,7 +179,30 @@ button.disabled=true;
 button.textContent="Submitting...";
 message.textContent="";
 
-const refundAmount=(Number(payment.amount)||0)*0.75;
+const refundAmount=(Number(payment.amount)||0)*.75;
+
+const existing=await supabaseClient
+.from("cancellations")
+.select("id,status")
+.eq("reservation_id",reservation.id)
+.order("created_at",{ascending:false})
+.limit(1)
+.maybeSingle();
+
+if(existing.error){
+console.error(existing.error);
+message.textContent="❌ Could not check cancellation status.";
+button.disabled=false;
+button.textContent="❌ Request Cancellation";
+return;
+}
+
+if(existing.data&&existing.data.status==="pending"){
+message.textContent="⚠️ A cancellation request is already pending.";
+button.disabled=false;
+button.textContent="❌ Request Cancellation";
+return;
+}
 
 const result=await supabaseClient
 .from("cancellations")
@@ -193,21 +222,14 @@ return;
 }
 
 message.innerHTML=`
-<span style="color:#16833b;font-size:18px">
-✅ Cancellation request submitted!
-</span>
-<p style="font-size:14px;color:#666;font-weight:normal">
-The hotel will review your cancellation request.
-Your expected refund is ${refundAmount.toFixed(2)} ETB.
-</p>
+<span style="color:#16833b;font-size:18px">✅ Cancellation request submitted!</span>
+<p style="font-size:14px;color:#666;font-weight:normal;margin-top:8px">The hotel will review your request. Your expected refund is ${refundAmount.toFixed(2)} ETB.</p>
 `;
 
 document.getElementById("reason").disabled=true;
 button.style.display="none";
 }
 
-loadCancellationData();
 </script>
-
 </body>
 </html>
