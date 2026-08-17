@@ -35,6 +35,7 @@ button{padding:10px 15px;border:none;border-radius:7px;cursor:pointer;font-weigh
 <h1>🏨 Hotel Admin</h1>
 
 <div class="controls">
+
 <strong>🔎 Search Reservations</strong>
 
 <input
@@ -60,227 +61,463 @@ oninput="filterCards()"
 <option value="cancellation">❌ Cancellation</option>
 </select>
 
-<button class="refresh" onclick="loadEverything()">🔄 Refresh</button>
+<button class="refresh" onclick="loadEverything()">
+🔄 Refresh
+</button>
+
 </div>
 
 <h2>📋 Reservations</h2>
-<div id="reservations">Loading reservations...</div>
+
+<div id="reservations">
+Loading reservations...
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 
 <script>
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
 
 let allCards=[];
 
-async function loadEverything(){
-const container=document.getElementById("reservations");
-container.innerHTML="Loading reservations...";
 
-const reservationResult=await supabaseClient
+// =========================
+// LOAD EVERYTHING
+// =========================
+
+async function loadEverything(){
+
+const container =
+document.getElementById("reservations");
+
+container.innerHTML =
+"Loading reservations...";
+
+
+const reservationResult =
+await supabaseClient
 .from("reservations")
 .select(`
 *,
 customers(name,phone),
 rooms(name,room_number)
 `)
-.order("created_at",{ascending:false});
+.order(
+"created_at",
+{ascending:false}
+);
+
 
 if(reservationResult.error){
-console.error(reservationResult.error);
-container.innerHTML="❌ Could not load reservations.";
+
+console.error(
+reservationResult.error
+);
+
+container.innerHTML =
+"❌ Could not load reservations.";
+
 return;
+
 }
 
-const reservations=reservationResult.data||[];
 
-const paymentResult=await supabaseClient
+const reservations =
+reservationResult.data || [];
+
+
+const paymentResult =
+await supabaseClient
 .from("payments")
 .select("*")
-.order("created_at",{ascending:false});
+.order(
+"created_at",
+{ascending:false}
+);
+
 
 if(paymentResult.error){
-console.error(paymentResult.error);
-container.innerHTML="❌ Could not load payments.";
+
+console.error(
+paymentResult.error
+);
+
+container.innerHTML =
+"❌ Could not load payments.";
+
 return;
+
 }
 
-const payments=paymentResult.data||[];
 
-const cancellationResult=await supabaseClient
+const payments =
+paymentResult.data || [];
+
+
+const cancellationResult =
+await supabaseClient
 .from("cancellations")
 .select("*")
-.order("created_at",{ascending:false});
+.order(
+"created_at",
+{ascending:false}
+);
+
 
 if(cancellationResult.error){
-console.error(cancellationResult.error);
-container.innerHTML="❌ Could not load cancellations.";
+
+console.error(
+cancellationResult.error
+);
+
+container.innerHTML =
+"❌ Could not load cancellations.";
+
 return;
+
 }
 
-const cancellations=cancellationResult.data||[];
 
-allCards=reservations.map(reservation=>{
+const cancellations =
+cancellationResult.data || [];
 
-const payment=payments.find(
-p=>p.reservation_id===reservation.id
+
+allCards =
+reservations.map(
+reservation=>{
+
+const payment =
+payments.find(
+p =>
+p.reservation_id ===
+reservation.id
 );
 
-const cancellation=cancellations.find(
-c=>c.reservation_id===reservation.id
+
+const cancellation =
+cancellations.find(
+c =>
+c.reservation_id ===
+reservation.id
 );
+
 
 return{
+
 reservation,
 payment,
 cancellation
+
 };
 
 });
 
+
 filterCards();
+
 }
+
+
+// =========================
+// FILTER
+// =========================
 
 function filterCards(){
 
-const search=document
+const search =
+document
 .getElementById("search")
 .value
 .toLowerCase()
 .trim();
 
-const status=document
+
+const status =
+document
 .getElementById("statusFilter")
 .value;
 
-const type=document
+
+const type =
+document
 .getElementById("typeFilter")
 .value;
 
-const filtered=allCards.filter(item=>{
 
-const r=item.reservation;
-const c=r.customers||{};
-const room=r.rooms||{};
-const p=item.payment;
-const x=item.cancellation;
+const filtered =
+allCards.filter(
+item=>{
 
-const searchable=`
+const r =
+item.reservation;
+
+const c =
+r.customers || {};
+
+const room =
+r.rooms || {};
+
+const p =
+item.payment;
+
+const x =
+item.cancellation;
+
+
+const searchable = `
+
 ${r.reservation_code}
-${c.name||""}
-${c.phone||""}
-${room.name||""}
-${room.room_number||""}
+
+${c.name || ""}
+
+${c.phone || ""}
+
+${room.name || ""}
+
+${room.room_number || ""}
+
 `.toLowerCase();
 
-if(search&&!searchable.includes(search)){
+
+if(
+search &&
+!searchable.includes(search)
+){
+
 return false;
+
 }
+
+
+// TYPE FILTER
 
 if(type==="reservation"){
-if(!r.status)return false;
-if(status!=="all"&&r.status!==status)return false;
-return true;
+
+if(!r.status)
+return false;
+
+if(
+status!=="all" &&
+r.status!==status
+){
+
+return false;
+
 }
+
+return true;
+
+}
+
 
 if(type==="payment"){
-if(!p)return false;
-if(status!=="all"&&p.status!==status)return false;
-return true;
+
+if(!p)
+return false;
+
+if(
+status!=="all" &&
+p.status!==status
+){
+
+return false;
+
 }
+
+return true;
+
+}
+
 
 if(type==="cancellation"){
-if(!x)return false;
-if(status!=="all"&&x.status!==status)return false;
-return true;
+
+if(!x)
+return false;
+
+if(
+status!=="all" &&
+x.status!==status
+){
+
+return false;
+
 }
 
-if(status==="all"){
 return true;
+
 }
+
+
+// STATUS ONLY
+
+if(status==="all")
+return true;
+
 
 return(
-r.status===status||
-(p&&p.status===status)||
-(x&&x.status===status)
+
+r.status===status ||
+
+(p && p.status===status) ||
+
+(x && x.status===status)
+
 );
 
 });
 
+
 displayCards(filtered);
+
 }
+
+
+// =========================
+// DISPLAY CARDS
+// =========================
 
 function displayCards(cards){
 
-const container=document.getElementById("reservations");
+const container =
+document.getElementById(
+"reservations"
+);
+
 
 if(!cards.length){
-container.innerHTML='<div class="empty">No matching records.</div>';
+
+container.innerHTML =
+'<div class="empty">No matching records.</div>';
+
 return;
+
 }
+
 
 container.innerHTML="";
 
-cards.forEach(item=>{
 
-const r=item.reservation;
-const c=r.customers||{};
-const room=r.rooms||{};
-const p=item.payment;
-const x=item.cancellation;
+cards.forEach(
+item=>{
+
+const r =
+item.reservation;
+
+const c =
+r.customers || {};
+
+const room =
+r.rooms || {};
+
+const p =
+item.payment;
+
+const x =
+item.cancellation;
+
 
 let paymentHTML="";
+
 
 if(p){
 
 paymentHTML=`
+
 <div class="section-title">
 🏨 Reservation & 💳 Payment
 </div>
 
 <div class="row">
-<span class="label">Amount:</span>
-${Number(p.amount||0).toFixed(2)} ETB
+<span class="label">
+Amount:
+</span>
+
+${Number(
+p.amount || 0
+).toFixed(2)} ETB
+
 </div>
 
+
 <div class="row">
-<span class="label">Status:</span>
-<span class="status ${p.status}">
+
+<span class="label">
+Status:
+</span>
+
+<span
+class="status ${p.status}"
+>
 ${p.status}
 </span>
+
 </div>
+
 
 <a
 class="receipt"
-href="${p.receipt_url||"#"}"
+href="${p.receipt_url || "#"}"
 target="_blank"
 rel="noopener"
 >
 🔗 Open Receipt
 </a>
 
-${p.status==="pending"?`
+
+${
+p.status==="pending"
+
+?
+
+`
+
 <br>
+
 <button
 class="confirm"
-onclick="updatePayment(${p.id},${r.id},'confirmed')"
+onclick="updatePayment(
+${p.id},
+${r.id},
+'confirmed'
+)"
 >
 ✅ Confirm
 </button>
 
+
 <button
 class="reject"
-onclick="updatePayment(${p.id},${r.id},'rejected')"
+onclick="updatePayment(
+${p.id},
+${r.id},
+'rejected'
+)"
 >
 ❌ Reject
 </button>
-`:""}
+
+`
+
+:
+
+""
+
+}
+
 `;
 
 }else{
 
 paymentHTML=`
+
 <div class="section-title">
 💳 Payment
 </div>
@@ -288,133 +525,425 @@ paymentHTML=`
 <div class="notice">
 No payment submitted yet.
 </div>
+
 `;
+
 }
 
+
 let cancellationHTML="";
+
 
 if(x){
 
 cancellationHTML=`
+
 <div class="section-title">
 ❌ Cancellation Request
 </div>
 
-<div class="row">
-<span class="label">Reason:</span>
-${escapeHTML(x.reason||"—")}
-</div>
 
 <div class="row">
-<span class="label">Refund:</span>
-${Number(x.refund_amount||0).toFixed(2)} ETB
+
+<span class="label">
+Reason:
+</span>
+
+${escapeHTML(
+x.reason || "—"
+)}
+
 </div>
 
+
 <div class="row">
-<span class="label">Status:</span>
-<span class="status ${x.status}">
+
+<span class="label">
+Refund:
+</span>
+
+${Number(
+x.refund_amount || 0
+).toFixed(2)} ETB
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
+Status:
+</span>
+
+<span
+class="status ${x.status}"
+>
 ${x.status}
 </span>
+
 </div>
 
-${x.status==="pending"?`
+
+${
+x.status==="pending"
+
+?
+
+`
+
 <button
 class="confirm"
-onclick="updateCancellation(${x.id},${r.id},'approved')"
+onclick="updateCancellation(
+${x.id},
+${r.id},
+'approved'
+)"
 >
 ✅ Approve
 </button>
 
+
 <button
 class="reject"
-onclick="updateCancellation(${x.id},${r.id},'rejected')"
+onclick="updateCancellation(
+${x.id},
+${r.id},
+'rejected'
+)"
 >
 ❌ Reject
 </button>
-`:""}
-`;
+
+`
+
+:
+
+""
+
 }
 
-container.innerHTML+=`
+`;
+
+}
+
+
+container.innerHTML += `
+
 <div class="card">
 
-<h3>📋 ${escapeHTML(r.reservation_code||"Unknown")}</h3>
+<h3>
+📋 ${escapeHTML(
+r.reservation_code ||
+"Unknown"
+)}
+</h3>
+
 
 <div class="row">
-<span class="label">Customer:</span>
-${escapeHTML(c.name||"—")}
+
+<span class="label">
+Customer:
+</span>
+
+${escapeHTML(
+c.name || "—"
+)}
+
 </div>
 
-<div class="row">
-<span class="label">Phone:</span>
-${escapeHTML(c.phone||"—")}
-</div>
 
 <div class="row">
-<span class="label">Room:</span>
-${escapeHTML(room.name||"—")}
-(${escapeHTML(room.room_number||"—")})
+
+<span class="label">
+Phone:
+</span>
+
+${escapeHTML(
+c.phone || "—"
+)}
+
 </div>
 
-<div class="row">
-<span class="label">Check-in:</span>
-${formatDate(r.check_in)}
-</div>
 
 <div class="row">
-<span class="label">Check-out:</span>
-${formatDate(r.check_out)}
+
+<span class="label">
+Room:
+</span>
+
+${escapeHTML(
+room.name || "—"
+)}
+
+(${escapeHTML(
+room.room_number || "—"
+)})
+
 </div>
 
-<div class="row">
-<span class="label">Total:</span>
-${Number(r.total_amount||0).toFixed(2)} ETB
-</div>
 
 <div class="row">
-<span class="label">Reservation:</span>
-<span class="status ${r.status}">
+
+<span class="label">
+Check-in:
+</span>
+
+${formatDate(
+r.check_in
+)}
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
+Check-out:
+</span>
+
+${formatDate(
+r.check_out
+)}
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
+Total:
+</span>
+
+${Number(
+r.total_amount || 0
+).toFixed(2)} ETB
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
+Reservation:
+</span>
+
+<span
+class="status ${r.status}"
+>
 ${r.status}
 </span>
+
 </div>
 
+
 ${paymentHTML}
+
 ${cancellationHTML}
 
 </div>
+
 `;
 
 });
+
 }
 
-async function updatePayment(paymentId,reservationId,newStatus){
 
-const paymentResult=await supabaseClient
+// =========================
+// UPDATE PAYMENT
+// =========================
+
+async function updatePayment(
+paymentId,
+reservationId,
+newStatus
+){
+
+// UPDATE PAYMENT
+
+const paymentResult =
+await supabaseClient
 .from("payments")
-.update({status:newStatus})
-.eq("id",paymentId);
+.update({
+status:newStatus
+})
+.eq(
+"id",
+paymentId
+);
+
 
 if(paymentResult.error){
-console.error(paymentResult.error);
-alert("❌ Could not update payment.");
+
+console.error(
+paymentResult.error
+);
+
+alert(
+"❌ Could not update payment."
+);
+
 return;
+
 }
 
-const reservationResult=await supabaseClient
+
+// UPDATE RESERVATION
+
+const reservationResult =
+await supabaseClient
 .from("reservations")
-.update({status:newStatus})
-.eq("id",reservationId);
+.update({
+status:newStatus
+})
+.eq(
+"id",
+reservationId
+);
+
 
 if(reservationResult.error){
-console.error(reservationResult.error);
-alert("⚠️ Payment updated, but reservation could not be updated.");
+
+console.error(
+reservationResult.error
+);
+
+alert(
+"⚠️ Payment updated, but reservation could not be updated."
+);
+
 loadEverything();
+
 return;
+
 }
 
-alert("✅ Payment and reservation updated.");
+
+// GET CUSTOMER
+
+const customerResult =
+await supabaseClient
+.from("reservations")
+.select(`
+customer_id,
+reservation_code
+`)
+.eq(
+"id",
+reservationId
+)
+.single();
+
+
+if(customerResult.error){
+
+console.error(
+customerResult.error
+);
+
+alert(
+"⚠️ Payment updated, but customer notification could not be created."
+);
+
 loadEverything();
+
+return;
+
 }
+
+
+// CREATE NOTIFICATION
+
+const title =
+newStatus==="confirmed"
+
+?
+
+"💳 Payment Confirmed"
+
+:
+
+"💳 Payment Rejected";
+
+
+const message =
+newStatus==="confirmed"
+
+?
+
+`Your payment for reservation ${customerResult.data.reservation_code} has been confirmed.`
+
+:
+
+`Your payment for reservation ${customerResult.data.reservation_code} has been rejected.`;
+
+
+const notificationResult =
+await supabaseClient
+.from("notifications")
+.insert({
+
+customer_id:
+customerResult.data.customer_id,
+
+reservation_id:
+reservationId,
+
+type:
+"payment",
+
+title:
+title,
+
+message:
+message,
+
+is_read:
+false
+
+});
+
+
+if(notificationResult.error){
+
+console.error(
+notificationResult.error
+);
+
+alert(
+"⚠️ Payment updated, but notification could not be created."
+);
+
+loadEverything();
+
+return;
+
+}
+
+
+alert(
+
+newStatus==="confirmed"
+
+?
+
+"✅ Payment confirmed and customer notified."
+
+:
+
+"✅ Payment rejected and customer notified."
+
+);
+
+
+loadEverything();
+
+}
+
+
+// =========================
+// UPDATE CANCELLATION
+// =========================
 
 async function updateCancellation(
 cancellationId,
@@ -422,59 +951,138 @@ reservationId,
 newStatus
 ){
 
-const cancellationResult=await supabaseClient
+const cancellationResult =
+await supabaseClient
 .from("cancellations")
-.update({status:newStatus})
-.eq("id",cancellationId);
+.update({
+status:newStatus
+})
+.eq(
+"id",
+cancellationId
+);
+
 
 if(cancellationResult.error){
-console.error(cancellationResult.error);
-alert("❌ Could not update cancellation.");
+
+console.error(
+cancellationResult.error
+);
+
+alert(
+"❌ Could not update cancellation."
+);
+
 return;
+
 }
+
 
 if(newStatus==="approved"){
 
-const reservationResult=await supabaseClient
+const reservationResult =
+await supabaseClient
 .from("reservations")
-.update({status:"cancelled"})
-.eq("id",reservationId);
+.update({
+status:"cancelled"
+})
+.eq(
+"id",
+reservationId
+);
+
 
 if(reservationResult.error){
-console.error(reservationResult.error);
-alert("⚠️ Cancellation approved, but reservation could not be cancelled.");
+
+console.error(
+reservationResult.error
+);
+
+alert(
+"⚠️ Cancellation approved, but reservation could not be cancelled."
+);
+
 loadEverything();
+
 return;
+
 }
 
-alert("✅ Cancellation approved and reservation cancelled.");
+
+alert(
+"✅ Cancellation approved and reservation cancelled."
+);
+
 
 }else{
 
-alert("✅ Cancellation request rejected.");
+alert(
+"✅ Cancellation request rejected."
+);
+
 }
 
+
 loadEverything();
+
 }
+
+
+// =========================
+// DATE
+// =========================
 
 function formatDate(date){
 
-if(!date)return"—";
+if(!date)
+return "—";
 
-return new Date(date).toLocaleDateString();
+
+return new Date(
+date
+).toLocaleDateString();
+
 }
+
+
+// =========================
+// ESCAPE HTML
+// =========================
 
 function escapeHTML(value){
 
 return String(value)
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
+
 }
 
+
 loadEverything();
+
 </script>
 
 </body>
