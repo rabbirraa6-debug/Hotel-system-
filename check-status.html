@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Check Reservation Status</title>
+
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+
+      font-family: Arial, sans-serif;
+
+      background: #f7f5f0;
+
+      margin: 0;
+
+      padding: 20px;
+
+    }
+
+
+    .container {
+
+      max-width: 500px;
+
+      margin: 40px auto;
+
+      background: white;
+
+      padding: 25px;
+
+      border-radius: 15px;
+
+      box-shadow:
+        0 4px 20px
+        rgba(0,0,0,.1);
+
+    }
+
+
+    h1 {
+
+      text-align: center;
+
+      margin-bottom: 25px;
+
+    }
+
+
+    label {
+
+      display: block;
+
+      margin-bottom: 7px;
+
+      font-weight: bold;
+
+    }
+
+
+    input {
+
+      width: 100%;
+
+      padding: 14px;
+
+      border: 1px solid #ccc;
+
+      border-radius: 8px;
+
+      font-size: 17px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 1px;
+
+    }
+
+
+    .search-button {
+
+      width: 100%;
+
+      margin-top: 15px;
+
+      padding: 14px;
+
+      background: #d4af37;
+
+      color: white;
+
+      border: none;
+
+      border-radius: 8px;
+
+      font-size: 16px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+    }
+
+
+    .search-button:disabled {
+
+      opacity: .6;
+
+    }
+
+
+    #message {
+
+      margin-top: 18px;
+
+      text-align: center;
+
+      font-weight: bold;
+
+    }
+
+
+    .result {
+
+      margin-top: 25px;
+
+      padding: 20px;
+
+      border-radius: 12px;
+
+      background: #fafafa;
+
+      border: 1px solid #ddd;
+
+    }
+
+
+    .booking-code {
+
+      text-align: center;
+
+      font-size: 23px;
+
+      font-weight: bold;
+
+      letter-spacing: 2px;
+
+      margin-bottom: 18px;
+
+    }
+
+
+    .status-box {
+
+      padding: 15px;
+
+      border-radius: 10px;
+
+      text-align: center;
+
+      font-size: 20px;
+
+      font-weight: bold;
+
+      margin-bottom: 20px;
+
+    }
+
+
+    .pending {
+
+      background: #fff4d6;
+
+      color: #a66a00;
+
+      border: 1px solid #e6b84a;
+
+    }
+
+
+    .confirmed {
+
+      background: #e4f7ea;
+
+      color: #16833b;
+
+      border: 1px solid #55b875;
+
+    }
+
+
+    .rejected {
+
+      background: #fde7e7;
+
+      color: #c62828;
+
+      border: 1px solid #e57373;
+
+    }
+
+
+    .info {
+
+      margin: 10px 0;
+
+      padding-bottom: 8px;
+
+      border-bottom: 1px solid #eee;
+
+    }
+
+
+    .label {
+
+      font-weight: bold;
+
+    }
+
+
+    .refresh {
+
+      width: 100%;
+
+      margin-top: 18px;
+
+      padding: 12px;
+
+      background: #222;
+
+      color: white;
+
+      border: none;
+
+      border-radius: 8px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <div class="container">
+
+
+    <h1>
+      🔎 Check Reservation
+    </h1>
+
+
+    <label>
+      Reservation ID
+    </label>
+
+
+    <input
+      id="reservationCode"
+      placeholder="HTL-G8E0KL"
+      maxlength="10"
+    >
+
+
+    <button
+      id="searchButton"
+      class="search-button"
+      onclick="checkReservation()"
+    >
+      Check Status
+    </button>
+
+
+    <div id="message"></div>
+
+
+    <div
+      id="result"
+      class="result"
+      style="display:none;"
+    >
+
+      <div
+        id="bookingCode"
+        class="booking-code"
+      ></div>
+
+
+      <div
+        id="statusBox"
+        class="status-box"
+      ></div>
+
+
+      <div
+        id="details"
+      ></div>
+
+
+      <button
+        class="refresh"
+        onclick="checkReservation()"
+      >
+        🔄 Refresh Status
+      </button>
+
+    </div>
+
+  </div>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="config.js"></script>
+
+
+  <script>
+
+
+    // =========================
+    // SUPABASE
+    // =========================
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    // =========================
+    // CHECK URL
+    // =========================
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const urlCode =
+      params.get(
+        "reservation"
+      );
+
+
+    if (urlCode) {
+
+      document.getElementById(
+        "reservationCode"
+      ).value =
+        urlCode;
+
+    }
+
+
+    // =========================
+    // CHECK RESERVATION
+    // =========================
+
+
+    async function checkReservation() {
+
+
+      const input =
+        document.getElementById(
+          "reservationCode"
+        );
+
+
+      const message =
+        document.getElementById(
+          "message"
+        );
+
+
+      const result =
+        document.getElementById(
+          "result"
+        );
+
+
+      const button =
+        document.getElementById(
+          "searchButton"
+        );
+
+
+      const code =
+        input.value
+          .trim()
+          .toUpperCase();
+
+
+      if (!code) {
+
+        message.textContent =
+          "❌ Please enter your reservation ID.";
+
+        result.style.display =
+          "none";
+
+        return;
+
+      }
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "Checking...";
+
+      message.textContent =
+        "";
+
+
+      // =========================
+      // GET RESERVATION
+      // =========================
+
+
+      const {
+        data: reservation,
+        error
+      } =
+        await supabaseClient
+
+          .from("reservations")
+
+          .select(`
+            *,
+            rooms (
+              name,
+              room_number
+            )
+          `)
+
+          .eq(
+            "reservation_code",
+            code
+          )
+
+          .single();
+
+
+      if (error || !reservation) {
+
+        console.error(error);
+
+        message.textContent =
+          "❌ Reservation not found. Check the ID and try again.";
+
+        result.style.display =
+          "none";
+
+        button.disabled = false;
+
+        button.textContent =
+          "Check Status";
+
+        return;
+
+      }
+
+
+      // =========================
+      // DISPLAY CODE
+      // =========================
+
+
+      document.getElementById(
+        "bookingCode"
+      ).textContent =
+        reservation.reservation_code;
+
+
+      // =========================
+      // STATUS
+      // =========================
+
+
+      const status =
+        reservation.status ||
+        "pending";
+
+
+      const statusBox =
+        document.getElementById(
+          "statusBox"
+        );
+
+
+      statusBox.className =
+        "status-box " +
+        status;
+
+
+      if (
+        status === "confirmed"
+      ) {
+
+        statusBox.textContent =
+          "✅ Reservation Confirmed";
+
+      }
+
+      else if (
+        status === "rejected"
+      ) {
+
+        statusBox.textContent =
+          "❌ Reservation Rejected";
+
+      }
+
+      else {
+
+        statusBox.textContent =
+          "🟡 Reservation Pending";
+
+      }
+
+
+      // =========================
+      // DETAILS
+      // =========================
+
+
+      const room =
+        reservation.rooms ||
+        {};
+
+
+      document.getElementById(
+        "details"
+      ).innerHTML = `
+
+        <div class="info">
+
+          <span class="label">
+            Room:
+          </span>
+
+          ${room.name || "—"}
+
+          ${
+            room.room_number
+              ? `(${room.room_number})`
+              : ""
+          }
+
+        </div>
+
+
+        <div class="info">
+
+          <span class="label">
+            Check-in:
+          </span>
+
+          ${formatDate(
+            reservation.check_in
+          )}
+
+        </div>
+
+
+        <div class="info">
+
+          <span class="label">
+            Check-out:
+          </span>
+
+          ${formatDate(
+            reservation.check_out
+          )}
+
+        </div>
+
+
+        <div class="info">
+
+          <span class="label">
+            Total:
+          </span>
+
+          ${Number(
+            reservation.total_amount
+          ).toFixed(2)}
+
+          ETB
+
+        </div>
+
+
+        <div class="info">
+
+          <span class="label">
+            Reservation status:
+          </span>
+
+          ${reservation.status}
+
+        </div>
+
+      `;
+
+
+      result.style.display =
+        "block";
+
+
+      button.disabled = false;
+
+      button.textContent =
+        "Check Status";
+
+    }
+
+
+    // =========================
+    // DATE FORMAT
+    // =========================
+
+
+    function formatDate(date) {
+
+      if (!date) {
+        return "—";
+      }
+
+
+      return new Date(
+        date
+      ).toLocaleDateString();
+
+    }
+
+
+  </script>
+
+</body>
+
+  </html>
