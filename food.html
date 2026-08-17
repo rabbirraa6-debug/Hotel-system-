@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>Food & Table</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f5f0;
+  color:#222;
+  padding:20px;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+}
+
+header{
+  background:#111;
+  color:white;
+  padding:18px;
+  border-radius:14px;
+  text-align:center;
+  margin-bottom:25px;
+}
+
+header h1{
+  margin-bottom:7px;
+}
+
+header p{
+  color:#ddd;
+  font-size:14px;
+}
+
+.section{
+  margin-bottom:30px;
+}
+
+.section h2{
+  margin-bottom:15px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:
+    repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+}
+
+.card{
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 3px 14px rgba(0,0,0,.1);
+}
+
+.card img{
+  width:100%;
+  height:125px;
+  object-fit:cover;
+  display:block;
+}
+
+.card-content{
+  padding:12px;
+}
+
+.card h3{
+  font-size:16px;
+  margin-bottom:6px;
+}
+
+.price{
+  color:#9b7b12;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.quantity{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.quantity button{
+  width:32px;
+  height:32px;
+  border:none;
+  border-radius:7px;
+  background:#111;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+}
+
+.quantity span{
+  min-width:20px;
+  text-align:center;
+  font-weight:bold;
+}
+
+.form-box{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 3px 14px rgba(0,0,0,.08);
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+select,
+input{
+  width:100%;
+  padding:13px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
+  margin-bottom:18px;
+  background:white;
+}
+
+.summary{
+  background:#fffdf5;
+  border:2px solid #d4af37;
+  border-radius:12px;
+  padding:18px;
+  margin-top:20px;
+}
+
+.summary h2{
+  margin-bottom:12px;
+}
+
+.summary-item{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+  border-bottom:1px solid #eee;
+}
+
+.total{
+  font-size:20px;
+  font-weight:bold;
+  margin-top:15px;
+  text-align:right;
+}
+
+.limit{
+  font-size:13px;
+  color:#777;
+  margin-top:-10px;
+  margin-bottom:15px;
+}
+
+.submit{
+  width:100%;
+  padding:15px;
+  margin-top:20px;
+  border:none;
+  border-radius:9px;
+  background:#d4af37;
+  color:#111;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.submit:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+#message{
+  margin-top:20px;
+  text-align:center;
+}
+
+.success-box{
+  background:white;
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 3px 15px rgba(0,0,0,.1);
+  text-align:center;
+}
+
+.order-id{
+  border:2px solid #d4af37;
+  background:#fffdf5;
+  border-radius:12px;
+  padding:18px;
+  margin:20px 0;
+}
+
+.order-id small{
+  display:block;
+  color:#777;
+  margin-bottom:8px;
+}
+
+.order-code{
+  display:block;
+  font-size:25px;
+  font-weight:bold;
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+
+.copy{
+  padding:10px 18px;
+  background:#d4af37;
+  color:#111;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.actions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.action{
+  display:block;
+  width:100%;
+  padding:13px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.status{
+  background:#d4af37;
+  color:#111;
+}
+
+.home{
+  background:#111;
+  color:white;
+}
+
+.notice{
+  padding:12px;
+  background:#fff4d6;
+  border-radius:8px;
+  margin-bottom:15px;
+  font-size:14px;
+}
+
+.error{
+  color:#c62828;
+}
+
+.success{
+  color:#16833b;
+}
+
+@media(max-width:500px){
+
+body{
+  padding:12px;
+}
+
+.grid{
+  grid-template-columns:
+    repeat(2,1fr);
+}
+
+.card img{
+  height:110px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+
+<h1>🍽️ Food & Table</h1>
+
+<p>
+Choose your food, drinks, table and arrival time.
+</p>
+
+</header>
+
+
+<!-- =========================
+     FOOD
+     ========================= -->
+
+<section class="section">
+
+<h2>🍽️ Food</h2>
+
+<div class="grid">
+
+
+<!-- Burger -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
+alt="Burger"
+>
+
+<div class="card-content">
+
+<h3>Burger</h3>
+
+<div class="price">
+250 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeFood(0,-1)">
+−
+</button>
+
+<span id="foodQty0">0</span>
+
+<button onclick="changeFood(0,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Pizza -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80"
+alt="Pizza"
+>
+
+<div class="card-content">
+
+<h3>Pizza</h3>
+
+<div class="price">
+400 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeFood(1,-1)">
+−
+</button>
+
+<span id="foodQty1">0</span>
+
+<button onclick="changeFood(1,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Pasta -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=600&q=80"
+alt="Pasta"
+>
+
+<div class="card-content">
+
+<h3>Pasta</h3>
+
+<div class="price">
+350 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeFood(2,-1)">
+−
+</button>
+
+<span id="foodQty2">0</span>
+
+<button onclick="changeFood(2,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Chicken -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80"
+alt="Chicken"
+>
+
+<div class="card-content">
+
+<h3>Chicken</h3>
+
+<div class="price">
+500 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeFood(3,-1)">
+−
+</button>
+
+<span id="foodQty3">0</span>
+
+<button onclick="changeFood(3,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Salad -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80"
+alt="Salad"
+>
+
+<div class="card-content">
+
+<h3>Salad</h3>
+
+<div class="price">
+250 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeFood(4,-1)">
+−
+</button>
+
+<span id="foodQty4">0</span>
+
+<button onclick="changeFood(4,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<p class="limit">
+Maximum food: 10 items
+</p>
+
+</section>
+
+
+<!-- =========================
+     DRINKS
+     ========================= -->
+
+<section class="section">
+
+<h2>🥤 Drinks</h2>
+
+<div class="grid">
+
+
+<!-- Water -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80"
+alt="Water"
+>
+
+<div class="card-content">
+
+<h3>Water</h3>
+
+<div class="price">
+50 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeDrink(0,-1)">
+−
+</button>
+
+<span id="drinkQty0">0</span>
+
+<button onclick="changeDrink(0,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Juice -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=600&q=80"
+alt="Juice"
+>
+
+<div class="card-content">
+
+<h3>Juice</h3>
+
+<div class="price">
+150 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeDrink(1,-1)">
+−
+</button>
+
+<span id="drinkQty1">0</span>
+
+<button onclick="changeDrink(1,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Cola -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80"
+alt="Cola"
+>
+
+<div class="card-content">
+
+<h3>Cola</h3>
+
+<div class="price">
+100 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeDrink(2,-1)">
+−
+</button>
+
+<span id="drinkQty2">0</span>
+
+<button onclick="changeDrink(2,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Coffee -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80"
+alt="Coffee"
+>
+
+<div class="card-content">
+
+<h3>Coffee</h3>
+
+<div class="price">
+100 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeDrink(3,-1)">
+−
+</button>
+
+<span id="drinkQty3">0</span>
+
+<button onclick="changeDrink(3,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Tea -->
+
+<div class="card">
+
+<img
+src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=600&q=80"
+alt="Tea"
+>
+
+<div class="card-content">
+
+<h3>Tea</h3>
+
+<div class="price">
+80 ETB
+</div>
+
+<div class="quantity">
+
+<button onclick="changeDrink(4,-1)">
+−
+</button>
+
+<span id="drinkQty4">0</span>
+
+<button onclick="changeDrink(4,1)">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<p class="limit">
+Maximum drinks: 10 items
+</p>
+
+</section>
+
+
+<!-- =========================
+     TABLE
+     ========================= -->
+
+<section class="section">
+
+<h2>🪑 Table</h2>
+
+<div class="form-box">
+
+<label for="tableNumber">
+Table Number
+</label>
+
+<select id="tableNumber">
+
+<option value="">
+Select Table Number
+</option>
+
+<option value="1">Table 01</option>
+<option value="2">Table 02</option>
+<option value="3">Table 03</option>
+<option value="4">Table 04</option>
+<option value="5">Table 05</option>
+<option value="6">Table 06</option>
+<option value="7">Table 07</option>
+<option value="8">Table 08</option>
+<option value="9">Table 09</option>
+<option value="10">Table 10</option>
+
+</select>
+
+
+<label for="arrivalTime">
+🕐 Estimated Arrival Time
+</label>
+
+<input
+id="arrivalTime"
+type="time"
+>
+
+
+<div class="notice">
+
+ℹ️ You can reserve a table with
+food, drinks, or both.
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     SUMMARY
+     ========================= -->
+
+<section class="section">
+
+<div class="summary">
+
+<h2>
+🛒 Order Summary
+</h2>
+
+<div id="summaryItems">
+No items selected.
+</div>
+
+<div class="total">
+
+Total:
+<span id="total">
+0.00
+</span>
+ETB
+
+</div>
+
+<button
+id="submitButton"
+class="submit"
+onclick="submitOrder()"
+>
+
+✅ Reserve Table & Order
+
+</button>
+
+</div>
+
+<div id="message"></div>
+
+</section>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="config.js"></script>
+
+<script>
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   FOOD DATA
+   ========================= */
+
+const foods=[
+
+{
+name:"Burger",
+price:250
+},
+
+{
+name:"Pizza",
+price:400
+},
+
+{
+name:"Pasta",
+price:350
+},
+
+{
+name:"Chicken",
+price:500
+},
+
+{
+name:"Salad",
+price:250
+}
+
+];
+
+
+/* =========================
+   DRINK DATA
+   ========================= */
+
+const drinks=[
+
+{
+name:"Water",
+price:50
+},
+
+{
+name:"Juice",
+price:150
+},
+
+{
+name:"Cola",
+price:100
+},
+
+{
+name:"Coffee",
+price:100
+},
+
+{
+name:"Tea",
+price:80
+}
+
+];
+
+
+let foodQuantities=
+[0,0,0,0,0];
+
+let drinkQuantities=
+[0,0,0,0,0];
+
+
+/* =========================
+   CHANGE FOOD
+   ========================= */
+
+function changeFood(index,change){
+
+const current=
+foodQuantities[index];
+
+const next=
+current+change;
+
+if(next<0){
+return;
+}
+
+const totalFood=
+foodQuantities.reduce(
+(a,b)=>a+b,0
+);
+
+if(change>0&&totalFood>=10){
+
+alert(
+"⚠️ Maximum 10 food items per table."
+);
+
+return;
+
+}
+
+foodQuantities[index]=next;
+
+document.getElementById(
+"foodQty"+index
+).textContent=next;
+
+updateSummary();
+
+}
+
+
+/* =========================
+   CHANGE DRINK
+   ========================= */
+
+function changeDrink(index,change){
+
+const current=
+drinkQuantities[index];
+
+const next=
+current+change;
+
+if(next<0){
+return;
+}
+
+const totalDrinks=
+drinkQuantities.reduce(
+(a,b)=>a+b,0
+);
+
+if(change>0&&totalDrinks>=10){
+
+alert(
+"⚠️ Maximum 10 drinks per table."
+);
+
+return;
+
+}
+
+drinkQuantities[index]=next;
+
+document.getElementById(
+"drinkQty"+index
+).textContent=next;
+
+updateSummary();
+
+}
+
+
+/* =========================
+   UPDATE SUMMARY
+   ========================= */
+
+function updateSummary(){
+
+const summary=
+document.getElementById(
+"summaryItems"
+);
+
+let html="";
+
+let total=0;
+
+let hasItems=false;
+
+
+/* FOOD */
+
+foods.forEach((food,index)=>{
+
+const qty=
+foodQuantities[index];
+
+if(qty>0){
+
+hasItems=true;
+
+const amount=
+food.price*qty;
+
+total+=amount;
+
+html+=`
+
+<div class="summary-item">
+
+<span>
+🍽️ ${food.name} × ${qty}
+</span>
+
+<span>
+${amount.toFixed(2)} ETB
+</span>
+
+</div>
+
+`;
+
+}
+
+});
+
+
+/* DRINKS */
+
+drinks.forEach((drink,index)=>{
+
+const qty=
+drinkQuantities[index];
+
+if(qty>0){
+
+hasItems=true;
+
+const amount=
+drink.price*qty;
+
+total+=amount;
+
+html+=`
+
+<div class="summary-item">
+
+<span>
+🥤 ${drink.name} × ${qty}
+</span>
+
+<span>
+${amount.toFixed(2)} ETB
+</span>
+
+</div>
+
+`;
+
+}
+
+});
+
+
+if(!hasItems){
+
+summary.innerHTML=
+"No items selected.";
+
+}else{
+
+summary.innerHTML=html;
+
+}
+
+
+document.getElementById(
+"total"
+).textContent=
+total.toFixed(2);
+
+}
+
+
+/* =========================
+   GENERATE ORDER ID
+   ========================= */
+
+function generateOrderCode(){
+
+const chars=
+"ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+let code="ORD-";
+
+for(let i=0;i<6;i++){
+
+code+=
+chars.charAt(
+Math.floor(
+Math.random()*chars.length
+)
+);
+
+}
+
+return code;
+
+}
+
+
+/* =========================
+   SUBMIT ORDER
+   ========================= */
+
+async function submitOrder(){
+
+const tableNumber=
+document.getElementById(
+"tableNumber"
+).value;
+
+const arrivalTime=
+document.getElementById(
+"arrivalTime"
+).value;
+
+const message=
+document.getElementById(
+"message"
+);
+
+const button=
+document.getElementById(
+"submitButton"
+);
+
+
+const foodTotal=
+foodQuantities.reduce(
+(a,b)=>a+b,0
+);
+
+const drinkTotal=
+drinkQuantities.reduce(
+(a,b)=>a+b,0
+);
+
+
+/* TABLE */
+
+if(!tableNumber){
+
+message.innerHTML=
+`<div class="error">
+❌ Please select a table number.
+</div>`;
+
+return;
+
+}
+
+
+/* ARRIVAL */
+
+if(!arrivalTime){
+
+message.innerHTML=
+`<div class="error">
+❌ Please select your estimated arrival time.
+</div>`;
+
+return;
+
+}
+
+
+/* AT LEAST ONE ITEM */
+
+if(foodTotal===0&&drinkTotal===0){
+
+message.innerHTML=
+`<div class="error">
+❌ Please select at least one food or drink.
+</div>`;
+
+return;
+
+}
+
+
+button.disabled=true;
+
+message.innerHTML=
+"Submitting order...";
+
+
+/* CALCULATE TOTAL */
+
+let total=0;
+
+foods.forEach(
+(food,index)=>{
+total+=
+food.price*
+foodQuantities[index];
+}
+);
+
+drinks.forEach(
+(drink,index)=>{
+total+=
+drink.price*
+drinkQuantities[index];
+}
+);
+
+
+/* CREATE ORDER ID */
+
+const orderCode=
+generateOrderCode();
+
+
+/* BUILD ITEMS */
+
+const items=[];
+
+
+foods.forEach(
+(food,index)=>{
+
+if(foodQuantities[index]>0){
+
+items.push({
+
+type:"food",
+
+name:food.name,
+
+quantity:
+foodQuantities[index],
+
+price:food.price
+
+});
+
+}
+
+});
+
+
+drinks.forEach(
+(drink,index)=>{
+
+if(drinkQuantities[index]>0){
+
+items.push({
+
+type:"drink",
+
+name:drink.name,
+
+quantity:
+drinkQuantities[index],
+
+price:drink.price
+
+});
+
+}
+
+});
+
+
+/*
+IMPORTANT:
+
+This expects an "orders" table
+with these columns:
+
+order_code
+table_number
+arrival_time
+items
+total_amount
+status
+*/
+
+const {
+data,
+error
+}=
+await supabaseClient
+
+.from("orders")
+
+.insert({
+
+order_code:
+orderCode,
+
+table_number:
+Number(tableNumber),
+
+arrival_time:
+arrivalTime,
+
+items:items,
+
+total_amount:
+total,
+
+status:
+"pending"
+
+})
+
+.select()
+
+.single();
+
+
+if(error){
+
+console.error(error);
+
+message.innerHTML=
+`<div class="error">
+❌ Could not submit order.
+</div>`;
+
+button.disabled=false;
+
+return;
+
+}
+
+
+/* SUCCESS */
+
+document.querySelector(
+".summary"
+).style.display="none";
+
+
+message.innerHTML=`
+
+<div class="success-box">
+
+<div
+class="success"
+style="
+font-size:20px;
+margin-bottom:10px;
+"
+>
+
+✅ Order Submitted Successfully!
+
+</div>
+
+<p>
+Your food and table reservation
+has been received.
+</p>
+
+
+<div class="order-id">
+
+<small>
+Order ID
+</small>
+
+<span
+id="orderCode"
+class="order-code"
+>
+
+${orderCode}
+
+</span>
+
+<button
+class="copy"
+onclick="copyOrderCode()"
+>
+
+📋 Copy ID
+
+</button>
+
+</div>
+
+
+<p
+style="
+font-size:14px;
+color:#666;
+margin-bottom:18px;
+"
+>
+
+Keep this ID to check your
+order status.
+
+</p>
+
+
+<div class="actions">
+
+<a
+class="action status"
+href="check-status.html?order=${encodeURIComponent(orderCode)}"
+>
+
+🔎 Check Order Status
+
+</a>
+
+
+<a
+class="action home"
+href="index.html"
+>
+
+🏠 Back to Home
+
+</a>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================
+   COPY ORDER ID
+   ========================= */
+
+function copyOrderCode(){
+
+const code=
+document.getElementById(
+"orderCode"
+).textContent.trim();
+
+navigator.clipboard
+.writeText(code)
+.then(()=>{
+
+const button=
+document.querySelector(
+".copy"
+);
+
+button.textContent=
+"✅ Copied!";
+
+setTimeout(()=>{
+
+button.textContent=
+"📋 Copy ID";
+
+},1500);
+
+})
+.catch(()=>{
+
+alert(
+"Could not copy automatically. Please copy the Order ID manually."
+);
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>
