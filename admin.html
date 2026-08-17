@@ -16,16 +16,20 @@ input,select{width:100%;padding:12px;margin-top:8px;border:1px solid #ccc;border
 .label{font-weight:bold}
 .status{font-weight:bold}
 .pending{color:#d68b00}
-.confirmed{color:#16833b}
+.confirmed,.approved{color:#16833b}
 .rejected{color:#c62828}
+.cancelled{color:#c62828}
 button{padding:10px 15px;border:none;border-radius:7px;cursor:pointer;font-weight:bold;margin:8px 5px 0 0}
 .confirm{background:#2e9d50;color:white}
 .reject{background:#d33;color:white}
 .refresh{background:#333;color:white;width:100%;margin-top:10px}
-a{display:inline-block;margin-top:8px}
+.receipt{display:inline-block;margin-top:8px}
+.section-title{font-size:17px;font-weight:bold;margin-top:18px;padding-top:15px;border-top:1px solid #eee}
 .empty{text-align:center;padding:20px;background:white;border-radius:10px;max-width:700px;margin:15px auto}
+.notice{padding:12px;background:#fff4d6;border-radius:8px;margin-top:12px}
 </style>
 </head>
+
 <body>
 
 <h1>🏨 Hotel Admin</h1>
@@ -33,13 +37,27 @@ a{display:inline-block;margin-top:8px}
 <div class="controls">
 <strong>🔎 Search Reservations</strong>
 
-<input id="search" type="text" placeholder="Reservation ID, name, phone or room..." oninput="filterReservations()">
+<input
+id="search"
+type="text"
+placeholder="Reservation ID, name, phone or room..."
+oninput="filterCards()"
+>
 
-<select id="statusFilter" onchange="filterReservations()">
+<select id="statusFilter" onchange="filterCards()">
 <option value="all">All statuses</option>
 <option value="pending">🟡 Pending</option>
 <option value="confirmed">✅ Confirmed</option>
 <option value="rejected">❌ Rejected</option>
+<option value="approved">✅ Approved</option>
+<option value="cancelled">❌ Cancelled</option>
+</select>
+
+<select id="typeFilter" onchange="filterCards()">
+<option value="all">All Type</option>
+<option value="reservation">🏨 Reservation</option>
+<option value="payment">💳 Payment</option>
+<option value="cancellation">❌ Cancellation</option>
 </select>
 
 <button class="refresh" onclick="loadEverything()">🔄 Refresh</button>
@@ -48,20 +66,19 @@ a{display:inline-block;margin-top:8px}
 <h2>📋 Reservations</h2>
 <div id="reservations">Loading reservations...</div>
 
-<h2>💳 Payments</h2>
-<div id="payments">Loading payments...</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 
 <script>
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let allReservations=[];
 
-async function loadReservations(){
+let allCards=[];
+
+async function loadEverything(){
 const container=document.getElementById("reservations");
+container.innerHTML="Loading reservations...";
 
-const{data,error}=await supabaseClient
+const reservationResult=await supabaseClient
 .from("reservations")
 .select(`
 *,
@@ -70,181 +87,303 @@ rooms(name,room_number)
 `)
 .order("created_at",{ascending:false});
 
-if(error){
-console.error(error);
+if(reservationResult.error){
+console.error(reservationResult.error);
 container.innerHTML="❌ Could not load reservations.";
 return;
 }
 
-allReservations=data||[];
-filterReservations();
-}
+const reservations=reservationResult.data||[];
 
-function filterReservations(){
-const search=document.getElementById("search").value.toLowerCase().trim();
-const status=document.getElementById("statusFilter").value;
-
-const filtered=allReservations.filter(reservation=>{
-const customer=reservation.customers||{};
-const room=reservation.rooms||{};
-
-const searchable=`
-${reservation.reservation_code}
-${customer.name||""}
-${customer.phone||""}
-${room.room_number||""}
-${room.name||""}
-`.toLowerCase();
-
-const matchesSearch=!search||searchable.includes(search);
-const matchesStatus=status==="all"||reservation.status===status;
-
-return matchesSearch&&matchesStatus;
-});
-
-displayReservations(filtered);
-}
-
-function displayReservations(reservations){
-const container=document.getElementById("reservations");
-
-if(!reservations.length){
-container.innerHTML='<div class="empty">No matching reservations.</div>';
-return;
-}
-
-container.innerHTML="";
-
-reservations.forEach(reservation=>{
-const customer=reservation.customers||{};
-const room=reservation.rooms||{};
-
-container.innerHTML+=`
-<div class="card">
-<h3>${reservation.reservation_code}</h3>
-
-<div class="row">
-<span class="label">Customer:</span>
-${customer.name||"—"}
-</div>
-
-<div class="row">
-<span class="label">Phone:</span>
-${customer.phone||"—"}
-</div>
-
-<div class="row">
-<span class="label">Room:</span>
-${room.name||"—"} (${room.room_number||"—"})
-</div>
-
-<div class="row">
-<span class="label">Check-in:</span>
-${formatDate(reservation.check_in)}
-</div>
-
-<div class="row">
-<span class="label">Check-out:</span>
-${formatDate(reservation.check_out)}
-</div>
-
-<div class="row">
-<span class="label">Total:</span>
-${Number(reservation.total_amount).toFixed(2)} ETB
-</div>
-
-<div class="row">
-<span class="label">Status:</span>
-<span class="status ${reservation.status}">
-${reservation.status}
-</span>
-</div>
-</div>
-`;
-});
-}
-
-async function loadPayments(){
-const container=document.getElementById("payments");
-
-const{data,error}=await supabaseClient
+const paymentResult=await supabaseClient
 .from("payments")
-.select(`
-*,
-reservations(id,reservation_code)
-`)
+.select("*")
 .order("created_at",{ascending:false});
 
-if(error){
-console.error(error);
+if(paymentResult.error){
+console.error(paymentResult.error);
 container.innerHTML="❌ Could not load payments.";
 return;
 }
 
-if(!data||!data.length){
-container.innerHTML='<div class="empty">No payments yet.</div>';
+const payments=paymentResult.data||[];
+
+const cancellationResult=await supabaseClient
+.from("cancellations")
+.select("*")
+.order("created_at",{ascending:false});
+
+if(cancellationResult.error){
+console.error(cancellationResult.error);
+container.innerHTML="❌ Could not load cancellations.";
 return;
 }
 
-/* Pending payments appear first */
-data.sort((a,b)=>{
-if(a.status==="pending"&&b.status!=="pending")return-1;
-if(a.status!=="pending"&&b.status==="pending")return 1;
-return 0;
+const cancellations=cancellationResult.data||[];
+
+allCards=reservations.map(reservation=>{
+
+const payment=payments.find(
+p=>p.reservation_id===reservation.id
+);
+
+const cancellation=cancellations.find(
+c=>c.reservation_id===reservation.id
+);
+
+return{
+reservation,
+payment,
+cancellation
+};
+
 });
+
+filterCards();
+}
+
+function filterCards(){
+
+const search=document
+.getElementById("search")
+.value
+.toLowerCase()
+.trim();
+
+const status=document
+.getElementById("statusFilter")
+.value;
+
+const type=document
+.getElementById("typeFilter")
+.value;
+
+const filtered=allCards.filter(item=>{
+
+const r=item.reservation;
+const c=r.customers||{};
+const room=r.rooms||{};
+const p=item.payment;
+const x=item.cancellation;
+
+const searchable=`
+${r.reservation_code}
+${c.name||""}
+${c.phone||""}
+${room.name||""}
+${room.room_number||""}
+`.toLowerCase();
+
+if(search&&!searchable.includes(search)){
+return false;
+}
+
+if(type==="reservation"){
+if(!r.status)return false;
+if(status!=="all"&&r.status!==status)return false;
+return true;
+}
+
+if(type==="payment"){
+if(!p)return false;
+if(status!=="all"&&p.status!==status)return false;
+return true;
+}
+
+if(type==="cancellation"){
+if(!x)return false;
+if(status!=="all"&&x.status!==status)return false;
+return true;
+}
+
+if(status==="all"){
+return true;
+}
+
+return(
+r.status===status||
+(p&&p.status===status)||
+(x&&x.status===status)
+);
+
+});
+
+displayCards(filtered);
+}
+
+function displayCards(cards){
+
+const container=document.getElementById("reservations");
+
+if(!cards.length){
+container.innerHTML='<div class="empty">No matching records.</div>';
+return;
+}
 
 container.innerHTML="";
 
-data.forEach(payment=>{
-const reservation=payment.reservations||{};
+cards.forEach(item=>{
 
-container.innerHTML+=`
-<div class="card">
+const r=item.reservation;
+const c=r.customers||{};
+const room=r.rooms||{};
+const p=item.payment;
+const x=item.cancellation;
 
-<h3>
-${reservation.reservation_code||"Unknown reservation"}
-</h3>
+let paymentHTML="";
+
+if(p){
+
+paymentHTML=`
+<div class="section-title">
+🏨 Reservation & 💳 Payment
+</div>
 
 <div class="row">
 <span class="label">Amount:</span>
-${Number(payment.amount).toFixed(2)} ETB
+${Number(p.amount||0).toFixed(2)} ETB
 </div>
 
 <div class="row">
 <span class="label">Status:</span>
-<span class="status ${payment.status}">
-${payment.status}
+<span class="status ${p.status}">
+${p.status}
 </span>
 </div>
 
-<a href="${payment.receipt_url}" target="_blank" rel="noopener">
+<a
+class="receipt"
+href="${p.receipt_url||"#"}"
+target="_blank"
+rel="noopener"
+>
 🔗 Open Receipt
 </a>
 
+${p.status==="pending"?`
 <br>
-
-${
-payment.status==="pending"
-?`
 <button
 class="confirm"
-onclick="updatePayment(${payment.id},${reservation.id},'confirmed')"
+onclick="updatePayment(${p.id},${r.id},'confirmed')"
 >
 ✅ Confirm
 </button>
 
 <button
 class="reject"
-onclick="updatePayment(${payment.id},${reservation.id},'rejected')"
+onclick="updatePayment(${p.id},${r.id},'rejected')"
 >
 ❌ Reject
 </button>
-`
-:""
+`:""}
+`;
+
+}else{
+
+paymentHTML=`
+<div class="section-title">
+💳 Payment
+</div>
+
+<div class="notice">
+No payment submitted yet.
+</div>
+`;
 }
+
+let cancellationHTML="";
+
+if(x){
+
+cancellationHTML=`
+<div class="section-title">
+❌ Cancellation Request
+</div>
+
+<div class="row">
+<span class="label">Reason:</span>
+${escapeHTML(x.reason||"—")}
+</div>
+
+<div class="row">
+<span class="label">Refund:</span>
+${Number(x.refund_amount||0).toFixed(2)} ETB
+</div>
+
+<div class="row">
+<span class="label">Status:</span>
+<span class="status ${x.status}">
+${x.status}
+</span>
+</div>
+
+${x.status==="pending"?`
+<button
+class="confirm"
+onclick="updateCancellation(${x.id},${r.id},'approved')"
+>
+✅ Approve
+</button>
+
+<button
+class="reject"
+onclick="updateCancellation(${x.id},${r.id},'rejected')"
+>
+❌ Reject
+</button>
+`:""}
+`;
+}
+
+container.innerHTML+=`
+<div class="card">
+
+<h3>📋 ${escapeHTML(r.reservation_code||"Unknown")}</h3>
+
+<div class="row">
+<span class="label">Customer:</span>
+${escapeHTML(c.name||"—")}
+</div>
+
+<div class="row">
+<span class="label">Phone:</span>
+${escapeHTML(c.phone||"—")}
+</div>
+
+<div class="row">
+<span class="label">Room:</span>
+${escapeHTML(room.name||"—")}
+(${escapeHTML(room.room_number||"—")})
+</div>
+
+<div class="row">
+<span class="label">Check-in:</span>
+${formatDate(r.check_in)}
+</div>
+
+<div class="row">
+<span class="label">Check-out:</span>
+${formatDate(r.check_out)}
+</div>
+
+<div class="row">
+<span class="label">Total:</span>
+${Number(r.total_amount||0).toFixed(2)} ETB
+</div>
+
+<div class="row">
+<span class="label">Reservation:</span>
+<span class="status ${r.status}">
+${r.status}
+</span>
+</div>
+
+${paymentHTML}
+${cancellationHTML}
 
 </div>
 `;
+
 });
 }
 
@@ -277,14 +416,62 @@ alert("✅ Payment and reservation updated.");
 loadEverything();
 }
 
+async function updateCancellation(
+cancellationId,
+reservationId,
+newStatus
+){
+
+const cancellationResult=await supabaseClient
+.from("cancellations")
+.update({status:newStatus})
+.eq("id",cancellationId);
+
+if(cancellationResult.error){
+console.error(cancellationResult.error);
+alert("❌ Could not update cancellation.");
+return;
+}
+
+if(newStatus==="approved"){
+
+const reservationResult=await supabaseClient
+.from("reservations")
+.update({status:"cancelled"})
+.eq("id",reservationId);
+
+if(reservationResult.error){
+console.error(reservationResult.error);
+alert("⚠️ Cancellation approved, but reservation could not be cancelled.");
+loadEverything();
+return;
+}
+
+alert("✅ Cancellation approved and reservation cancelled.");
+
+}else{
+
+alert("✅ Cancellation request rejected.");
+}
+
+loadEverything();
+}
+
 function formatDate(date){
+
 if(!date)return"—";
+
 return new Date(date).toLocaleDateString();
 }
 
-function loadEverything(){
-loadReservations();
-loadPayments();
+function escapeHTML(value){
+
+return String(value)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 }
 
 loadEverything();
