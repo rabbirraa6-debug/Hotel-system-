@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
@@ -23,7 +22,6 @@ body{
   background:#f5f5f5;
   margin:0;
   padding:20px;
-  color:#222;
 }
 
 h1{
@@ -35,7 +33,7 @@ h2{
 }
 
 .controls{
-  max-width:750px;
+  max-width:700px;
   margin:20px auto;
   background:white;
   padding:15px;
@@ -56,14 +54,13 @@ select{
   background:white;
   padding:20px;
   margin:15px auto;
-  max-width:750px;
+  max-width:700px;
   border-radius:12px;
   box-shadow:0 3px 15px rgba(0,0,0,.1);
 }
 
 .row{
   margin:8px 0;
-  line-height:1.5;
 }
 
 .label{
@@ -131,10 +128,6 @@ button:disabled{
   text-decoration:none;
 }
 
-.receipt:hover{
-  text-decoration:underline;
-}
-
 .section-title{
   font-size:17px;
   font-weight:bold;
@@ -148,7 +141,7 @@ button:disabled{
   padding:20px;
   background:white;
   border-radius:10px;
-  max-width:750px;
+  max-width:700px;
   margin:15px auto;
 }
 
@@ -200,66 +193,12 @@ button:disabled{
   margin-bottom:10px;
 }
 
-.cancellation-box{
-  background:#fff0f0;
-  border:2px solid #e1a4a4;
-  border-radius:10px;
-  padding:15px;
-  margin-top:12px;
+.room-card{
+  border-left:5px solid #555;
 }
 
-.food-cancellation{
-  background:#fff8e8;
-  border:2px solid #d4af37;
-}
-
-.refund-box{
-  background:#f3fff5;
-  border:1px solid #55b875;
-  border-radius:8px;
-  padding:12px;
-  margin-top:10px;
-}
-
-.refund-amount{
-  color:#16833b;
-  font-size:20px;
-  font-weight:bold;
-}
-
-.account-box{
-  background:#f5f5f5;
-  border:1px solid #ddd;
-  border-radius:8px;
-  padding:12px;
-  margin-top:10px;
-  word-break:break-word;
-}
-
-.reason-box{
-  background:white;
-  border-radius:8px;
-  padding:10px;
-  margin-top:8px;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-
-@media(max-width:600px){
-
-body{
-  padding:12px;
-}
-
-.card{
-  padding:15px;
-}
-
-.order-item{
-  flex-direction:column;
-  gap:3px;
-}
-
+.cancel-card{
+  border-left:5px solid #c62828;
 }
 
 </style>
@@ -363,6 +302,7 @@ onclick="loadEverything()"
 📋 Room Reservations
 </h2>
 
+
 <div id="reservations">
 Loading reservations...
 </div>
@@ -372,17 +312,9 @@ Loading reservations...
 🍽️ Food & Table Orders
 </h2>
 
+
 <div id="orders">
 Loading orders...
-</div>
-
-
-<h2>
-❌ Food & Table Cancellation Requests
-</h2>
-
-<div id="orderCancellations">
-Loading cancellation requests...
 </div>
 
 
@@ -407,12 +339,10 @@ let allCards = [];
 
 let allOrders = [];
 
-let allCancellations = [];
 
-
-// =========================
+// =====================================================
 // LOAD EVERYTHING
-// =========================
+// =====================================================
 
 async function loadEverything(){
 
@@ -428,15 +358,9 @@ document.getElementById(
 "Loading orders...";
 
 
-document.getElementById(
-"orderCancellations"
-).innerHTML =
-"Loading cancellation requests...";
-
-
-/* =========================
-   RESERVATIONS
-   ========================= */
+// =====================================================
+// RESERVATIONS
+// =====================================================
 
 const reservationResult =
 await supabaseClient
@@ -446,7 +370,7 @@ await supabaseClient
 .select(`
 *,
 customers(name,phone),
-rooms(name,room_number)
+rooms(name,room_number,available)
 `)
 
 .order(
@@ -468,7 +392,7 @@ document.getElementById(
 ).innerHTML =
 "❌ Could not load reservations.";
 
-allCards = [];
+allCards=[];
 
 }else{
 
@@ -476,9 +400,9 @@ const reservations =
 reservationResult.data || [];
 
 
-/* =========================
-   PAYMENTS
-   ========================= */
+// =====================================================
+// PAYMENTS
+// =====================================================
 
 const paymentResult =
 await supabaseClient
@@ -498,12 +422,14 @@ ascending:false
 const payments =
 paymentResult.error
 ? []
-: paymentResult.data || [];
+: (
+paymentResult.data || []
+);
 
 
-/* =========================
-   ROOM CANCELLATIONS
-   ========================= */
+// =====================================================
+// CANCELLATIONS
+// =====================================================
 
 const cancellationResult =
 await supabaseClient
@@ -523,8 +449,14 @@ ascending:false
 const cancellations =
 cancellationResult.error
 ? []
-: cancellationResult.data || [];
+: (
+cancellationResult.data || []
+);
 
+
+// =====================================================
+// COMBINE RESERVATION DATA
+// =====================================================
 
 allCards =
 reservations.map(
@@ -559,9 +491,9 @@ cancellation
 }
 
 
-/* =========================
-   FOOD ORDERS
-   ========================= */
+// =====================================================
+// FOOD / TABLE ORDERS
+// =====================================================
 
 const orderResult =
 await supabaseClient
@@ -589,7 +521,7 @@ document.getElementById(
 ).innerHTML =
 "❌ Could not load food orders.";
 
-allOrders = [];
+allOrders=[];
 
 }else{
 
@@ -599,49 +531,14 @@ orderResult.data || [];
 }
 
 
-/* =========================
-   ALL CANCELLATIONS
-   ========================= */
-
-const allCancellationResult =
-await supabaseClient
-
-.from("cancellations")
-
-.select("*")
-
-.order(
-"created_at",
-{
-ascending:false
-}
-);
-
-
-if(allCancellationResult.error){
-
-console.error(
-allCancellationResult.error
-);
-
-allCancellations = [];
-
-}else{
-
-allCancellations =
-allCancellationResult.data || [];
-
-}
-
-
 filterCards();
 
 }
 
 
-// =========================
+// =====================================================
 // FILTER
-// =========================
+// =====================================================
 
 function filterCards(){
 
@@ -665,9 +562,9 @@ document
 .value;
 
 
-/* =========================
-   ROOM RESERVATIONS
-   ========================= */
+// =====================================================
+// FILTER RESERVATIONS
+// =====================================================
 
 const filteredReservations =
 allCards.filter(
@@ -691,7 +588,7 @@ item.cancellation;
 
 const searchable = `
 
-${r.reservation_code}
+${r.reservation_code || ""}
 
 ${c.name || ""}
 
@@ -714,6 +611,8 @@ return false;
 }
 
 
+// ROOM RESERVATION
+
 if(type === "reservation"){
 
 if(status !== "all"){
@@ -726,6 +625,8 @@ return true;
 
 }
 
+
+// PAYMENT
 
 if(type === "payment"){
 
@@ -746,13 +647,37 @@ return true;
 }
 
 
-if(type === "order" ||
-type === "cancellation"){
+// CANCELLATION
+
+if(type === "cancellation"){
+
+if(!x){
 
 return false;
 
 }
 
+if(status !== "all"){
+
+return x.status === status;
+
+}
+
+return true;
+
+}
+
+
+// ORDER DOES NOT BELONG HERE
+
+if(type === "order"){
+
+return false;
+
+}
+
+
+// STATUS ONLY
 
 if(status === "all"){
 
@@ -779,9 +704,9 @@ filteredReservations
 );
 
 
-/* =========================
-   FOOD ORDERS
-   ========================= */
+// =====================================================
+// FILTER ORDERS
+// =====================================================
 
 const filteredOrders =
 allOrders.filter(
@@ -808,8 +733,10 @@ return false;
 }
 
 
-if(type !== "all" &&
-type !== "order"){
+if(
+type !== "all" &&
+type !== "order"
+){
 
 return false;
 
@@ -835,92 +762,12 @@ displayOrders(
 filteredOrders
 );
 
-
-/* =========================
-   FOOD CANCELLATIONS
-   ========================= */
-
-const filteredCancellations =
-allCancellations.filter(
-cancellation => {
-
-if(!cancellation.order_id){
-
-return false;
-
 }
 
 
-const order =
-allOrders.find(
-o =>
-o.id ===
-cancellation.order_id
-);
-
-
-const searchable = `
-
-${cancellation.id || ""}
-
-${cancellation.order_id || ""}
-
-${order?.order_code || ""}
-
-${order?.table_number || ""}
-
-${cancellation.refund_account || ""}
-
-${cancellation.reason || ""}
-
-`.toLowerCase();
-
-
-if(
-search &&
-!searchable.includes(search)
-){
-
-return false;
-
-}
-
-
-if(
-type !== "all" &&
-type !== "cancellation"
-){
-
-return false;
-
-}
-
-
-if(
-status !== "all" &&
-cancellation.status !== status
-){
-
-return false;
-
-}
-
-
-return true;
-
-});
-
-
-displayOrderCancellations(
-filteredCancellations
-);
-
-}
-
-
-// =========================
+// =====================================================
 // DISPLAY ROOM RESERVATIONS
-// =========================
+// =====================================================
 
 function displayCards(cards){
 
@@ -962,6 +809,10 @@ const x =
 item.cancellation;
 
 
+// =====================================================
+// PAYMENT HTML
+// =====================================================
+
 let paymentHTML = "";
 
 
@@ -972,6 +823,7 @@ paymentHTML = `
 <div class="section-title">
 💳 Payment
 </div>
+
 
 <div class="row">
 
@@ -1033,6 +885,7 @@ No receipt URL submitted.
 </div>
 
 `
+
 }
 
 
@@ -1048,13 +901,13 @@ p.status === "pending"
 <button
 class="confirm"
 onclick="updatePayment(
-${p.id},
-${r.id},
+${Number(p.id)},
+${Number(r.id)},
 'confirmed'
 )"
 >
 
-✅ Confirm
+✅ Confirm Payment
 
 </button>
 
@@ -1062,13 +915,13 @@ ${r.id},
 <button
 class="reject"
 onclick="updatePayment(
-${p.id},
-${r.id},
+${Number(p.id)},
+${Number(r.id)},
 'rejected'
 )"
 >
 
-❌ Reject
+❌ Reject Payment
 
 </button>
 
@@ -1099,6 +952,10 @@ No payment submitted yet.
 }
 
 
+// =====================================================
+// CANCELLATION HTML
+// =====================================================
+
 let cancellationHTML = "";
 
 
@@ -1117,11 +974,9 @@ cancellationHTML = `
 Reason:
 </span>
 
-<div class="reason-box">
 ${escapeHTML(
 x.reason || "—"
 )}
-</div>
 
 </div>
 
@@ -1158,36 +1013,6 @@ ${escapeHTML(x.status)}
 
 
 ${
-x.refund_account
-
-?
-
-`
-
-<div class="account-box">
-
-<span class="label">
-🏦 Refund Account:
-</span>
-
-<br>
-
-${escapeHTML(
-x.refund_account
-)}
-
-</div>
-
-`
-
-:
-
-""
-
-}
-
-
-${
 x.status === "pending"
 
 ?
@@ -1197,13 +1022,13 @@ x.status === "pending"
 <button
 class="confirm"
 onclick="updateCancellation(
-${x.id},
-${r.id},
+${Number(x.id)},
+${Number(r.id)},
 'approved'
 )"
 >
 
-✅ Approve
+✅ Approve Cancellation
 
 </button>
 
@@ -1211,13 +1036,13 @@ ${r.id},
 <button
 class="reject"
 onclick="updateCancellation(
-${x.id},
-${r.id},
+${Number(x.id)},
+${Number(r.id)},
 'rejected'
 )"
 >
 
-❌ Reject
+❌ Reject Cancellation
 
 </button>
 
@@ -1234,9 +1059,13 @@ ${r.id},
 }
 
 
+// =====================================================
+// ROOM CARD
+// =====================================================
+
 container.innerHTML += `
 
-<div class="card">
+<div class="card room-card">
 
 <h3>
 
@@ -1284,9 +1113,32 @@ ${escapeHTML(
 room.name || "—"
 )}
 
-(${escapeHTML(
+(
+${escapeHTML(
 room.room_number || "—"
-)})
+)}
+)
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
+Room Available:
+</span>
+
+${
+room.available === true
+?
+
+'<span class="status confirmed">Yes</span>'
+
+:
+
+'<span class="status cancelled">No</span>'
+
+}
 
 </div>
 
@@ -1361,9 +1213,9 @@ ${cancellationHTML}
 }
 
 
-// =========================
+// =====================================================
 // DISPLAY FOOD ORDERS
-// =========================
+// =====================================================
 
 function displayOrders(orders){
 
@@ -1432,8 +1284,7 @@ let itemsHTML = "";
 
 if(items.length){
 
-itemsHTML =
-items.map(
+itemsHTML = items.map(
 item => {
 
 const quantity =
@@ -1463,12 +1314,15 @@ return `
 <span>
 
 ${icon}
+
 ${escapeHTML(
 item.name || "Item"
 )}
+
 × ${quantity}
 
 </span>
+
 
 <span>
 
@@ -1488,13 +1342,19 @@ ETB
 itemsHTML = `
 
 <div class="notice">
+
 No items found.
+
 </div>
 
 `;
 
 }
 
+
+// =====================================================
+// RECEIPT
+// =====================================================
 
 const receiptHTML =
 order.receipt_url
@@ -1529,6 +1389,10 @@ rel="noopener"
 `;
 
 
+// =====================================================
+// ORDER ACTIONS
+// =====================================================
+
 const actionHTML =
 status === "pending"
 
@@ -1539,7 +1403,7 @@ status === "pending"
 <button
 class="confirm"
 onclick="updateOrder(
-${order.id},
+${Number(order.id)},
 'confirmed'
 )"
 >
@@ -1552,7 +1416,7 @@ ${order.id},
 <button
 class="reject"
 onclick="updateOrder(
-${order.id},
+${Number(order.id)},
 'rejected'
 )"
 >
@@ -1573,7 +1437,9 @@ container.innerHTML += `
 <div class="card order-card">
 
 <div class="badge">
+
 🍽️ FOOD & TABLE ORDER
+
 </div>
 
 
@@ -1593,7 +1459,9 @@ order.order_code ||
 Table:
 </span>
 
-🪑 Table ${escapeHTML(
+🪑 Table
+
+${escapeHTML(
 String(
 order.table_number || "—"
 )
@@ -1608,7 +1476,9 @@ order.table_number || "—"
 Estimated Arrival:
 </span>
 
-🕐 ${escapeHTML(
+🕐
+
+${escapeHTML(
 order.arrival_time || "—"
 )}
 
@@ -1643,12 +1513,15 @@ ${escapeHTML(status)}
 
 ${itemsHTML}
 
+
 <div class="order-total">
 
 Total:
+
 ${Number(
 order.total_amount || 0
 ).toFixed(2)}
+
 ETB
 
 </div>
@@ -1682,400 +1555,9 @@ ${actionHTML}
 }
 
 
-// =========================
-// DISPLAY FOOD CANCELLATIONS
-// =========================
-
-function displayOrderCancellations(cancellations){
-
-const container =
-document.getElementById(
-"orderCancellations"
-);
-
-
-if(!cancellations.length){
-
-container.innerHTML =
-'<div class="empty">No food & table cancellation requests.</div>';
-
-return;
-
-}
-
-
-container.innerHTML = "";
-
-
-cancellations.forEach(
-cancellation => {
-
-const order =
-allOrders.find(
-o =>
-o.id ===
-cancellation.order_id
-);
-
-
-if(!order){
-
-return;
-
-}
-
-
-const amount =
-Number(
-order.total_amount || 0
-);
-
-
-const refundAmount =
-Number(
-cancellation.refund_amount ||
-amount * 0.50
-);
-
-
-const fee =
-amount -
-refundAmount;
-
-
-let items = [];
-
-
-try{
-
-if(Array.isArray(order.items)){
-
-items =
-order.items;
-
-}else if(
-typeof order.items === "string"
-){
-
-items =
-JSON.parse(order.items);
-
-}
-
-}catch(error){
-
-items = [];
-
-}
-
-
-let itemsHTML = "";
-
-
-if(items.length){
-
-itemsHTML =
-items.map(
-item => {
-
-const quantity =
-Number(
-item.quantity || 0
-);
-
-const price =
-Number(
-item.price || 0
-);
-
-return `
-
-<div class="order-item">
-
-<span>
-
-${item.type === "drink" ? "🥤" : "🍽️"}
-
-${escapeHTML(
-item.name || "Item"
-)}
-
-× ${quantity}
-
-</span>
-
-<span>
-
-${(
-quantity * price
-).toFixed(2)}
-ETB
-
-</span>
-
-</div>
-
-`;
-
-}).join("");
-
-}
-
-
-const actionHTML =
-cancellation.status === "pending"
-
-?
-
-`
-
-<button
-class="confirm"
-onclick="updateOrderCancellation(
-${cancellation.id},
-${order.id},
-'approved'
-)"
->
-
-✅ Approve 50% Refund
-
-</button>
-
-
-<button
-class="reject"
-onclick="updateOrderCancellation(
-${cancellation.id},
-${order.id},
-'rejected'
-)"
->
-
-❌ Reject Cancellation
-
-</button>
-
-`
-
-:
-
-"";
-
-
-container.innerHTML += `
-
-<div class="card cancellation-box food-cancellation">
-
-<div class="badge">
-🍽️ FOOD & TABLE CANCELLATION
-</div>
-
-
-<h3>
-
-📋 ${escapeHTML(
-order.order_code ||
-"Unknown"
-)}
-
-</h3>
-
-
-<div class="row">
-
-<span class="label">
-Table:
-</span>
-
-🪑 Table ${escapeHTML(
-String(
-order.table_number || "—"
-)
-)}
-
-</div>
-
-
-<div class="row">
-
-<span class="label">
-Original Order Total:
-</span>
-
-${amount.toFixed(2)}
-ETB
-
-</div>
-
-
-<div class="section-title">
-🍽️ Ordered Items
-</div>
-
-
-<div class="items-box">
-
-${itemsHTML}
-
-</div>
-
-
-<div class="section-title">
-❌ Cancellation Details
-</div>
-
-
-<div class="row">
-
-<span class="label">
-Reason:
-</span>
-
-<div class="reason-box">
-
-${escapeHTML(
-cancellation.reason || "—"
-)}
-
-</div>
-
-</div>
-
-
-<div class="refund-box">
-
-<div>
-
-<span class="label">
-Original amount:
-</span>
-
-${amount.toFixed(2)}
-ETB
-
-</div>
-
-
-<div style="margin-top:8px">
-
-<span class="label">
-Refund percentage:
-</span>
-
-50%
-
-</div>
-
-
-<div style="margin-top:8px">
-
-<span class="label">
-Refund amount:
-</span>
-
-<span class="refund-amount">
-
-${refundAmount.toFixed(2)}
-ETB
-
-</span>
-
-</div>
-
-
-<div style="margin-top:8px">
-
-<span class="label">
-Cancellation fee:
-</span>
-
-${fee.toFixed(2)}
-ETB
-
-</div>
-
-</div>
-
-
-${
-cancellation.refund_account
-
-?
-
-`
-
-<div class="account-box">
-
-<span class="label">
-🏦 Customer Refund Account:
-</span>
-
-<br><br>
-
-${escapeHTML(
-cancellation.refund_account
-)}
-
-</div>
-
-`
-
-:
-
-`
-
-<div class="notice">
-
-⚠️ Customer did not provide a refund account.
-
-</div>
-
-`
-
-}
-
-
-<div class="row">
-
-<span class="label">
-Cancellation Status:
-</span>
-
-<span
-class="status ${escapeHTML(
-cancellation.status
-)}"
->
-
-${escapeHTML(
-cancellation.status
-)}
-
-</span>
-
-</div>
-
-
-<div>
-
-${actionHTML}
-
-</div>
-
-
-</div>
-
-`;
-
-});
-
-}
-
-
-// =========================
-// UPDATE FOOD ORDER
-// =========================
+// =====================================================
+// UPDATE FOOD / TABLE ORDER
+// =====================================================
 
 async function updateOrder(
 orderId,
@@ -2088,7 +1570,8 @@ await supabaseClient
 .from("orders")
 
 .update({
-status:newStatus
+status:newStatus,
+updated_at:new Date().toISOString()
 })
 
 .eq(
@@ -2100,12 +1583,12 @@ orderId
 if(result.error){
 
 console.error(
-"Order update error:",
 result.error
 );
 
 alert(
-"❌ Could not update food & table order."
+"❌ Could not update order: " +
+result.error.message
 );
 
 return;
@@ -2133,118 +1616,9 @@ loadEverything();
 }
 
 
-// =========================
-// UPDATE FOOD CANCELLATION
-// =========================
-
-async function updateOrderCancellation(
-cancellationId,
-orderId,
-newStatus
-){
-
-if(
-newStatus !== "approved" &&
-newStatus !== "rejected"
-){
-
-return;
-
-}
-
-
-const cancellationResult =
-await supabaseClient
-
-.from("cancellations")
-
-.update({
-status:newStatus
-})
-
-.eq(
-"id",
-cancellationId
-);
-
-
-if(cancellationResult.error){
-
-console.error(
-"Cancellation update error:",
-cancellationResult.error
-);
-
-alert(
-"❌ Could not update food cancellation."
-);
-
-return;
-
-}
-
-
-/* =========================
-   APPROVED
-   ========================= */
-
-if(newStatus === "approved"){
-
-const orderResult =
-await supabaseClient
-
-.from("orders")
-
-.update({
-status:"cancelled"
-})
-
-.eq(
-"id",
-orderId
-);
-
-
-if(orderResult.error){
-
-console.error(
-"Order cancellation error:",
-orderResult.error
-);
-
-alert(
-"⚠️ Cancellation approved, but the food order could not be marked cancelled."
-);
-
-loadEverything();
-
-return;
-
-}
-
-
-alert(
-"✅ Food & table cancellation approved. 50% refund is due to the customer."
-);
-
-
-}else{
-
-alert(
-"✅ Food & table cancellation request rejected."
-);
-
-}
-
-
-loadEverything();
-
-}
-
-
-// =========================
+// =====================================================
 // UPDATE ROOM PAYMENT
-// =========================
+// =====================================================
 
 async function updatePayment(
 paymentId,
@@ -2274,13 +1648,18 @@ paymentResult.error
 );
 
 alert(
-"❌ Could not update payment."
+"❌ Could not update payment: " +
+paymentResult.error.message
 );
 
 return;
 
 }
 
+
+// =====================================================
+// UPDATE RESERVATION
+// =====================================================
 
 const reservationResult =
 await supabaseClient
@@ -2304,7 +1683,8 @@ reservationResult.error
 );
 
 alert(
-"⚠️ Payment updated, but reservation could not be updated."
+"⚠️ Payment updated, but reservation could not be updated: " +
+reservationResult.error.message
 );
 
 loadEverything();
@@ -2314,9 +1694,9 @@ return;
 }
 
 
-/* =========================
-   GET CUSTOMER
-   ========================= */
+// =====================================================
+// GET CUSTOMER
+// =====================================================
 
 const customerResult =
 await supabaseClient
@@ -2353,9 +1733,9 @@ return;
 }
 
 
-/* =========================
-   NOTIFICATION
-   ========================= */
+// =====================================================
+// NOTIFICATION
+// =====================================================
 
 const title =
 newStatus === "confirmed"
@@ -2369,7 +1749,7 @@ newStatus === "confirmed"
 "💳 Payment Rejected";
 
 
-const notificationMessage =
+const message =
 newStatus === "confirmed"
 
 ?
@@ -2401,7 +1781,7 @@ title:
 title,
 
 message:
-notificationMessage,
+message,
 
 is_read:
 false
@@ -2446,101 +1826,80 @@ loadEverything();
 }
 
 
-// =========================
-// UPDATE ROOM CANCELLATION
-// =========================
+// =====================================================
+// UPDATED CANCELLATION FUNCTION
+// =====================================================
 
 async function updateCancellation(
-cancellationId,
-reservationId,
-newStatus
+    cancellationId,
+    reservationId,
+    newStatus
 ){
 
-const cancellationResult =
-await supabaseClient
+    if(newStatus === "approved"){
 
-.from("cancellations")
+        const result =
+            await supabaseClient.rpc(
+                "approve_cancellation",
+                {
+                    p_cancellation_id: cancellationId
+                }
+            );
 
-.update({
-status:newStatus
-})
+        if(result.error){
 
-.eq(
-"id",
-cancellationId
-);
+            console.error(result.error);
 
+            alert(
+                "❌ Could not approve cancellation: " +
+                result.error.message
+            );
 
-if(cancellationResult.error){
+            return;
+        }
 
-console.error(
-cancellationResult.error
-);
+        alert(
+            "✅ Cancellation approved. " +
+            "The reservation is cancelled and the room is available again."
+        );
 
-alert(
-"❌ Could not update cancellation."
-);
+    }else{
 
-return;
+        const result =
+            await supabaseClient
+                .from("cancellations")
+                .update({
+                    status: "rejected"
+                })
+                .eq(
+                    "id",
+                    cancellationId
+                );
 
+        if(result.error){
+
+            console.error(result.error);
+
+            alert(
+                "❌ Could not reject cancellation: " +
+                result.error.message
+            );
+
+            return;
+        }
+
+        alert(
+            "✅ Cancellation request rejected."
+        );
+    }
+
+    loadEverything();
 }
 
 
-if(newStatus === "approved"){
-
-const reservationResult =
-await supabaseClient
-
-.from("reservations")
-
-.update({
-status:"cancelled"
-})
-
-.eq(
-"id",
-reservationId
-);
-
-
-if(reservationResult.error){
-
-console.error(
-reservationResult.error
-);
-
-alert(
-"⚠️ Cancellation approved, but reservation could not be cancelled."
-);
-
-loadEverything();
-
-return;
-
-}
-
-
-alert(
-"✅ Room cancellation approved and reservation cancelled."
-);
-
-}else{
-
-alert(
-"✅ Room cancellation request rejected."
-);
-
-}
-
-
-loadEverything();
-
-}
-
-
-// =========================
+// =====================================================
 // DATE
-// =========================
+// =====================================================
 
 function formatDate(date){
 
@@ -2558,9 +1917,9 @@ date
 }
 
 
-// =========================
+// =====================================================
 // ESCAPE HTML
-// =========================
+// =====================================================
 
 function escapeHTML(value){
 
@@ -2594,9 +1953,9 @@ return String(value)
 }
 
 
-// =========================
+// =====================================================
 // ESCAPE URL
-// =========================
+// =====================================================
 
 function escapeAttribute(value){
 
@@ -2625,9 +1984,9 @@ return String(value)
 }
 
 
-// =========================
+// =====================================================
 // START
-// =========================
+// =====================================================
 
 loadEverything();
 
