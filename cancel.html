@@ -1,235 +1,1773 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Cancel Reservation</title>
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>Cancel Reservation or Food Order</title>
+
 <style>
-*{box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#f7f5f0;margin:0;padding:20px;color:#222}
-.container{max-width:500px;margin:30px auto;background:white;padding:25px;border-radius:15px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
-h1{text-align:center;margin-bottom:20px}
-.warning{background:#fff0f0;border:2px solid #c62828;color:#b71c1c;padding:18px;border-radius:12px;margin-bottom:20px}
-.warning h3{margin:0 0 10px}
-label{display:block;font-weight:bold;margin:15px 0 7px}
-input,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-textarea{min-height:100px;resize:vertical}
-.find{width:100%;padding:13px;margin-top:12px;background:#111;color:white;border:0;border-radius:8px;font-weight:bold;cursor:pointer}
-.booking{background:#fffdf5;border:2px solid #d4af37;border-radius:12px;padding:15px;text-align:center;margin:20px 0}
-.code{font-size:23px;font-weight:bold;letter-spacing:2px}
-.info{padding:12px 0;border-bottom:1px solid #eee}
-.label{font-weight:bold}
-.refund{background:#f3fff5;border:1px solid #55b875;padding:15px;border-radius:10px;margin-top:15px}
-.refund strong{color:#16833b}
-.cancel{width:100%;padding:14px;margin-top:20px;background:#c62828;color:white;border:0;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer}
-.cancel:disabled{opacity:.6;cursor:not-allowed}
-.home{display:block;text-align:center;margin-top:12px;padding:12px;background:#111;color:white;text-decoration:none;border-radius:8px;font-weight:bold}
-#details{display:none}
-#reasonBox{display:none}
-#message{text-align:center;margin-top:18px;font-weight:bold}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f5f0;
+  margin:0;
+  padding:20px;
+  color:#222;
+}
+
+.container{
+  max-width:500px;
+  margin:30px auto;
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 4px 20px rgba(0,0,0,.1);
+}
+
+h1{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.warning{
+  background:#fff0f0;
+  border:2px solid #c62828;
+  color:#b71c1c;
+  padding:18px;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+
+.warning h3{
+  margin:0 0 10px;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin:15px 0 7px;
+}
+
+input,
+textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
+}
+
+textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+.find{
+  width:100%;
+  padding:13px;
+  margin-top:12px;
+  background:#111;
+  color:white;
+  border:0;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.find:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.booking{
+  background:#fffdf5;
+  border:2px solid #d4af37;
+  border-radius:12px;
+  padding:15px;
+  text-align:center;
+  margin:20px 0;
+}
+
+.type-badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:7px;
+  background:#111;
+  color:white;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.code{
+  font-size:23px;
+  font-weight:bold;
+  letter-spacing:2px;
+}
+
+.info{
+  padding:12px 0;
+  border-bottom:1px solid #eee;
+}
+
+.label{
+  font-weight:bold;
+}
+
+.refund{
+  background:#f3fff5;
+  border:1px solid #55b875;
+  padding:15px;
+  border-radius:10px;
+  margin-top:15px;
+}
+
+.refund strong{
+  color:#16833b;
+}
+
+.items{
+  text-align:left;
+  margin-top:15px;
+  background:#fafafa;
+  border-radius:8px;
+  padding:10px;
+}
+
+.item{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px solid #eee;
+}
+
+.item:last-child{
+  border-bottom:none;
+}
+
+.cancel{
+  width:100%;
+  padding:14px;
+  margin-top:20px;
+  background:#c62828;
+  color:white;
+  border:0;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.cancel:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.home{
+  display:block;
+  text-align:center;
+  margin-top:12px;
+  padding:12px;
+  background:#111;
+  color:white;
+  text-decoration:none;
+  border-radius:8px;
+  font-weight:bold;
+}
+
+#details{
+  display:none;
+}
+
+#reasonBox{
+  display:none;
+}
+
+#message{
+  text-align:center;
+  margin-top:18px;
+  font-weight:bold;
+}
+
+.status-confirmed{
+  color:#16833b;
+  font-weight:bold;
+}
+
+.status-pending{
+  color:#d68b00;
+  font-weight:bold;
+}
+
+.status-rejected,
+.status-cancelled{
+  color:#c62828;
+  font-weight:bold;
+}
+
+.notice{
+  padding:12px;
+  background:#fff4d6;
+  border-radius:8px;
+  margin-top:15px;
+  font-size:14px;
+  color:#555;
+}
+
 </style>
+
 </head>
+
+
 <body>
 
+
 <div class="container">
-<h1>❌ Cancel Reservation</h1>
+
+<h1>
+❌ Cancel Booking
+</h1>
+
 
 <div class="warning">
-<h3>🔴 Cancellation Notice</h3>
-<p>Cancellation will result in a <strong>75% refund</strong> of the confirmed payment amount.</p>
-<p>The remaining <strong>25%</strong> will be retained as the cancellation fee.</p>
+
+<h3>
+🔴 Cancellation Notice
+</h3>
+
+<p id="warningText">
+
+Enter your Reservation ID or Food & Table Order ID to see the applicable refund.
+
+</p>
+
 </div>
 
-<label for="reservationCodeInput">Reservation ID</label>
-<input id="reservationCodeInput" type="text" placeholder="Example: HTL-G8E0KL" autocomplete="off">
-<button class="find" onclick="findReservation()">🔎 Find Reservation</button>
+
+<label for="bookingCodeInput">
+
+Reservation / Order ID
+
+</label>
+
+
+<input
+id="bookingCodeInput"
+type="text"
+placeholder="Example: HTL-G8E0KL or ORD-ABC123"
+autocomplete="off"
+>
+
+
+<button
+id="findButton"
+class="find"
+onclick="findBooking()"
+>
+
+🔎 Find Booking
+
+</button>
+
 
 <div id="details">
+
 <div class="booking">
-<div style="font-size:13px;color:#777;margin-bottom:7px">Reservation ID</div>
-<div id="reservationCode" class="code"></div>
-</div>
-<div id="paymentDetails"></div>
+
+<div
+id="typeBadge"
+class="type-badge"
+>
 </div>
 
-<div id="reasonBox">
-<label for="reason">Reason for cancellation</label>
-<textarea id="reason" placeholder="Tell us why you want to cancel..."></textarea>
-<button id="cancelButton" class="cancel" onclick="requestCancellation()">❌ Request Cancellation</button>
+
+<div
+style="
+font-size:13px;
+color:#777;
+margin-bottom:7px;
+"
+>
+
+Booking ID
+
 </div>
+
+
+<div
+id="bookingCode"
+class="code"
+>
+</div>
+
+</div>
+
+
+<div id="bookingDetails"></div>
+
+</div>
+
+
+<div id="reasonBox">
+
+<label for="reason">
+
+Reason for cancellation
+
+</label>
+
+
+<textarea
+id="reason"
+placeholder="Tell us why you want to cancel..."
+></textarea>
+
+
+<button
+id="cancelButton"
+class="cancel"
+onclick="requestCancellation()"
+>
+
+❌ Request Cancellation
+
+</button>
+
+</div>
+
 
 <div id="message"></div>
 
-<a href="index.html" class="home">🏠 Back to Home</a>
+
+<a
+href="index.html"
+class="home"
+>
+
+🏠 Back to Home
+
+</a>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
 <script src="config.js"></script>
 
+
 <script>
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let reservation=null;
-let payment=null;
 
-async function findReservation(){
-const input=document.getElementById("reservationCodeInput");
-const details=document.getElementById("details");
-const paymentDetails=document.getElementById("paymentDetails");
-const reasonBox=document.getElementById("reasonBox");
-const message=document.getElementById("message");
-const code=input.value.trim().toUpperCase();
 
-details.style.display="none";
-reasonBox.style.display="none";
-message.textContent="";
-paymentDetails.innerHTML="";
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+let bookingType = null;
+
+let reservation = null;
+
+let order = null;
+
+let payment = null;
+
+
+// =========================
+// FIND BOOKING
+// =========================
+
+async function findBooking(){
+
+const input =
+document.getElementById(
+"bookingCodeInput"
+);
+
+const details =
+document.getElementById(
+"details"
+);
+
+const bookingDetails =
+document.getElementById(
+"bookingDetails"
+);
+
+const reasonBox =
+document.getElementById(
+"reasonBox"
+);
+
+const message =
+document.getElementById(
+"message"
+);
+
+const findButton =
+document.getElementById(
+"findButton"
+);
+
+const code =
+input.value
+.trim()
+.toUpperCase();
+
+
+/* RESET */
+
+bookingType = null;
+
+reservation = null;
+
+order = null;
+
+payment = null;
+
+details.style.display =
+"none";
+
+reasonBox.style.display =
+"none";
+
+message.textContent =
+"";
+
+bookingDetails.innerHTML =
+"";
+
 
 if(!code){
-message.textContent="❌ Please enter your reservation ID.";
+
+message.textContent =
+"❌ Please enter your Reservation ID or Order ID.";
+
 return;
+
 }
 
-message.textContent="🔎 Finding reservation...";
 
-const reservationResult=await supabaseClient
+findButton.disabled =
+true;
+
+findButton.textContent =
+"🔎 Searching...";
+
+message.textContent =
+"Searching...";
+
+
+/* =========================
+   TRY ROOM RESERVATION
+   ========================= */
+
+const reservationResult =
+await supabaseClient
+
 .from("reservations")
+
 .select("*")
-.eq("reservation_code",code)
+
+.eq(
+"reservation_code",
+code
+)
+
 .maybeSingle();
 
-if(reservationResult.error){
-console.error(reservationResult.error);
-message.textContent="❌ Could not find the reservation.";
+
+if(
+reservationResult.error
+){
+
+console.error(
+reservationResult.error
+);
+
+findButton.disabled =
+false;
+
+findButton.textContent =
+"🔎 Find Booking";
+
+message.textContent =
+"❌ Could not search reservations.";
+
 return;
+
 }
 
-if(!reservationResult.data){
-message.textContent="❌ Reservation not found. Check your reservation ID.";
-return;
-}
 
-reservation=reservationResult.data;
+/* =========================
+   ROOM FOUND
+   ========================= */
 
-const paymentResult=await supabaseClient
+if(
+reservationResult.data
+){
+
+bookingType =
+"reservation";
+
+reservation =
+reservationResult.data;
+
+
+/* FIND PAYMENT */
+
+const paymentResult =
+await supabaseClient
+
 .from("payments")
+
 .select("*")
-.eq("reservation_id",reservation.id)
-.order("created_at",{ascending:false})
+
+.eq(
+"reservation_id",
+reservation.id
+)
+
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+
 .limit(1)
 .maybeSingle();
+
 
 if(paymentResult.error){
-console.error(paymentResult.error);
-message.textContent="❌ Could not load payment information.";
+
+console.error(
+paymentResult.error
+);
+
+findButton.disabled =
+false;
+
+findButton.textContent =
+"🔎 Find Booking";
+
+message.textContent =
+"❌ Could not load payment information.";
+
 return;
+
 }
 
-payment=paymentResult.data;
+
+payment =
+paymentResult.data;
+
+
+/* DISPLAY ROOM */
+
+displayReservation();
+
+
+findButton.disabled =
+false;
+
+findButton.textContent =
+"🔎 Find Booking";
+
+return;
+
+}
+
+
+/* =========================
+   TRY FOOD ORDER
+   ========================= */
+
+const orderResult =
+await supabaseClient
+
+.from("orders")
+
+.select("*")
+
+.eq(
+"order_code",
+code
+)
+
+.maybeSingle();
+
+
+if(
+orderResult.error
+){
+
+console.error(
+orderResult.error
+);
+
+findButton.disabled =
+false;
+
+findButton.textContent =
+"🔎 Find Booking";
+
+message.textContent =
+"❌ Could not search food orders.";
+
+return;
+
+}
+
+
+/* =========================
+   FOOD ORDER FOUND
+   ========================= */
+
+if(
+orderResult.data
+){
+
+bookingType =
+"order";
+
+order =
+orderResult.data;
+
+
+displayFoodOrder();
+
+
+findButton.disabled =
+false;
+
+findButton.textContent =
+"🔎 Find Booking";
+
+return;
+
+}
+
+
+/* =========================
+   NOT FOUND
+   ========================= */
+
+findButton.disabled =
+false;
+
+findButton.textContent =
+"🔎 Find Booking";
+
+message.textContent =
+"❌ Booking not found. Please check your ID.";
+
+}
+
+
+// =========================
+// DISPLAY ROOM RESERVATION
+// =========================
+
+function displayReservation(){
+
+const details =
+document.getElementById(
+"details"
+);
+
+const bookingDetails =
+document.getElementById(
+"bookingDetails"
+);
+
+const reasonBox =
+document.getElementById(
+"reasonBox"
+);
+
+const message =
+document.getElementById(
+"message"
+);
+
+const typeBadge =
+document.getElementById(
+"typeBadge"
+);
+
+const bookingCode =
+document.getElementById(
+"bookingCode"
+);
+
+const warningText =
+document.getElementById(
+"warningText"
+);
+
+
+typeBadge.textContent =
+"🏨 ROOM RESERVATION";
+
+bookingCode.textContent =
+reservation.reservation_code;
+
+
+warningText.innerHTML =
+`Room reservation cancellations receive a <strong>75% refund</strong> of the confirmed payment amount. The remaining <strong>25%</strong> is retained as a cancellation fee.`;
+
 
 if(!payment){
-message.textContent="❌ No payment was found for this reservation.";
-return;
-}
 
-const amount=Number(payment.amount)||0;
-const refund=amount*.75;
-const fee=amount*.25;
+bookingDetails.innerHTML = `
 
-document.getElementById("reservationCode").textContent=reservation.reservation_code;
+<div class="notice">
 
-paymentDetails.innerHTML=`
-<div class="info"><span class="label">Payment amount:</span> ${amount.toFixed(2)} ETB</div>
-<div class="info"><span class="label">Payment status:</span> ${payment.status}</div>
-<div class="refund">
-<div class="info"><span class="label">Expected refund (75%):</span> <strong>${refund.toFixed(2)} ETB</strong></div>
-<div class="info"><span class="label">Cancellation fee (25%):</span> ${fee.toFixed(2)} ETB</div>
-<p style="font-size:13px;color:#666;margin:10px 0 0">The refund amount is calculated automatically from your payment.</p>
+❌ No payment was found for this reservation.
+
 </div>
+
 `;
 
-details.style.display="block";
+details.style.display =
+"block";
 
-if(reservation.status==="cancelled"){
-message.textContent="⚠️ This reservation has already been cancelled.";
+message.textContent =
+"Cancellation is unavailable because no payment was found.";
+
 return;
+
 }
 
-if(payment.status!=="confirmed"){
-message.textContent="⚠️ Cancellation is available after your payment has been confirmed.";
+
+const amount =
+Number(payment.amount) || 0;
+
+const refund =
+amount * 0.75;
+
+const fee =
+amount * 0.25;
+
+
+bookingDetails.innerHTML = `
+
+<div class="info">
+
+<span class="label">
+Payment amount:
+</span>
+
+${amount.toFixed(2)} ETB
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Payment status:
+</span>
+
+<span class="status-${escapeHTML(payment.status)}">
+
+${escapeHTML(payment.status)}
+
+</span>
+
+</div>
+
+
+<div class="refund">
+
+<div class="info">
+
+<span class="label">
+Expected refund (75%):
+</span>
+
+<strong>
+${refund.toFixed(2)} ETB
+</strong>
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Cancellation fee (25%):
+</span>
+
+${fee.toFixed(2)} ETB
+
+</div>
+
+
+<p
+style="
+font-size:13px;
+color:#666;
+margin:10px 0 0;
+"
+>
+
+The refund is automatically calculated from the confirmed payment.
+
+</p>
+
+</div>
+
+`;
+
+
+details.style.display =
+"block";
+
+
+/* CHECK STATUS */
+
+if(
+reservation.status ===
+"cancelled"
+){
+
+message.textContent =
+"⚠️ This reservation has already been cancelled.";
+
 return;
+
 }
 
-reasonBox.style.display="block";
-message.textContent="";
-}
 
-async function requestCancellation(){
-const reason=document.getElementById("reason").value.trim();
-const button=document.getElementById("cancelButton");
-const message=document.getElementById("message");
+if(
+payment.status !==
+"confirmed"
+){
 
-if(!reservation||!payment)return;
+message.textContent =
+"⚠️ Cancellation is available after your room payment has been confirmed.";
 
-if(!reason){
-message.textContent="❌ Please enter a reason for cancellation.";
 return;
+
 }
 
-button.disabled=true;
-button.textContent="Submitting...";
-message.textContent="";
 
-const refundAmount=(Number(payment.amount)||0)*.75;
+/* CHECK EXISTING CANCELLATION */
 
-const existing=await supabaseClient
+checkExistingCancellation(
+"reservation",
+reservation.id
+);
+
+}
+
+
+// =========================
+// DISPLAY FOOD ORDER
+// =========================
+
+function displayFoodOrder(){
+
+const details =
+document.getElementById(
+"details"
+);
+
+const bookingDetails =
+document.getElementById(
+"bookingDetails"
+);
+
+const typeBadge =
+document.getElementById(
+"typeBadge"
+);
+
+const bookingCode =
+document.getElementById(
+"bookingCode"
+);
+
+const warningText =
+document.getElementById(
+"warningText"
+);
+
+const message =
+document.getElementById(
+"message"
+);
+
+
+typeBadge.textContent =
+"🍽️ FOOD & TABLE ORDER";
+
+bookingCode.textContent =
+order.order_code;
+
+
+warningText.innerHTML =
+`Food & Table cancellations receive a <strong>50% refund</strong> of the order total. The remaining <strong>50%</strong> is retained as a cancellation fee.`;
+
+
+/* PARSE ITEMS */
+
+let items = [];
+
+
+try{
+
+if(Array.isArray(order.items)){
+
+items =
+order.items;
+
+}
+
+else if(
+typeof order.items ===
+"string"
+){
+
+items =
+JSON.parse(order.items);
+
+}
+
+}catch(error){
+
+console.error(
+error
+);
+
+items = [];
+
+}
+
+
+/* BUILD ITEMS */
+
+let itemsHTML =
+"";
+
+
+if(items.length){
+
+itemsHTML =
+items.map(
+item => {
+
+const quantity =
+Number(
+item.quantity || 0
+);
+
+const price =
+Number(
+item.price || 0
+);
+
+const amount =
+quantity * price;
+
+const icon =
+item.type === "drink"
+? "🥤"
+: "🍽️";
+
+
+return `
+
+<div class="item">
+
+<span>
+
+${icon}
+${escapeHTML(
+item.name || "Item"
+)}
+× ${quantity}
+
+</span>
+
+<span>
+
+${amount.toFixed(2)}
+ETB
+
+</span>
+
+</div>
+
+`;
+
+}).join("");
+
+}else{
+
+itemsHTML = `
+
+<div class="notice">
+
+No order items found.
+
+</div>
+
+`;
+
+}
+
+
+const total =
+Number(
+order.total_amount
+) || 0;
+
+
+const refund =
+total * 0.50;
+
+
+const fee =
+total * 0.50;
+
+
+bookingDetails.innerHTML = `
+
+<div class="info">
+
+<span class="label">
+Table:
+</span>
+
+🪑 Table ${escapeHTML(
+String(
+order.table_number || "—"
+)
+)}
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Estimated arrival:
+</span>
+
+🕐 ${escapeHTML(
+order.arrival_time || "—"
+)}
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Order status:
+</span>
+
+<span class="status-${escapeHTML(order.status || "pending")}">
+
+${escapeHTML(
+order.status || "pending"
+)}
+
+</span>
+
+</div>
+
+
+<div class="items">
+
+<strong>
+🍽️ Ordered Items
+</strong>
+
+${itemsHTML}
+
+<div
+style="
+font-size:18px;
+font-weight:bold;
+text-align:right;
+margin-top:10px;
+"
+>
+
+Total:
+${total.toFixed(2)} ETB
+
+</div>
+
+</div>
+
+
+<div class="refund">
+
+<div class="info">
+
+<span class="label">
+Expected refund (50%):
+</span>
+
+<strong>
+${refund.toFixed(2)} ETB
+</strong>
+
+</div>
+
+
+<div class="info">
+
+<span class="label">
+Cancellation fee (50%):
+</span>
+
+${fee.toFixed(2)} ETB
+
+</div>
+
+
+<p
+style="
+font-size:13px;
+color:#666;
+margin:10px 0 0;
+"
+>
+
+The refund is automatically calculated from the food and table order total.
+
+</p>
+
+</div>
+
+`;
+
+
+details.style.display =
+"block";
+
+
+/* CHECK STATUS */
+
+if(
+order.status ===
+"cancelled"
+){
+
+message.textContent =
+"⚠️ This food & table order has already been cancelled.";
+
+return;
+
+}
+
+
+if(
+order.status !==
+"confirmed"
+){
+
+message.textContent =
+"⚠️ Food & Table cancellation is available after your order has been confirmed.";
+
+return;
+
+}
+
+
+/* CHECK EXISTING CANCELLATION */
+
+checkExistingCancellation(
+"order",
+order.id
+);
+
+}
+
+
+// =========================
+// CHECK EXISTING CANCELLATION
+// =========================
+
+async function checkExistingCancellation(
+type,
+id
+){
+
+const reasonBox =
+document.getElementById(
+"reasonBox"
+);
+
+const message =
+document.getElementById(
+"message"
+);
+
+
+let query =
+supabaseClient
 .from("cancellations")
 .select("id,status")
-.eq("reservation_id",reservation.id)
-.order("created_at",{ascending:false})
+.order(
+"created_at",
+{
+ascending:false
+}
+)
 .limit(1)
 .maybeSingle();
 
-if(existing.error){
-console.error(existing.error);
-message.textContent="❌ Could not check cancellation status.";
-button.disabled=false;
-button.textContent="❌ Request Cancellation";
-return;
+
+if(type === "reservation"){
+
+query =
+query.eq(
+"reservation_id",
+id
+);
+
+}else{
+
+query =
+query.eq(
+"order_id",
+id
+);
+
 }
 
-if(existing.data&&existing.data.status==="pending"){
-message.textContent="⚠️ A cancellation request is already pending.";
-button.disabled=false;
-button.textContent="❌ Request Cancellation";
-return;
-}
 
-const result=await supabaseClient
-.from("cancellations")
-.insert({
-reservation_id:reservation.id,
-reason:reason,
-refund_amount:refundAmount,
-status:"pending"
-});
+const result =
+await query;
+
 
 if(result.error){
-console.error(result.error);
-message.textContent="❌ Could not submit cancellation request.";
-button.disabled=false;
-button.textContent="❌ Request Cancellation";
+
+console.error(
+result.error
+);
+
+message.textContent =
+"❌ Could not check cancellation status.";
+
 return;
+
 }
 
-message.innerHTML=`
-<span style="color:#16833b;font-size:18px">✅ Cancellation request submitted!</span>
-<p style="font-size:14px;color:#666;font-weight:normal;margin-top:8px">The hotel will review your request. Your expected refund is ${refundAmount.toFixed(2)} ETB.</p>
+
+if(
+result.data &&
+result.data.status ===
+"pending"
+){
+
+message.textContent =
+"⚠️ A cancellation request is already pending.";
+
+return;
+
+}
+
+
+if(
+result.data &&
+(
+result.data.status ===
+"approved" ||
+result.data.status ===
+"rejected"
+)
+){
+
+/*
+Allow another request after
+a previous request was completed.
+*/
+
+}
+
+
+reasonBox.style.display =
+"block";
+
+message.textContent =
+"";
+
+}
+
+
+// =========================
+// REQUEST CANCELLATION
+// =========================
+
+async function requestCancellation(){
+
+const reason =
+document.getElementById(
+"reason"
+).value.trim();
+
+const button =
+document.getElementById(
+"cancelButton"
+);
+
+const message =
+document.getElementById(
+"message"
+);
+
+
+if(
+!bookingType ||
+(
+!reservation &&
+!order
+)
+){
+
+message.textContent =
+"❌ Please find a booking first.";
+
+return;
+
+}
+
+
+if(!reason){
+
+message.textContent =
+"❌ Please enter a reason for cancellation.";
+
+return;
+
+}
+
+
+button.disabled =
+true;
+
+button.textContent =
+"Submitting...";
+
+message.textContent =
+"";
+
+
+/* =========================
+   ROOM CANCELLATION
+   ========================= */
+
+if(
+bookingType ===
+"reservation"
+){
+
+const amount =
+Number(
+payment.amount
+) || 0;
+
+const refundAmount =
+amount * 0.75;
+
+
+/* CHECK AGAIN */
+
+const existing =
+await supabaseClient
+
+.from("cancellations")
+
+.select("id,status")
+
+.eq(
+"reservation_id",
+reservation.id
+)
+
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+
+.limit(1)
+
+.maybeSingle();
+
+
+if(existing.error){
+
+console.error(
+existing.error
+);
+
+showSubmitError(
+button,
+message,
+"❌ Could not check cancellation status."
+);
+
+return;
+
+}
+
+
+if(
+existing.data &&
+existing.data.status ===
+"pending"
+){
+
+showSubmitError(
+button,
+message,
+"⚠️ A cancellation request is already pending."
+);
+
+return;
+
+}
+
+
+/* INSERT */
+
+const result =
+await supabaseClient
+
+.from("cancellations")
+
+.insert({
+
+reservation_id:
+reservation.id,
+
+order_id:
+null,
+
+reason:
+reason,
+
+refund_amount:
+refundAmount,
+
+status:
+"pending"
+
+});
+
+
+if(result.error){
+
+console.error(
+result.error
+);
+
+showSubmitError(
+button,
+message,
+"❌ Could not submit cancellation request."
+);
+
+return;
+
+}
+
+
+showSuccess(
+message,
+refundAmount,
+"75%"
+);
+
+return;
+
+}
+
+
+/* =========================
+   FOOD ORDER CANCELLATION
+   ========================= */
+
+if(
+bookingType ===
+"order"
+){
+
+const total =
+Number(
+order.total_amount
+) || 0;
+
+const refundAmount =
+total * 0.50;
+
+
+/* CHECK AGAIN */
+
+const existing =
+await supabaseClient
+
+.from("cancellations")
+
+.select("id,status")
+
+.eq(
+"order_id",
+order.id
+)
+
+.order(
+"created_at",
+{
+ascending:false
+}
+)
+
+.limit(1)
+
+.maybeSingle();
+
+
+if(existing.error){
+
+console.error(
+existing.error
+);
+
+showSubmitError(
+button,
+message,
+"❌ Could not check cancellation status."
+);
+
+return;
+
+}
+
+
+if(
+existing.data &&
+existing.data.status ===
+"pending"
+){
+
+showSubmitError(
+button,
+message,
+"⚠️ A cancellation request is already pending."
+);
+
+return;
+
+}
+
+
+/* INSERT FOOD CANCELLATION */
+
+const result =
+await supabaseClient
+
+.from("cancellations")
+
+.insert({
+
+reservation_id:
+null,
+
+order_id:
+order.id,
+
+reason:
+reason,
+
+refund_amount:
+refundAmount,
+
+status:
+"pending"
+
+});
+
+
+if(result.error){
+
+console.error(
+result.error
+);
+
+showSubmitError(
+button,
+message,
+"❌ Could not submit food cancellation request."
+);
+
+return;
+
+}
+
+
+showSuccess(
+message,
+refundAmount,
+"50%"
+);
+
+}
+
+}
+
+
+// =========================
+// SUCCESS
+// =========================
+
+function showSuccess(
+message,
+refundAmount,
+percentage
+){
+
+message.innerHTML = `
+
+<span
+style="
+color:#16833b;
+font-size:18px;
+"
+>
+
+✅ Cancellation request submitted!
+
+</span>
+
+
+<p
+style="
+font-size:14px;
+color:#666;
+font-weight:normal;
+margin-top:8px;
+"
+>
+
+The hotel will review your request.
+
+Your expected refund is
+
+<strong>
+${refundAmount.toFixed(2)} ETB
+</strong>
+
+(${percentage} refund).
+
+</p>
+
 `;
 
-document.getElementById("reason").disabled=true;
-button.style.display="none";
+
+document.getElementById(
+"reason"
+).disabled =
+true;
+
+
+const button =
+document.getElementById(
+"cancelButton"
+);
+
+button.style.display =
+"none";
+
 }
 
+
+// =========================
+// ERROR
+// =========================
+
+function showSubmitError(
+button,
+message,
+text
+){
+
+message.textContent =
+text;
+
+button.disabled =
+false;
+
+button.textContent =
+"❌ Request Cancellation";
+
+}
+
+
+// =========================
+// ESCAPE HTML
+// =========================
+
+function escapeHTML(value){
+
+return String(value)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
+
+
 </script>
+
 </body>
+
 </html>
