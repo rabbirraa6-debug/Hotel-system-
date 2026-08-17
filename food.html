@@ -198,6 +198,44 @@ input{
   text-align:center;
 }
 
+.payment-box{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  margin-top:20px;
+  box-shadow:0 3px 14px rgba(0,0,0,.08);
+}
+
+.payment-box h2{
+  margin-bottom:10px;
+}
+
+.payment-note{
+  background:#fff4d6;
+  padding:12px;
+  border-radius:8px;
+  margin-bottom:18px;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.payment-submit{
+  width:100%;
+  padding:14px;
+  background:#d4af37;
+  color:#111;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.payment-submit:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
 .success-box{
   background:white;
   padding:25px;
@@ -326,8 +364,6 @@ Choose your food, drinks, table and arrival time.
 <div class="grid">
 
 
-<!-- Burger -->
-
 <div class="card">
 
 <img
@@ -361,8 +397,6 @@ alt="Burger"
 
 </div>
 
-
-<!-- Pizza -->
 
 <div class="card">
 
@@ -398,8 +432,6 @@ alt="Pizza"
 </div>
 
 
-<!-- Pasta -->
-
 <div class="card">
 
 <img
@@ -434,8 +466,6 @@ alt="Pasta"
 </div>
 
 
-<!-- Chicken -->
-
 <div class="card">
 
 <img
@@ -469,8 +499,6 @@ alt="Chicken"
 
 </div>
 
-
-<!-- Salad -->
 
 <div class="card">
 
@@ -525,8 +553,6 @@ Maximum food: 10 items
 <div class="grid">
 
 
-<!-- Water -->
-
 <div class="card">
 
 <img
@@ -560,8 +586,6 @@ alt="Water"
 
 </div>
 
-
-<!-- Juice -->
 
 <div class="card">
 
@@ -597,8 +621,6 @@ alt="Juice"
 </div>
 
 
-<!-- Cola -->
-
 <div class="card">
 
 <img
@@ -633,8 +655,6 @@ alt="Cola"
 </div>
 
 
-<!-- Coffee -->
-
 <div class="card">
 
 <img
@@ -668,8 +688,6 @@ alt="Coffee"
 
 </div>
 
-
-<!-- Tea -->
 
 <div class="card">
 
@@ -756,11 +774,10 @@ id="arrivalTime"
 type="time"
 >
 
-
 <div class="notice">
 
-ℹ️ You can reserve a table with
-food, drinks, or both.
+ℹ️ Select at least one food or drink
+to reserve a table.
 
 </div>
 
@@ -775,7 +792,10 @@ food, drinks, or both.
 
 <section class="section">
 
-<div class="summary">
+<div
+id="summaryBox"
+class="summary"
+>
 
 <h2>
 🛒 Order Summary
@@ -796,16 +816,69 @@ ETB
 </div>
 
 <button
-id="submitButton"
+id="continueButton"
 class="submit"
-onclick="submitOrder()"
+onclick="showPaymentBox()"
 >
 
-✅ Reserve Table & Order
+💳 Continue to Payment
 
 </button>
 
 </div>
+
+
+<!-- =========================
+     PAYMENT
+     ========================= -->
+
+<div
+id="paymentBox"
+class="payment-box"
+style="display:none;"
+>
+
+<h2>
+💳 Payment Receipt
+</h2>
+
+<div class="payment-note">
+
+Please complete your payment and paste
+your payment receipt URL below.
+
+<br><br>
+
+⚠️ Your Order ID will only be generated
+after the receipt has been successfully
+submitted.
+
+</div>
+
+
+<label for="receiptUrl">
+Payment Receipt URL
+</label>
+
+<input
+id="receiptUrl"
+type="url"
+placeholder="Paste your receipt link here"
+>
+
+
+<button
+id="paymentButton"
+class="payment-submit"
+onclick="submitOrder()"
+>
+
+✅ Submit Order & Receipt
+
+</button>
+
+</div>
+
 
 <div id="message"></div>
 
@@ -822,10 +895,11 @@ onclick="submitOrder()"
 
 <script>
 
+
 const supabaseClient =
 window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
 
@@ -910,11 +984,8 @@ let drinkQuantities=
 
 function changeFood(index,change){
 
-const current=
-foodQuantities[index];
-
 const next=
-current+change;
+foodQuantities[index]+change;
 
 if(next<0){
 return;
@@ -952,11 +1023,8 @@ updateSummary();
 
 function changeDrink(index,change){
 
-const current=
-drinkQuantities[index];
-
 const next=
-current+change;
+drinkQuantities[index]+change;
 
 if(next<0){
 return;
@@ -989,6 +1057,37 @@ updateSummary();
 
 
 /* =========================
+   GET TOTAL
+   ========================= */
+
+function getOrderTotal(){
+
+let total=0;
+
+foods.forEach(
+(food,index)=>{
+
+total+=
+food.price*
+foodQuantities[index];
+
+});
+
+drinks.forEach(
+(drink,index)=>{
+
+total+=
+drink.price*
+drinkQuantities[index];
+
+});
+
+return total;
+
+}
+
+
+/* =========================
    UPDATE SUMMARY
    ========================= */
 
@@ -1001,14 +1100,13 @@ document.getElementById(
 
 let html="";
 
-let total=0;
-
 let hasItems=false;
 
 
 /* FOOD */
 
-foods.forEach((food,index)=>{
+foods.forEach(
+(food,index)=>{
 
 const qty=
 foodQuantities[index];
@@ -1019,8 +1117,6 @@ hasItems=true;
 
 const amount=
 food.price*qty;
-
-total+=amount;
 
 html+=`
 
@@ -1045,7 +1141,8 @@ ${amount.toFixed(2)} ETB
 
 /* DRINKS */
 
-drinks.forEach((drink,index)=>{
+drinks.forEach(
+(drink,index)=>{
 
 const qty=
 drinkQuantities[index];
@@ -1056,8 +1153,6 @@ hasItems=true;
 
 const amount=
 drink.price*qty;
-
-total+=amount;
 
 html+=`
 
@@ -1080,58 +1175,27 @@ ${amount.toFixed(2)} ETB
 });
 
 
-if(!hasItems){
-
 summary.innerHTML=
+hasItems
+?
+html
+:
 "No items selected.";
-
-}else{
-
-summary.innerHTML=html;
-
-}
 
 
 document.getElementById(
 "total"
 ).textContent=
-total.toFixed(2);
+getOrderTotal().toFixed(2);
 
 }
 
 
 /* =========================
-   GENERATE ORDER ID
+   SHOW PAYMENT
    ========================= */
 
-function generateOrderCode(){
-
-const chars=
-"ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-let code="ORD-";
-
-for(let i=0;i<6;i++){
-
-code+=
-chars.charAt(
-Math.floor(
-Math.random()*chars.length
-)
-);
-
-}
-
-return code;
-
-}
-
-
-/* =========================
-   SUBMIT ORDER
-   ========================= */
-
-async function submitOrder(){
+function showPaymentBox(){
 
 const tableNumber=
 document.getElementById(
@@ -1146,11 +1210,6 @@ document.getElementById(
 const message=
 document.getElementById(
 "message"
-);
-
-const button=
-document.getElementById(
-"submitButton"
 );
 
 
@@ -1193,7 +1252,7 @@ return;
 }
 
 
-/* AT LEAST ONE ITEM */
+/* ITEMS */
 
 if(foodTotal===0&&drinkTotal===0){
 
@@ -1207,40 +1266,56 @@ return;
 }
 
 
-button.disabled=true;
-
-message.innerHTML=
-"Submitting order...";
+message.innerHTML="";
 
 
-/* CALCULATE TOTAL */
+document.getElementById(
+"paymentBox"
+).style.display=
+"block";
 
-let total=0;
 
-foods.forEach(
-(food,index)=>{
-total+=
-food.price*
-foodQuantities[index];
+document.getElementById(
+"paymentBox"
+).scrollIntoView({
+behavior:"smooth"
+});
+
 }
+
+
+/* =========================
+   GENERATE ORDER ID
+   ========================= */
+
+function generateOrderCode(){
+
+const chars=
+"ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+let code="ORD-";
+
+for(let i=0;i<6;i++){
+
+code+=
+chars.charAt(
+Math.floor(
+Math.random()*chars.length
+)
 );
 
-drinks.forEach(
-(drink,index)=>{
-total+=
-drink.price*
-drinkQuantities[index];
 }
-);
+
+return code;
+
+}
 
 
-/* CREATE ORDER ID */
+/* =========================
+   BUILD ITEMS
+   ========================= */
 
-const orderCode=
-generateOrderCode();
-
-
-/* BUILD ITEMS */
+function buildItems(){
 
 const items=[];
 
@@ -1291,19 +1366,96 @@ price:drink.price
 });
 
 
-/*
-IMPORTANT:
+return items;
 
-This expects an "orders" table
-with these columns:
+}
 
-order_code
-table_number
-arrival_time
-items
-total_amount
-status
-*/
+
+/* =========================
+   SUBMIT ORDER + RECEIPT
+   ========================= */
+
+async function submitOrder(){
+
+const tableNumber=
+document.getElementById(
+"tableNumber"
+).value;
+
+const arrivalTime=
+document.getElementById(
+"arrivalTime"
+).value;
+
+const receiptUrl=
+document.getElementById(
+"receiptUrl"
+).value.trim();
+
+const message=
+document.getElementById(
+"message"
+);
+
+const button=
+document.getElementById(
+"paymentButton"
+);
+
+
+/* RECEIPT */
+
+if(!receiptUrl){
+
+message.innerHTML=
+`<div class="error">
+❌ Please enter your payment receipt URL.
+</div>`;
+
+return;
+
+}
+
+
+/* BASIC URL CHECK */
+
+try{
+
+new URL(receiptUrl);
+
+}
+
+catch{
+
+message.innerHTML=
+`<div class="error">
+❌ Please enter a valid receipt URL.
+</div>`;
+
+return;
+
+}
+
+
+button.disabled=true;
+
+button.textContent=
+"Submitting...";
+
+
+const orderCode=
+generateOrderCode();
+
+const total=
+getOrderTotal();
+
+const items=
+buildItems();
+
+
+/* =========================
+   INSERT ORDER
+   ========================= */
 
 const {
 data,
@@ -1324,10 +1476,17 @@ Number(tableNumber),
 arrival_time:
 arrivalTime,
 
-items:items,
+items:
+items,
 
 total_amount:
 total,
+
+receipt_url:
+receiptUrl,
+
+payment_status:
+"pending",
 
 status:
 "pending"
@@ -1345,21 +1504,35 @@ console.error(error);
 
 message.innerHTML=
 `<div class="error">
-❌ Could not submit order.
+❌ Could not submit order and receipt.
+<br><br>
+Please check your receipt URL and try again.
 </div>`;
 
 button.disabled=false;
+
+button.textContent=
+"✅ Submit Order & Receipt";
 
 return;
 
 }
 
 
-/* SUCCESS */
+/* =========================
+   SUCCESS
+   ========================= */
 
-document.querySelector(
-".summary"
-).style.display="none";
+document.getElementById(
+"summaryBox"
+).style.display=
+"none";
+
+
+document.getElementById(
+"paymentBox"
+).style.display=
+"none";
 
 
 message.innerHTML=`
@@ -1374,13 +1547,21 @@ margin-bottom:10px;
 "
 >
 
-✅ Order Submitted Successfully!
+✅ Order & Receipt Submitted!
 
 </div>
 
-<p>
-Your food and table reservation
-has been received.
+
+<p
+style="
+font-size:14px;
+color:#666;
+"
+>
+
+Your payment receipt has been
+submitted for review.
+
 </p>
 
 
@@ -1395,9 +1576,10 @@ id="orderCode"
 class="order-code"
 >
 
-${orderCode}
+${escapeHTML(orderCode)}
 
 </span>
+
 
 <button
 class="copy"
@@ -1419,8 +1601,8 @@ margin-bottom:18px;
 "
 >
 
-Keep this ID to check your
-order status.
+Keep this Order ID to check your
+food and table reservation status.
 
 </p>
 
@@ -1466,8 +1648,10 @@ document.getElementById(
 "orderCode"
 ).textContent.trim();
 
+
 navigator.clipboard
 .writeText(code)
+
 .then(()=>{
 
 const button=
@@ -1478,6 +1662,7 @@ document.querySelector(
 button.textContent=
 "✅ Copied!";
 
+
 setTimeout(()=>{
 
 button.textContent=
@@ -1486,6 +1671,7 @@ button.textContent=
 },1500);
 
 })
+
 .catch(()=>{
 
 alert(
@@ -1493,6 +1679,27 @@ alert(
 );
 
 });
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+   ========================= */
+
+function escapeHTML(value){
+
+return String(value)
+
+.replace(/&/g,"&amp;")
+
+.replace(/</g,"&lt;")
+
+.replace(/>/g,"&gt;")
+
+.replace(/"/g,"&quot;")
+
+.replace(/'/g,"&#039;");
 
 }
 
