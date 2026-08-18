@@ -51,10 +51,6 @@ header p{
   font-size:14px;
 }
 
-/* =========================
-   SECTIONS
-   ========================= */
-
 .section{
   width:100%;
   margin-bottom:30px;
@@ -63,10 +59,6 @@ header p{
 .section h2{
   margin-bottom:15px;
 }
-
-/* =========================
-   FOOD / DRINK GRID
-   ========================= */
 
 .grid{
   width:100%;
@@ -136,10 +128,6 @@ header p{
   font-weight:bold;
 }
 
-/* =========================
-   FORMS
-   ========================= */
-
 .form-box{
   background:white;
   padding:20px;
@@ -169,10 +157,6 @@ input:focus{
   outline:none;
   border-color:#d4af37;
 }
-
-/* =========================
-   SUMMARY
-   ========================= */
 
 .summary{
   background:#fffdf5;
@@ -225,10 +209,6 @@ input:focus{
   opacity:.6;
   cursor:not-allowed;
 }
-
-/* =========================
-   PAYMENT
-   ========================= */
 
 #message{
   margin-top:20px;
@@ -285,10 +265,6 @@ input:focus{
   cursor:not-allowed;
 }
 
-/* =========================
-   MESSAGES
-   ========================= */
-
 .notice{
   padding:12px;
   background:#fff4d6;
@@ -319,10 +295,6 @@ input:focus{
 .occupied-box strong{
   font-size:18px;
 }
-
-/* =========================
-   SUCCESS
-   ========================= */
 
 .success-box{
   background:white;
@@ -389,10 +361,6 @@ input:focus{
   color:white;
 }
 
-/* =========================
-   MOBILE
-   ========================= */
-
 @media(max-width:700px){
 
   body{
@@ -444,7 +412,7 @@ input:focus{
 <h1>🍽️ Food & Table</h1>
 
 <p>
-Choose your food, drinks, table and arrival time.
+Choose your food, drinks, table, arrival date and time.
 </p>
 
 </header>
@@ -459,9 +427,6 @@ Choose your food, drinks, table and arrival time.
 <h2>🍽️ Food</h2>
 
 <div class="grid">
-
-
-<!-- BURGER -->
 
 <div class="card">
 
@@ -495,8 +460,6 @@ onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-155054766
 </div>
 
 
-<!-- PIZZA -->
-
 <div class="card">
 
 <img
@@ -528,8 +491,6 @@ onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-156529962
 
 </div>
 
-
-<!-- PASTA -->
 
 <div class="card">
 
@@ -563,8 +524,6 @@ onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-162199634
 </div>
 
 
-<!-- CHICKEN -->
-
 <div class="card">
 
 <img
@@ -596,8 +555,6 @@ onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-159810344
 
 </div>
 
-
-<!-- SALAD -->
 
 <div class="card">
 
@@ -649,9 +606,6 @@ Maximum food: 10 items
 
 <div class="grid">
 
-
-<!-- WATER -->
-
 <div class="card">
 
 <img
@@ -682,8 +636,6 @@ loading="lazy"
 
 </div>
 
-
-<!-- JUICE -->
 
 <div class="card">
 
@@ -716,8 +668,6 @@ loading="lazy"
 </div>
 
 
-<!-- COLA -->
-
 <div class="card">
 
 <img
@@ -749,8 +699,6 @@ loading="lazy"
 </div>
 
 
-<!-- COFFEE -->
-
 <div class="card">
 
 <img
@@ -781,8 +729,6 @@ loading="lazy"
 
 </div>
 
-
-<!-- TEA -->
 
 <div class="card">
 
@@ -855,6 +801,16 @@ Select Table Number
 <option value="10">Table 10</option>
 
 </select>
+
+
+<label for="arrivalDate">
+📅 Arrival Date
+</label>
+
+<input
+id="arrivalDate"
+type="date"
+>
 
 
 <label for="arrivalTime">
@@ -948,8 +904,6 @@ submitted.
 </div>
 
 
-<!-- CUSTOMER -->
-
 <div class="customer-box">
 
 <h3>
@@ -980,8 +934,6 @@ autocomplete="tel"
 
 </div>
 
-
-<!-- RECEIPT -->
 
 <label for="receiptUrl">
 Payment Receipt URL
@@ -1101,6 +1053,43 @@ let foodQuantities =
 
 let drinkQuantities =
 [0,0,0,0,0];
+
+
+/* =========================
+   SET MINIMUM ARRIVAL DATE
+   ========================= */
+
+function setMinimumArrivalDate(){
+
+  const arrivalDate =
+  document.getElementById(
+    "arrivalDate"
+  );
+
+  if(!arrivalDate){
+    return;
+  }
+
+  const today =
+  new Date();
+
+  const year =
+  today.getFullYear();
+
+  const month =
+  String(
+    today.getMonth() + 1
+  ).padStart(2,"0");
+
+  const day =
+  String(
+    today.getDate()
+  ).padStart(2,"0");
+
+  arrivalDate.min =
+  `${year}-${month}-${day}`;
+
+}
 
 
 /* =========================
@@ -1322,7 +1311,10 @@ function updateSummary(){
    CHECK TABLE OCCUPANCY
    ========================= */
 
-async function checkTableOccupied(tableNumber){
+async function checkTableOccupied(
+  tableNumber,
+  arrivalDate
+){
 
   const {
     data,
@@ -1332,7 +1324,9 @@ async function checkTableOccupied(tableNumber){
 
     .from("orders")
 
-    .select("id,status")
+    .select(
+      "id,status,arrival_date,arrival_time"
+    )
 
     .eq(
       "table_number",
@@ -1347,7 +1341,7 @@ async function checkTableOccupied(tableNumber){
       ]
     )
 
-    .limit(1);
+    .limit(100);
 
 
   if(error){
@@ -1362,10 +1356,103 @@ async function checkTableOccupied(tableNumber){
   }
 
 
-  return (
-    data &&
-    data.length > 0
+  if(!data || data.length === 0){
+
+    return false;
+
+  }
+
+
+  /*
+   * Only consider another order as occupying
+   * the table if its reservation time is still
+   * active.
+   */
+
+  const requestedDateTime =
+  new Date(
+    `${arrivalDate}T00:00:00`
   );
+
+
+  for(const order of data){
+
+    if(!order.arrival_date){
+
+      /*
+       * Old orders without arrival_date are
+       * treated as active for safety.
+       */
+
+      return true;
+
+    }
+
+
+    if(!order.arrival_time){
+
+      return true;
+
+    }
+
+
+    const existingDateTime =
+    new Date(
+      `${order.arrival_date}T${order.arrival_time}`
+    );
+
+
+    /*
+     * Existing order remains active until
+     * one hour after estimated arrival.
+     */
+
+    const expirationTime =
+    new Date(
+      existingDateTime.getTime()
+      +
+      60 * 60 * 1000
+    );
+
+
+    if(
+      requestedDateTime.getTime()
+      === existingDateTime.getTime()
+    ){
+
+      return true;
+
+    }
+
+    /*
+     * Orders are treated as occupying the table
+     * around their active period.
+     */
+
+    if(
+      Math.abs(
+        requestedDateTime.getTime()
+        -
+        existingDateTime.getTime()
+      )
+      < 60 * 60 * 1000
+    ){
+
+      return true;
+
+    }
+
+    /*
+     * Keep this reference so the expiration
+     * calculation remains explicit.
+     */
+
+    void expirationTime;
+
+  }
+
+
+  return false;
 
 }
 
@@ -1379,6 +1466,11 @@ async function showPaymentBox(){
   const tableNumber =
   document.getElementById(
     "tableNumber"
+  ).value;
+
+  const arrivalDate =
+  document.getElementById(
+    "arrivalDate"
   ).value;
 
   const arrivalTime =
@@ -1415,6 +1507,20 @@ async function showPaymentBox(){
     `
       <div class="error">
         ❌ Please select a table number.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  if(!arrivalDate){
+
+    message.innerHTML =
+    `
+      <div class="error">
+        ❌ Please select your arrival date.
       </div>
     `;
 
@@ -1467,7 +1573,8 @@ async function showPaymentBox(){
 
     const occupied =
     await checkTableOccupied(
-      tableNumber
+      tableNumber,
+      arrivalDate
     );
 
 
@@ -1480,20 +1587,20 @@ async function showPaymentBox(){
           <strong>
             🚫 Table
             ${String(tableNumber).padStart(2,"0")}
-            is occupied
+            may already be occupied
           </strong>
 
           <br><br>
 
           This table already has a
           <strong>pending</strong> or
-          <strong>confirmed</strong> order.
+          <strong>confirmed</strong> order
+          around the selected arrival time.
 
           <br><br>
 
-          Please wait until the current
-          order is finished, or choose
-          another table.
+          Please choose another table
+          or another arrival time.
 
         </div>
 
@@ -1673,6 +1780,11 @@ async function submitOrder(){
     "tableNumber"
   ).value;
 
+  const arrivalDate =
+  document.getElementById(
+    "arrivalDate"
+  ).value;
+
   const arrivalTime =
   document.getElementById(
     "arrivalTime"
@@ -1702,6 +1814,46 @@ async function submitOrder(){
   document.getElementById(
     "paymentButton"
   );
+
+
+  /* DATE */
+
+  if(!arrivalDate){
+
+    message.innerHTML =
+    `
+      <div class="error">
+        ❌ Please select your arrival date.
+      </div>
+    `;
+
+    document.getElementById(
+      "arrivalDate"
+    ).focus();
+
+    return;
+
+  }
+
+
+  /* TIME */
+
+  if(!arrivalTime){
+
+    message.innerHTML =
+    `
+      <div class="error">
+        ❌ Please select your estimated arrival time.
+      </div>
+    `;
+
+    document.getElementById(
+      "arrivalTime"
+    ).focus();
+
+    return;
+
+  }
 
 
   /* NAME */
@@ -1836,7 +1988,8 @@ async function submitOrder(){
 
     const occupied =
     await checkTableOccupied(
-      tableNumber
+      tableNumber,
+      arrivalDate
     );
 
 
@@ -1849,17 +2002,19 @@ async function submitOrder(){
           <strong>
             🚫 Table
             ${String(tableNumber).padStart(2,"0")}
-            is occupied
+            may already be occupied
           </strong>
 
           <br><br>
 
           Another pending or confirmed
-          order is already using this table.
+          order is already using this table
+          around the selected arrival time.
 
           <br><br>
 
-          Please wait or choose another table.
+          Please choose another table
+          or another arrival time.
 
         </div>
 
@@ -1930,6 +2085,9 @@ async function submitOrder(){
       table_number:
       Number(tableNumber),
 
+      arrival_date:
+      arrivalDate,
+
       arrival_time:
       arrivalTime,
 
@@ -1972,12 +2130,6 @@ async function submitOrder(){
       error
     );
 
-
-    /*
-     * If the database protection
-     * rejects a simultaneous order,
-     * show occupied message.
-     */
 
     const errorText =
     (
@@ -2248,6 +2400,15 @@ function escapeHTML(value){
     );
 
 }
+
+
+/* =========================
+   INITIALIZE
+   ========================= */
+
+setMinimumArrivalDate();
+
+updateSummary();
 
 </script>
 
