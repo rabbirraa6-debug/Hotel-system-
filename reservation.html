@@ -136,14 +136,12 @@ button:disabled {
   Reserve Your Room
 </h1>
 
-
 <div
   id="roomInfo"
   class="room-info"
 >
   Loading room...
 </div>
-
 
 <label for="name">
   Your Name
@@ -156,7 +154,6 @@ button:disabled {
   autocomplete="name"
 >
 
-
 <label for="phone">
   Phone Number
 </label>
@@ -168,7 +165,6 @@ button:disabled {
   autocomplete="tel"
 >
 
-
 <label for="checkIn">
   Check-in
 </label>
@@ -178,7 +174,6 @@ button:disabled {
   type="date"
 >
 
-
 <label for="checkOut">
   Check-out
 </label>
@@ -187,7 +182,6 @@ button:disabled {
   id="checkOut"
   type="date"
 >
-
 
 <div class="total">
 
@@ -201,7 +195,6 @@ button:disabled {
 
 </div>
 
-
 <button
   id="reserveButton"
   onclick="makeReservation()"
@@ -209,11 +202,9 @@ button:disabled {
   Confirm Reservation
 </button>
 
-
 <div id="message"></div>
 
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -221,38 +212,21 @@ button:disabled {
 
 <script>
 
-
-/* =========================
-   SUPABASE
-   ========================= */
-
 const supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
 
-
-/* =========================
-   GET ROOM ID
-   ========================= */
-
 const params =
   new URLSearchParams(
     window.location.search
   );
 
-
 const roomId =
   params.get("room");
 
-
 let selectedRoom = null;
-
-
-/* =========================
-   LOAD ROOM
-   ========================= */
 
 async function loadRoom() {
 
@@ -267,24 +241,18 @@ async function loadRoom() {
 
   }
 
-
   const {
     data,
     error
   } =
     await supabaseClient
-
       .from("rooms")
-
       .select("*")
-
       .eq(
         "id",
         roomId
       )
-
       .single();
-
 
   if (error) {
 
@@ -302,9 +270,7 @@ async function loadRoom() {
 
   }
 
-
   selectedRoom = data;
-
 
   document.getElementById(
     "roomInfo"
@@ -338,29 +304,21 @@ async function loadRoom() {
 
 }
 
-
-/* =========================
-   CALCULATE TOTAL
-   ========================= */
-
 function calculateTotal() {
 
   if (!selectedRoom) {
     return;
   }
 
-
   const checkIn =
     document.getElementById(
       "checkIn"
     ).value;
 
-
   const checkOut =
     document.getElementById(
       "checkOut"
     ).value;
-
 
   if (
     !checkIn ||
@@ -376,18 +334,15 @@ function calculateTotal() {
 
   }
 
-
   const start =
     new Date(
       checkIn + "T00:00:00"
     );
 
-
   const end =
     new Date(
       checkOut + "T00:00:00"
     );
-
 
   const nights =
     Math.ceil(
@@ -402,7 +357,6 @@ function calculateTotal() {
       )
     );
 
-
   if (nights <= 0) {
 
     document.getElementById(
@@ -414,13 +368,11 @@ function calculateTotal() {
 
   }
 
-
   const total =
     nights *
     Number(
       selectedRoom.price
     );
-
 
   document.getElementById(
     "total"
@@ -429,17 +381,11 @@ function calculateTotal() {
 
 }
 
-
-/* =========================
-   ROOM OVERLAP ERROR
-   ========================= */
-
 function isRoomOverlapError(error) {
 
   if (!error) {
     return false;
   }
-
 
   const text =
     (
@@ -450,31 +396,20 @@ function isRoomOverlapError(error) {
       (error.hint || "")
     ).toLowerCase();
 
-
   return (
-
     error.code === "23P01" ||
-
     text.includes(
       "reservations_no_room_overlap"
     ) ||
-
     text.includes(
       "exclusion constraint"
     ) ||
-
     text.includes(
       "conflicting key value"
     )
-
   );
 
 }
-
-
-/* =========================
-   CHECK ROOM AVAILABILITY
-   ========================= */
 
 async function checkRoomAvailability(
   roomId,
@@ -487,18 +422,14 @@ async function checkRoomAvailability(
     error
   } =
     await supabaseClient
-
       .from("reservations")
-
       .select(
         "id, reservation_code, check_in, check_out, status"
       )
-
       .eq(
         "room_id",
         roomId
       )
-
       .in(
         "status",
         [
@@ -506,19 +437,15 @@ async function checkRoomAvailability(
           "confirmed"
         ]
       )
-
       .lt(
         "check_in",
         checkOut
       )
-
       .gt(
         "check_out",
         checkIn
       )
-
       .limit(1);
-
 
   if (error) {
 
@@ -534,9 +461,7 @@ async function checkRoomAvailability(
 
   }
 
-
   return {
-
     available:
       !data ||
       data.length === 0,
@@ -548,15 +473,9 @@ async function checkRoomAvailability(
         : null,
 
     error: null
-
   };
 
 }
-
-
-/* =========================
-   GENERATE RESERVATION CODE
-   ========================= */
 
 function generateReservationCode() {
 
@@ -565,7 +484,6 @@ function generateReservationCode() {
 
   let code =
     "HTL-";
-
 
   for (
     let i = 0;
@@ -583,27 +501,9 @@ function generateReservationCode() {
 
   }
 
-
   return code;
 
 }
-
-
-/* =========================
-   CREATE CUSTOMER
-   =========================
-   
-   IMPORTANT:
-   We DO NOT use:
-   
-   .from("customers").insert(...)
-   
-   anymore.
-   
-   We use the SECURITY DEFINER
-   function created in Supabase.
-   
-   ========================= */
 
 async function createCustomer(
   name,
@@ -623,7 +523,6 @@ async function createCustomer(
       }
     );
 
-
   if (error) {
 
     console.error(
@@ -638,23 +537,12 @@ async function createCustomer(
 
   }
 
-
-  /*
-   * The function returns one
-   * customer row.
-   */
-
   return {
     customer: data,
     error: null
   };
 
 }
-
-
-/* =========================
-   MAKE RESERVATION
-   ========================= */
 
 async function makeReservation() {
 
@@ -663,43 +551,32 @@ async function makeReservation() {
       "name"
     ).value.trim();
 
-
   const phone =
     document.getElementById(
       "phone"
     ).value.trim();
-
 
   const checkIn =
     document.getElementById(
       "checkIn"
     ).value;
 
-
   const checkOut =
     document.getElementById(
       "checkOut"
     ).value;
-
 
   const message =
     document.getElementById(
       "message"
     );
 
-
   const button =
     document.getElementById(
       "reserveButton"
     );
 
-
   message.innerHTML = "";
-
-
-  /* =========================
-     BASIC VALIDATION
-     ========================= */
 
   if (
     !name ||
@@ -722,7 +599,6 @@ async function makeReservation() {
 
   }
 
-
   if (!selectedRoom) {
 
     message.innerHTML = `
@@ -739,22 +615,15 @@ async function makeReservation() {
 
   }
 
-
-  /* =========================
-     DATE VALIDATION
-     ========================= */
-
   const start =
     new Date(
       checkIn + "T00:00:00"
     );
 
-
   const end =
     new Date(
       checkOut + "T00:00:00"
     );
-
 
   if (
     Number.isNaN(
@@ -779,7 +648,6 @@ async function makeReservation() {
 
   }
 
-
   if (
     end <= start
   ) {
@@ -798,11 +666,6 @@ async function makeReservation() {
 
   }
 
-
-  /* =========================
-     CALCULATE NIGHTS
-     ========================= */
-
   const nights =
     Math.ceil(
       (
@@ -816,23 +679,16 @@ async function makeReservation() {
       )
     );
 
-
   const total =
     nights *
     Number(
       selectedRoom.price
     );
 
-
-  /* =========================
-     DISABLE BUTTON
-     ========================= */
-
   button.disabled = true;
 
   button.textContent =
     "Checking availability...";
-
 
   message.innerHTML = `
 
@@ -844,22 +700,12 @@ async function makeReservation() {
 
   `;
 
-
-  /* =========================
-     CHECK AVAILABILITY
-     ========================= */
-
   const availability =
     await checkRoomAvailability(
       selectedRoom.id,
       checkIn,
       checkOut
     );
-
-
-  /* =========================
-     AVAILABILITY ERROR
-     ========================= */
 
   if (
     availability.error
@@ -869,7 +715,6 @@ async function makeReservation() {
       "Availability error:",
       availability.error
     );
-
 
     message.innerHTML = `
 
@@ -890,7 +735,6 @@ async function makeReservation() {
 
     `;
 
-
     button.disabled = false;
 
     button.textContent =
@@ -899,11 +743,6 @@ async function makeReservation() {
     return;
 
   }
-
-
-  /* =========================
-     ROOM NOT AVAILABLE
-     ========================= */
 
   if (
     !availability.available
@@ -932,7 +771,6 @@ async function makeReservation() {
 
     `;
 
-
     button.disabled = false;
 
     button.textContent =
@@ -942,22 +780,11 @@ async function makeReservation() {
 
   }
 
-
-  /* =========================
-     GENERATE CODE
-     ========================= */
-
   const reservationCode =
     generateReservationCode();
 
-
-  /* =========================
-     CREATE CUSTOMER
-     ========================= */
-
   button.textContent =
     "Creating customer...";
-
 
   message.innerHTML = `
 
@@ -969,7 +796,6 @@ async function makeReservation() {
 
   `;
 
-
   const {
     customer,
     error: customerError
@@ -979,18 +805,12 @@ async function makeReservation() {
       phone
     );
 
-
-  /* =========================
-     CUSTOMER ERROR
-     ========================= */
-
   if (customerError) {
 
     console.error(
       "Customer creation error:",
       customerError
     );
-
 
     message.innerHTML = `
 
@@ -1011,7 +831,6 @@ async function makeReservation() {
 
     `;
 
-
     button.disabled = false;
 
     button.textContent =
@@ -1020,11 +839,6 @@ async function makeReservation() {
     return;
 
   }
-
-
-  /* =========================
-     VERIFY CUSTOMER
-     ========================= */
 
   if (
     !customer ||
@@ -1035,7 +849,6 @@ async function makeReservation() {
       "Customer function returned unexpected data:",
       customer
     );
-
 
     message.innerHTML = `
 
@@ -1051,7 +864,6 @@ async function makeReservation() {
 
     `;
 
-
     button.disabled = false;
 
     button.textContent =
@@ -1061,20 +873,13 @@ async function makeReservation() {
 
   }
 
-
   console.log(
     "Customer created:",
     customer
   );
 
-
-  /* =========================
-     CREATE RESERVATION
-     ========================= */
-
   button.textContent =
     "Creating reservation...";
-
 
   message.innerHTML = `
 
@@ -1086,48 +891,35 @@ async function makeReservation() {
 
   `;
 
-
   const {
     data: reservation,
     error: reservationError
   } =
-    await supabaseClient
-
-      .from("reservations")
-
-      .insert({
-
-        reservation_code:
+    await supabaseClient.rpc(
+      "create_reservation",
+      {
+        p_reservation_code:
           reservationCode,
 
-        customer_id:
+        p_customer_id:
           customer.id,
 
-        room_id:
+        p_room_id:
           selectedRoom.id,
 
-        check_in:
+        p_check_in:
           checkIn,
 
-        check_out:
+        p_check_out:
           checkOut,
 
-        total_amount:
+        p_total_amount:
           total,
 
-        status:
+        p_status:
           "pending"
-
-      })
-
-      .select()
-
-      .single();
-
-
-  /* =========================
-     RESERVATION ERROR
-     ========================= */
+      }
+    );
 
   if (reservationError) {
 
@@ -1135,7 +927,6 @@ async function makeReservation() {
       "Reservation error:",
       reservationError
     );
-
 
     if (
       isRoomOverlapError(
@@ -1206,7 +997,6 @@ async function makeReservation() {
 
     }
 
-
     button.disabled = false;
 
     button.textContent =
@@ -1216,10 +1006,46 @@ async function makeReservation() {
 
   }
 
+  const createdReservation =
+    Array.isArray(
+      reservation
+    )
+      ? reservation[0]
+      : reservation;
 
-  /* =========================
-     SUCCESS
-     ========================= */
+  if (
+    !createdReservation ||
+    !createdReservation.reservation_code
+  ) {
+
+    console.error(
+      "Unexpected reservation response:",
+      reservation
+    );
+
+    message.innerHTML = `
+
+      <div class="error-box">
+
+        ❌ Reservation was created but
+        the response was unexpected.
+
+        <br><br>
+
+        Please contact the hotel.
+
+      </div>
+
+    `;
+
+    button.disabled = false;
+
+    button.textContent =
+      "Confirm Reservation";
+
+    return;
+
+  }
 
   message.innerHTML = `
 
@@ -1237,7 +1063,7 @@ async function makeReservation() {
 
         <strong>
           ${escapeHtml(
-            reservation.reservation_code
+            createdReservation.reservation_code
           )}
         </strong>
 
@@ -1251,31 +1077,20 @@ async function makeReservation() {
 
   `;
 
-
   button.style.display =
     "none";
-
-
-  /* =========================
-     REDIRECT TO PAYMENT
-     ========================= */
 
   setTimeout(() => {
 
     window.location.href =
       "payment.html?reservation=" +
       encodeURIComponent(
-        reservation.reservation_code
+        createdReservation.reservation_code
       );
 
   }, 1500);
 
 }
-
-
-/* =========================
-   ESCAPE HTML
-   ========================= */
 
 function escapeHtml(value) {
 
@@ -1308,11 +1123,6 @@ function escapeHtml(value) {
 
 }
 
-
-/* =========================
-   DATE EVENTS
-   ========================= */
-
 document
   .getElementById(
     "checkIn"
@@ -1321,7 +1131,6 @@ document
     "change",
     calculateTotal
   );
-
 
 document
   .getElementById(
@@ -1332,13 +1141,7 @@ document
     calculateTotal
   );
 
-
-/* =========================
-   LOAD ROOM
-   ========================= */
-
 loadRoom();
-
 
 </script>
 
