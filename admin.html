@@ -376,7 +376,6 @@ button:disabled{
       🔎 Search
     </strong>
 
-
     <input
       id="search"
       type="text"
@@ -488,29 +487,39 @@ src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 
 <script>
 
-
 // =====================================================
 // SUPABASE
 // =====================================================
 
 const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
 // =====================================================
 // ADMIN LOGIN STATE
 //
 // IMPORTANT:
-// We deliberately DO NOT read sessionStorage here.
+// This is ONLY kept in memory.
 //
-// This means every time admin.html is loaded or refreshed,
-// the administrator must enter the PIN again.
+// It is NOT saved to sessionStorage/localStorage.
+//
+// Therefore:
+// - refresh = logged out
+// - closing page = logged out
+// - logout = PIN cleared
 // =====================================================
 
 let adminAuthenticated = false;
+
+
+// IMPORTANT FIX:
+// We keep the successful PIN in memory so that
+// loadEverything() can send it to admin_get_reservations.
+
+let currentAdminPin = "";
 
 
 let allCards = [];
@@ -528,10 +537,12 @@ document.addEventListener(
 
     updateAdminScreen();
 
+
     const pinInput =
       document.getElementById(
         "adminPin"
       );
+
 
     if(pinInput){
 
@@ -566,6 +577,7 @@ function updateAdminScreen(){
     document.getElementById(
       "loginScreen"
     );
+
 
   const adminApp =
     document.getElementById(
@@ -607,10 +619,12 @@ async function adminLogin(){
       "adminPin"
     );
 
+
   const loginButton =
     document.getElementById(
       "loginButton"
     );
+
 
   const message =
     document.getElementById(
@@ -663,9 +677,11 @@ async function adminLogin(){
         result.error
       );
 
+
       message.textContent =
         "❌ Login failed: " +
         result.error.message;
+
 
       return;
 
@@ -682,22 +698,20 @@ async function adminLogin(){
     ){
 
       // -------------------------------------------------
-      // Successful login
+      // SUCCESS
       // -------------------------------------------------
 
       adminAuthenticated =
         true;
 
 
-      /*
-       * We intentionally do NOT save authentication
-       * to sessionStorage.
-       *
-       * Therefore refreshing this page will require
-       * the PIN again.
-       */
+      // IMPORTANT FIX:
+      // Keep PIN in memory for subsequent RPC calls.
+      currentAdminPin =
+        pin;
 
 
+      // Clear the visible input.
       pinInput.value = "";
 
 
@@ -736,6 +750,7 @@ async function adminLogin(){
       error
     );
 
+
     message.textContent =
       "❌ Could not connect to admin login.";
 
@@ -762,14 +777,34 @@ function adminLogout(){
     false;
 
 
-  /*
-   * Remove any old authentication value that may
-   * have been created by an older version of the page.
-   */
+  // IMPORTANT:
+  // Completely forget the PIN.
 
-  sessionStorage.removeItem(
-    "hotel_admin_authenticated"
-  );
+  currentAdminPin =
+    "";
+
+
+  // Remove any old authentication value that
+  // may have been created by an older version.
+
+  try{
+
+    sessionStorage.removeItem(
+      "hotel_admin_authenticated"
+    );
+
+    localStorage.removeItem(
+      "hotel_admin_authenticated"
+    );
+
+  }catch(error){
+
+    console.warn(
+      "Could not clear old storage:",
+      error
+    );
+
+  }
 
 
   allCards = [];
@@ -792,6 +827,11 @@ function adminLogout(){
   ).textContent = "";
 
 
+  document.getElementById(
+    "adminPin"
+  ).value = "";
+
+
   updateAdminScreen();
 
 }
@@ -803,13 +843,17 @@ function adminLogout(){
 
 function requireAdmin(){
 
-  if(!adminAuthenticated){
+  if(
+    !adminAuthenticated ||
+    !currentAdminPin
+  ){
 
     adminLogout();
 
     return false;
 
   }
+
 
   return true;
 
@@ -829,50 +873,109 @@ async function loadEverything(){
   }
 
 
-  document.getElementById(
-    "reservations"
-  ).innerHTML =
-  "Loading reservations...";
+  const reservationsContainer =
+    document.getElementById(
+      "reservations"
+    );
 
 
-  document.getElementById(
-    "orders"
-  ).innerHTML =
-  "Loading orders...";
+  const ordersContainer =
+    document.getElementById(
+      "orders"
+    );
+
+
+  reservationsContainer.innerHTML =
+    "Loading reservations...";
+
+
+  ordersContainer.innerHTML =
+    "Loading orders...";
 
 
   // =====================================================
   // RESERVATIONS
+  //
+  // IMPORTANT FIX:
+  // Use currentAdminPin instead of undefined adminPin.
   // =====================================================
 
-  const reservationResult =
-  await supabaseClient.rpc(
-    "admin_get_reservations",
-    {
-      p_pin: adminPin
-    }
-  );
+  let reservationResult;
+
+
+  try{
+
+    reservationResult =
+      await supabaseClient.rpc(
+        "admin_get_reservations",
+        {
+          p_pin: currentAdminPin
+        }
+      );
+
+  }catch(error){
+
+    console.error(
+      "Reservation RPC exception:",
+      error
+    );
+
+
+    reservationsContainer.innerHTML =
+      "❌ Could not load reservations. " +
+      escapeHTML(
+        error.message || "Unknown error"
+      );
+
+
+    allCards = [];
+
+    filterCards();
+
+    return;
+
+  }
 
 
   if(reservationResult.error){
 
     console.error(
+      "admin_get_reservations error:",
       reservationResult.error
     );
 
 
-    document.getElementById(
-      "reservations"
-    ).innerHTML =
-      "❌ Could not load reservations.";
+    reservationsContainer.innerHTML =
+      `
+      <div class="notice">
+
+        ❌ Could not load reservations.
+
+        <br><br>
+
+        <strong>Error:</strong>
+
+        ${escapeHTML(
+          reservationResult.error.message ||
+          "Unknown reservation error"
+        )}
+
+      </div>
+      `;
 
 
-    allCards=[];
+    allCards = [];
 
   }else{
 
     const reservations =
       reservationResult.data || [];
+
+
+    console.log(
+      "Reservations loaded:",
+      reservations
+    );
 
 
     // =====================================================
@@ -892,6 +995,16 @@ async function loadEverything(){
           ascending:false
         }
       );
+
+
+    if(paymentResult.error){
+
+      console.warn(
+        "Could not load payments:",
+        paymentResult.error
+      );
+
+    }
 
 
     const payments =
@@ -921,6 +1034,16 @@ async function loadEverything(){
       );
 
 
+    if(cancellationResult.error){
+
+      console.warn(
+        "Could not load cancellations:",
+        cancellationResult.error
+      );
+
+    }
+
+
     const cancellations =
       cancellationResult.error
       ? []
@@ -940,16 +1063,24 @@ async function loadEverything(){
           const payment =
             payments.find(
               p =>
-                p.reservation_id ===
-                reservation.id
+                Number(
+                  p.reservation_id
+                ) ===
+                Number(
+                  reservation.id
+                )
             );
 
 
           const cancellation =
             cancellations.find(
               c =>
-                c.reservation_id ===
-                reservation.id
+                Number(
+                  c.reservation_id
+                ) ===
+                Number(
+                  reservation.id
+                )
             );
 
 
@@ -989,17 +1120,31 @@ async function loadEverything(){
   if(orderResult.error){
 
     console.error(
+      "Could not load food orders:",
       orderResult.error
     );
 
 
-    document.getElementById(
-      "orders"
-    ).innerHTML =
-      "❌ Could not load food orders.";
+    ordersContainer.innerHTML =
+      `
+      <div class="notice">
+
+        ❌ Could not load food orders.
+
+        <br><br>
+
+        <strong>Error:</strong>
+
+        ${escapeHTML(
+          orderResult.error.message ||
+          "Unknown error"
+        )}
+
+      </div>
+      `;
 
 
-    allOrders=[];
+    allOrders = [];
 
   }else{
 
@@ -1058,14 +1203,61 @@ function filterCards(){
         const r =
           item.reservation;
 
+
+        // IMPORTANT:
+        // admin_get_reservations returns the customer
+        // information directly in the reservation row
+        // in your current result:
+        //
+        // customer_name
+        // customer_phone
+        // customer_email
+        //
+        // It may NOT return customers:{}.
+        //
+        // Therefore we support BOTH formats.
+
         const c =
           r.customers || {};
+
 
         const room =
           r.rooms || {};
 
+
+        const customerName =
+          r.customer_name ||
+          c.name ||
+          "";
+
+
+        const customerPhone =
+          r.customer_phone ||
+          c.phone ||
+          "";
+
+
+        const customerEmail =
+          r.customer_email ||
+          c.email ||
+          "";
+
+
+        const roomName =
+          r.room_name ||
+          room.name ||
+          "";
+
+
+        const roomNumber =
+          r.room_number ||
+          room.room_number ||
+          "";
+
+
         const p =
           item.payment;
+
 
         const x =
           item.cancellation;
@@ -1077,15 +1269,15 @@ function filterCards(){
 
           ${r.reservation_code || ""}
 
-          ${c.name || ""}
+          ${customerName}
 
-          ${c.phone || ""}
+          ${customerPhone}
 
-          ${c.email || ""}
+          ${customerEmail}
 
-          ${room.name || ""}
+          ${roomName}
 
-          ${room.room_number || ""}
+          ${roomNumber}
 
         `.toLowerCase();
 
@@ -1136,6 +1328,7 @@ function filterCards(){
 
           }
 
+
           return true;
 
         }
@@ -1159,6 +1352,7 @@ function filterCards(){
             return x.status === status;
 
           }
+
 
           return true;
 
@@ -1309,14 +1503,64 @@ function displayCards(cards){
       const r =
         item.reservation;
 
+
       const c =
         r.customers || {};
+
 
       const room =
         r.rooms || {};
 
+
+      // IMPORTANT:
+      // Support the actual columns returned by your
+      // admin reservation RPC.
+
+      const customerName =
+        r.customer_name ||
+        c.name ||
+        "—";
+
+
+      const customerPhone =
+        r.customer_phone ||
+        c.phone ||
+        "—";
+
+
+      const customerEmail =
+        r.customer_email ||
+        c.email ||
+        "—";
+
+
+      const roomName =
+        r.room_name ||
+        room.name ||
+        "—";
+
+
+      const roomNumber =
+        r.room_number ||
+        room.room_number ||
+        "—";
+
+
+      const roomAvailable =
+        typeof r.room_available === "boolean"
+
+        ?
+
+        r.room_available
+
+        :
+
+        room.available === true;
+
+
       const p =
         item.payment;
+
 
       const x =
         item.cancellation;
@@ -1603,7 +1847,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              c.name || "—"
+              customerName
             )}
 
           </div>
@@ -1616,7 +1860,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              c.phone || "—"
+              customerPhone
             )}
 
           </div>
@@ -1629,7 +1873,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              c.email || "—"
+              customerEmail
             )}
 
           </div>
@@ -1642,13 +1886,13 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              room.name || "—"
+              roomName
             )}
 
             (
 
             ${escapeHTML(
-              room.room_number || "—"
+              roomNumber
             )}
 
             )
@@ -1663,7 +1907,7 @@ function displayCards(cards){
             </span>
 
             ${
-              room.available === true
+              roomAvailable
 
               ?
 
