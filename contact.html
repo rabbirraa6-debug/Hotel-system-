@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>Contact Us - Your Hotel</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f5f0;
+  color:#222;
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+header{
+  background:#111;
+  color:white;
+  padding:18px 20px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  gap:20px;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+nav{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:15px;
+}
+
+nav a{
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+}
+
+nav a:hover{
+  color:#d4af37;
+}
+
+
+/* =========================
+   HERO
+   ========================= */
+
+.hero{
+  background:
+    linear-gradient(
+      rgba(0,0,0,.55),
+      rgba(0,0,0,.55)
+    ),
+    url("https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80")
+    center/cover;
+
+  color:white;
+
+  padding:70px 20px;
+
+  text-align:center;
+}
+
+.hero h1{
+  font-size:42px;
+  margin-bottom:15px;
+}
+
+.hero p{
+  font-size:18px;
+  color:#eee;
+}
+
+
+/* =========================
+   MAIN SECTION
+   ========================= */
+
+.section{
+  padding:45px 20px;
+}
+
+.section h2{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+
+/* =========================
+   CONTACT CARDS
+   ========================= */
+
+.contact-grid{
+  max-width:900px;
+  margin:auto;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+  gap:20px;
+}
+
+.contact-card{
+  background:white;
+
+  padding:25px;
+
+  border-radius:14px;
+
+  box-shadow:
+    0 4px 15px
+    rgba(0,0,0,.08);
+
+  text-align:center;
+}
+
+.contact-icon{
+  font-size:35px;
+  margin-bottom:12px;
+}
+
+.contact-card h3{
+  margin-bottom:10px;
+}
+
+.contact-card p{
+  color:#555;
+  line-height:1.6;
+}
+
+.contact-link{
+  display:inline-block;
+
+  margin-top:15px;
+
+  color:#9b7b12;
+
+  font-weight:bold;
+
+  text-decoration:none;
+}
+
+.contact-link:hover{
+  text-decoration:underline;
+}
+
+
+/* =========================
+   HELP SECTION
+   ========================= */
+
+.help-section{
+  background:#111;
+  color:white;
+
+  padding:45px 20px;
+
+  text-align:center;
+}
+
+.help-section h2{
+  margin-bottom:15px;
+}
+
+.help-section p{
+  color:#ddd;
+  max-width:650px;
+  margin:0 auto 25px;
+  line-height:1.6;
+}
+
+
+/* =========================
+   BUTTON
+   ========================= */
+
+.btn{
+  display:inline-block;
+
+  background:#d4af37;
+  color:#111;
+
+  padding:13px 22px;
+
+  border-radius:8px;
+
+  text-decoration:none;
+
+  font-weight:bold;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+
+/* =========================
+   HOURS
+   ========================= */
+
+.hours{
+  max-width:700px;
+
+  margin:35px auto 0;
+
+  background:white;
+
+  padding:20px;
+
+  border-radius:12px;
+
+  box-shadow:
+    0 4px 15px
+    rgba(0,0,0,.08);
+
+  text-align:center;
+}
+
+.hours h3{
+  margin-bottom:12px;
+}
+
+.hours p{
+  color:#555;
+  line-height:1.6;
+}
+
+
+/* =========================
+   FOOTER
+   ========================= */
+
+footer{
+  background:#111;
+
+  color:white;
+
+  text-align:center;
+
+  padding:25px;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media(max-width:650px){
+
+header{
+  flex-direction:column;
+}
+
+nav{
+  justify-content:center;
+}
+
+.hero h1{
+  font-size:34px;
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+     ========================= -->
+
+<header>
+
+<div class="logo">
+YOUR HOTEL
+</div>
+
+
+<nav>
+
+<a href="index.html">
+Home
+</a>
+
+<a href="rooms.html">
+Rooms
+</a>
+
+<a href="food.html">
+Food & Table
+</a>
+
+<a href="check-status.html">
+Check Status
+</a>
+
+<a href="contact.html">
+Contact
+</a>
+
+</nav>
+
+</header>
+
+
+<!-- =========================
+     HERO
+     ========================= -->
+
+<section class="hero">
+
+<h1>
+📞 Contact Us
+</h1>
+
+<p>
+We're here to help with your reservation,
+order or any questions you may have.
+</p>
+
+</section>
+
+
+<!-- =========================
+     CONTACT INFORMATION
+     ========================= -->
+
+<section class="section">
+
+<h2>
+How Can We Help?
+</h2>
+
+
+<div class="contact-grid">
+
+
+<!-- PHONE -->
+
+<div class="contact-card">
+
+<div class="contact-icon">
+📞
+</div>
+
+<h3>
+Call Us
+</h3>
+
+<p>
+Speak directly with the hotel.
+</p>
+
+<a
+href="tel:09XXXXXXXX"
+class="contact-link"
+>
+09XXXXXXXX
+</a>
+
+</div>
+
+
+<!-- EMAIL -->
+
+<div class="contact-card">
+
+<div class="contact-icon">
+📧
+</div>
+
+<h3>
+Email Us
+</h3>
+
+<p>
+Send us your questions or requests.
+</p>
+
+<a
+href="mailto:hotel@example.com"
+class="contact-link"
+>
+hotel@example.com
+</a>
+
+</div>
+
+
+<!-- LOCATION -->
+
+<div class="contact-card">
+
+<div class="contact-icon">
+📍
+</div>
+
+<h3>
+Our Location
+</h3>
+
+<p>
+YOUR HOTEL<br>
+Your City, Ethiopia
+</p>
+
+</div>
+
+
+<!-- WHATSAPP -->
+
+<div class="contact-card">
+
+<div class="contact-icon">
+💬
+</div>
+
+<h3>
+WhatsApp
+</h3>
+
+<p>
+Message the hotel for quick assistance.
+</p>
+
+<a
+href="https://wa.me/2519XXXXXXXX"
+class="contact-link"
+target="_blank"
+rel="noopener"
+>
+Message Us →
+</a>
+
+</div>
+
+
+</div>
+
+
+<!-- =========================
+     SUPPORT HOURS
+     ========================= -->
+
+<div class="hours">
+
+<h3>
+🕐 Contact & Support Hours
+</h3>
+
+<p>
+Our team is available to assist you with
+reservations, food orders, payments and
+general questions.
+</p>
+
+<p>
+<strong>
+Every day: 8:00 AM – 10:00 PM
+</strong>
+</p>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     HELP SECTION
+     ========================= -->
+
+<section class="help-section">
+
+<h2>
+Need Help With a Reservation or Order?
+</h2>
+
+<p>
+If you have already made a room reservation
+or food and table order, you can check its
+latest status using your reservation or order ID.
+</p>
+
+
+<a
+href="check-status.html"
+class="btn"
+>
+🔎 Check Status
+</a>
+
+</section>
+
+
+<!-- =========================
+     QUICK LINKS
+     ========================= -->
+
+<section class="section">
+
+<h2>
+Quick Links
+</h2>
+
+
+<div class="contact-grid">
+
+
+<div class="contact-card">
+
+<div class="contact-icon">
+🛏️
+</div>
+
+<h3>
+Rooms
+</h3>
+
+<p>
+Browse available rooms and make a reservation.
+</p>
+
+<a
+href="rooms.html"
+class="contact-link"
+>
+Reserve a Room →
+</a>
+
+</div>
+
+
+<div class="contact-card">
+
+<div class="contact-icon">
+🍽️
+</div>
+
+<h3>
+Food & Table
+</h3>
+
+<p>
+Order food and drinks and choose your table.
+</p>
+
+<a
+href="food.html"
+class="contact-link"
+>
+Order Food →
+</a>
+
+</div>
+
+
+<div class="contact-card">
+
+<div class="contact-icon">
+🔎
+</div>
+
+<h3>
+Check Status
+</h3>
+
+<p>
+Check the latest status of your reservation
+or food order.
+</p>
+
+<a
+href="check-status.html"
+class="contact-link"
+>
+Check Status →
+</a>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     FOOTER
+     ========================= -->
+
+<footer>
+
+© 2026 Your Hotel. All rights reserved.
+
+</footer>
+
+
+</body>
+
+  </html>
