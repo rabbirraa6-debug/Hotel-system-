@@ -1,18 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
 
-<head>
+«»
 
-<meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
-
-<title>Food & Table</title>
-
-<style>
+<title>Food & Table</title><style>
 
 *{
   box-sizing:border-box;
@@ -236,6 +228,18 @@ input{
   cursor:not-allowed;
 }
 
+.customer-box{
+  background:#fafafa;
+  border:1px solid #ddd;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:18px;
+}
+
+.customer-box h3{
+  margin-bottom:14px;
+}
+
 .success-box{
   background:white;
   padding:25px;
@@ -349,436 +353,175 @@ body{
 
 }
 
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<header>
-
-<h1>🍽️ Food & Table</h1>
-
-<p>
+</style></head><body><div class="container"><header><h1>🍽️ Food & Table</h1><p>
 Choose your food, drinks, table and arrival time.
-</p>
-
-</header>
-
-
-<!-- =========================
+</p></header><!-- =========================
      FOOD
-     ========================= -->
-
-<section class="section">
-
-<h2>🍽️ Food</h2>
-
-<div class="grid">
-
-
-<div class="card">
-
-<img
-src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=600&h=500&q=80"
+     ========================= --><section class="section"><h2>🍽️ Food</h2><div class="grid"><div class="card"><img
+src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
 alt="Burger"
 loading="lazy"
-onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1617196030246-9d585c7f989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';"
->
+onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80';"
 
-<div class="card-content">
+«»
 
-<h3>Burger</h3>
-
-<div class="price">
+<div class="card-content"><h3>Burger</h3><div class="price">
 250 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeFood(0,-1)">
+</div><div class="quantity"><button onclick="changeFood(0,-1)">
 −
-</button>
-
-<span id="foodQty0">0</span>
+</button><span id="foodQty0">0</span>
 
 <button onclick="changeFood(0,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<img
-src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80"
+</button></div></div></div><div class="card"><img
+src="https://images.unsplash.com/photo-1574071318508-1cdbab80d601?auto=format&fit=crop&w=600&q=80"
 alt="Pizza"
 loading="lazy"
-onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80';"
->
+onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80';"
 
-<div class="card-content">
+«»
 
-<h3>Pizza</h3>
-
-<div class="price">
+<div class="card-content"><h3>Pizza</h3><div class="price">
 400 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeFood(1,-1)">
+</div><div class="quantity"><button onclick="changeFood(1,-1)">
 −
-</button>
-
-<span id="foodQty1">0</span>
+</button><span id="foodQty1">0</span>
 
 <button onclick="changeFood(1,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<img
+</button></div></div></div><div class="card"><img
 src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=600&q=80"
 alt="Pasta"
 loading="lazy"
->
 
-<div class="card-content">
+«»
 
-<h3>Pasta</h3>
-
-<div class="price">
+<div class="card-content"><h3>Pasta</h3><div class="price">
 350 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeFood(2,-1)">
+</div><div class="quantity"><button onclick="changeFood(2,-1)">
 −
-</button>
-
-<span id="foodQty2">0</span>
+</button><span id="foodQty2">0</span>
 
 <button onclick="changeFood(2,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<img
+</button></div></div></div><div class="card"><img
 src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80"
 alt="Chicken"
 loading="lazy"
->
 
-<div class="card-content">
+«»
 
-<h3>Chicken</h3>
-
-<div class="price">
+<div class="card-content"><h3>Chicken</h3><div class="price">
 500 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeFood(3,-1)">
+</div><div class="quantity"><button onclick="changeFood(3,-1)">
 −
-</button>
-
-<span id="foodQty3">0</span>
+</button><span id="foodQty3">0</span>
 
 <button onclick="changeFood(3,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<img
+</button></div></div></div><div class="card"><img
 src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80"
 alt="Salad"
 loading="lazy"
->
 
-<div class="card-content">
+«»
 
-<h3>Salad</h3>
-
-<div class="price">
+<div class="card-content"><h3>Salad</h3><div class="price">
 250 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeFood(4,-1)">
+</div><div class="quantity"><button onclick="changeFood(4,-1)">
 −
-</button>
-
-<span id="foodQty4">0</span>
+</button><span id="foodQty4">0</span>
 
 <button onclick="changeFood(4,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<p class="limit">
+</button></div></div></div></div><p class="limit">
 Maximum food: 10 items
-</p>
-
-</section>
-
-
-<!-- =========================
+</p></section><!-- =========================
      DRINKS
-     ========================= -->
-
-<section class="section">
-
-<h2>🥤 Drinks</h2>
-
-<div class="grid">
-
-
-<div class="card">
-
-<img
+     ========================= --><section class="section"><h2>🥤 Drinks</h2><div class="grid"><div class="card"><img
 src="https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80"
 alt="Water"
 loading="lazy"
->
 
-<div class="card-content">
+«»
 
-<h3>Water</h3>
-
-<div class="price">
+<div class="card-content"><h3>Water</h3><div class="price">
 50 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeDrink(0,-1)">
+</div><div class="quantity"><button onclick="changeDrink(0,-1)">
 −
-</button>
-
-<span id="drinkQty0">0</span>
+</button><span id="drinkQty0">0</span>
 
 <button onclick="changeDrink(0,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<img
+</button></div></div></div><div class="card"><img
 src="https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=600&q=80"
 alt="Juice"
 loading="lazy"
->
 
-<div class="card-content">
+«»
 
-<h3>Juice</h3>
-
-<div class="price">
+<div class="card-content"><h3>Juice</h3><div class="price">
 150 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeDrink(1,-1)">
+</div><div class="quantity"><button onclick="changeDrink(1,-1)">
 −
-</button>
-
-<span id="drinkQty1">0</span>
+</button><span id="drinkQty1">0</span>
 
 <button onclick="changeDrink(1,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<img
+</button></div></div></div><div class="card"><img
 src="https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80"
 alt="Cola"
 loading="lazy"
->
 
-<div class="card-content">
+«»
 
-<h3>Cola</h3>
-
-<div class="price">
+<div class="card-content"><h3>Cola</h3><div class="price">
 100 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeDrink(2,-1)">
+</div><div class="quantity"><button onclick="changeDrink(2,-1)">
 −
-</button>
-
-<span id="drinkQty2">0</span>
+</button><span id="drinkQty2">0</span>
 
 <button onclick="changeDrink(2,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<img
+</button></div></div></div><div class="card"><img
 src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80"
 alt="Coffee"
 loading="lazy"
->
 
-<div class="card-content">
+«»
 
-<h3>Coffee</h3>
-
-<div class="price">
+<div class="card-content"><h3>Coffee</h3><div class="price">
 100 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeDrink(3,-1)">
+</div><div class="quantity"><button onclick="changeDrink(3,-1)">
 −
-</button>
-
-<span id="drinkQty3">0</span>
+</button><span id="drinkQty3">0</span>
 
 <button onclick="changeDrink(3,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<img
+</button></div></div></div><div class="card"><img
 src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=600&q=80"
 alt="Tea"
 loading="lazy"
->
 
-<div class="card-content">
+«»
 
-<h3>Tea</h3>
-
-<div class="price">
+<div class="card-content"><h3>Tea</h3><div class="price">
 80 ETB
-</div>
-
-<div class="quantity">
-
-<button onclick="changeDrink(4,-1)">
+</div><div class="quantity"><button onclick="changeDrink(4,-1)">
 −
-</button>
-
-<span id="drinkQty4">0</span>
+</button><span id="drinkQty4">0</span>
 
 <button onclick="changeDrink(4,1)">
 +
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<p class="limit">
+</button></div></div></div></div><p class="limit">
 Maximum drinks: 10 items
-</p>
-
-</section>
-
-
-<!-- =========================
+</p></section><!-- =========================
      TABLE
-     ========================= -->
-
-<section class="section">
-
-<h2>🪑 Table</h2>
-
-<div class="form-box">
-
-<label for="tableNumber">
+     ========================= --><section class="section"><h2>🪑 Table</h2><div class="form-box"><label for="tableNumber">
 Table Number
-</label>
-
-<select id="tableNumber">
-
-<option value="">
+</label><select id="tableNumber"><option value="">
 Select Table Number
-</option>
-
-<option value="1">Table 01</option>
+</option><option value="1">Table 01</option>
 <option value="2">Table 02</option>
 <option value="3">Table 03</option>
 <option value="4">Table 04</option>
@@ -787,92 +530,51 @@ Select Table Number
 <option value="7">Table 07</option>
 <option value="8">Table 08</option>
 <option value="9">Table 09</option>
-<option value="10">Table 10</option>
-
-</select>
-
-
-<label for="arrivalTime">
+<option value="10">Table 10</option></select><label for="arrivalTime">
 🕐 Estimated Arrival Time
-</label>
-
-<input
+</label><input
 id="arrivalTime"
 type="time"
->
 
-<div class="notice">
+«»
 
-ℹ️ Select at least one food or drink
+<div class="notice">ℹ️ Select at least one food or drink
 to reserve a table.
 
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =========================
+</div></div></section><!-- =========================
      SUMMARY
-     ========================= -->
-
-<section class="section">
-
-<div
+     ========================= --><section class="section"><div
 id="summaryBox"
 class="summary"
->
-
-<h2>
+><h2>
 🛒 Order Summary
-</h2>
-
-<div id="summaryItems">
+</h2><div id="summaryItems">
 No items selected.
-</div>
-
-<div class="total">
-
-Total:
+</div><div class="total">Total:
 <span id="total">
 0.00
 </span>
 ETB
 
-</div>
-
-<button
+</div><button
 id="continueButton"
 class="submit"
 onclick="showPaymentBox()"
->
+
+«»
 
 💳 Continue to Payment
 
-</button>
-
-</div>
-
-
-<!-- =========================
+</button></div><!-- =========================
      PAYMENT
-     ========================= -->
-
-<div
+     ========================= --><div
 id="paymentBox"
 class="payment-box"
 style="display:none;"
->
-
-<h2>
+><h2>
 💳 Payment Receipt
-</h2>
-
-<div class="payment-note">
-
-Please complete your payment and paste
-your payment receipt URL below.
+</h2><div class="payment-note">Please enter your contact information
+and complete your payment.
 
 <br><br>
 
@@ -880,47 +582,51 @@ your payment receipt URL below.
 after the receipt has been successfully
 submitted.
 
-</div>
+</div><!-- =========================
+     CUSTOMER INFORMATION
+     ========================= --><div class="customer-box"><h3>
+👤 Customer Information
+</h3><label for="customerName">
+Your Name
+</label><input
+id="customerName"
+type="text"
+placeholder="Enter your name"
+autocomplete="name"
 
+«»
 
-<label for="receiptUrl">
+<label for="customerPhone">
+Phone Number
+</label><input
+id="customerPhone"
+type="tel"
+placeholder="Enter your phone number"
+autocomplete="tel"
+
+«»
+
+</div><!-- =========================
+     RECEIPT
+     ========================= --><label for="receiptUrl">
 Payment Receipt URL
-</label>
-
-<input
+</label><input
 id="receiptUrl"
 type="url"
 placeholder="Paste your receipt link here"
->
 
+«»
 
 <button
 id="paymentButton"
 class="payment-submit"
 onclick="submitOrder()"
->
+
+«»
 
 ✅ Submit Order & Receipt
 
-</button>
-
-</div>
-
-
-<div id="message"></div>
-
-</section>
-
-</div>
-
-
-<!-- SUPABASE -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="config.js"></script>
-
-<script>
+</button></div><div id="message"></div></section></div><!-- SUPABASE --><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
 
 
 const supabaseClient =
@@ -1130,8 +836,6 @@ let html="";
 let hasItems=false;
 
 
-/* FOOD */
-
 foods.forEach(
 (food,index)=>{
 
@@ -1165,8 +869,6 @@ ${amount.toFixed(2)} ETB
 
 });
 
-
-/* DRINKS */
 
 drinks.forEach(
 (drink,index)=>{
@@ -1305,8 +1007,6 @@ drinkQuantities.reduce(
 );
 
 
-/* TABLE */
-
 if(!tableNumber){
 
 message.innerHTML=
@@ -1318,8 +1018,6 @@ return;
 
 }
 
-
-/* ARRIVAL */
 
 if(!arrivalTime){
 
@@ -1333,8 +1031,6 @@ return;
 }
 
 
-/* ITEMS */
-
 if(foodTotal===0&&drinkTotal===0){
 
 message.innerHTML=
@@ -1346,10 +1042,6 @@ return;
 
 }
 
-
-/* =========================
-   CHECK OCCUPIED TABLE
-   ========================= */
 
 continueButton.disabled=true;
 
@@ -1430,10 +1122,6 @@ return;
 
 }
 
-
-/* =========================
-   TABLE IS AVAILABLE
-   ========================= */
 
 message.innerHTML="";
 
@@ -1561,6 +1249,16 @@ document.getElementById(
 "arrivalTime"
 ).value;
 
+const customerName=
+document.getElementById(
+"customerName"
+).value.trim();
+
+const customerPhone=
+document.getElementById(
+"customerPhone"
+).value.trim();
+
 const receiptUrl=
 document.getElementById(
 "receiptUrl"
@@ -1577,7 +1275,75 @@ document.getElementById(
 );
 
 
-/* RECEIPT */
+/* =========================
+   CUSTOMER NAME
+   ========================= */
+
+if(!customerName){
+
+message.innerHTML=
+`<div class="error">
+❌ Please enter your name.
+</div>`;
+
+document.getElementById(
+"customerName"
+).focus();
+
+return;
+
+}
+
+
+/* =========================
+   CUSTOMER PHONE
+   ========================= */
+
+if(!customerPhone){
+
+message.innerHTML=
+`<div class="error">
+❌ Please enter your phone number.
+</div>`;
+
+document.getElementById(
+"customerPhone"
+).focus();
+
+return;
+
+}
+
+
+/* =========================
+   PHONE VALIDATION
+   ========================= */
+
+const phoneDigits=
+customerPhone.replace(
+/\D/g,
+""
+);
+
+if(phoneDigits.length<7){
+
+message.innerHTML=
+`<div class="error">
+❌ Please enter a valid phone number.
+</div>`;
+
+document.getElementById(
+"customerPhone"
+).focus();
+
+return;
+
+}
+
+
+/* =========================
+   RECEIPT
+   ========================= */
 
 if(!receiptUrl){
 
@@ -1586,12 +1352,18 @@ message.innerHTML=
 ❌ Please enter your payment receipt URL.
 </div>`;
 
+document.getElementById(
+"receiptUrl"
+).focus();
+
 return;
 
 }
 
 
-/* BASIC URL CHECK */
+/* =========================
+   URL CHECK
+   ========================= */
 
 try{
 
@@ -1605,6 +1377,10 @@ message.innerHTML=
 `<div class="error">
 ❌ Please enter a valid receipt URL.
 </div>`;
+
+document.getElementById(
+"receiptUrl"
+).focus();
 
 return;
 
@@ -1738,7 +1514,13 @@ payment_status:
 "pending",
 
 status:
-"pending"
+"pending",
+
+customer_name:
+customerName,
+
+customer_phone:
+customerPhone
 
 })
 
@@ -1746,6 +1528,10 @@ status:
 
 .single();
 
+
+/* =========================
+   HANDLE INSERT ERROR
+   ========================= */
 
 if(error){
 
@@ -1761,7 +1547,8 @@ message.innerHTML=
 
 <br><br>
 
-Please try again.
+Please check your information
+and try again.
 
 </div>`;
 
@@ -1814,6 +1601,13 @@ font-size:14px;
 color:#666;
 "
 >
+
+Thank you,
+<strong>
+${escapeHTML(customerName)}
+</strong>.
+
+<br>
 
 Your payment receipt has been
 submitted for review.
@@ -1959,8 +1753,4 @@ return String(value)
 
 }
 
-</script>
-
-</body>
-
-</html>
+</script></body></html>
