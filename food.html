@@ -418,9 +418,10 @@ onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-161719603
 <div class="card">
 
 <img
-src="https://images.unsplash.com/photo-1574071318508-1cdbab80d601?auto=format&fit=crop&w=600&q=80"
+src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80"
 alt="Pizza"
 loading="lazy"
+onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80';"
 >
 
 <div class="card-content">
@@ -1625,13 +1626,7 @@ buildItems();
 
 /* =========================
    CHECK TABLE AGAIN
-   =========================
-   
-   This second check protects
-   against someone creating an
-   order between the first check
-   and the final insert.
-*/
+   ========================= */
 
 try{
 
@@ -1759,65 +1754,16 @@ console.error(
 error
 );
 
-
-/*
- * If the database constraint
- * catches another order at the
- * same time, show occupied message.
- */
-
-const errorText=
-(
-(error.message||"")+
-" "+
-(error.details||"")+
-" "+
-(error.hint||"")
-).toLowerCase();
-
-
-if(
-error.code==="23P01" ||
-errorText.includes("orders") &&
-(
-errorText.includes("overlap") ||
-errorText.includes("conflict")
-)
-){
-
-message.innerHTML=`
-
-<div class="occupied-box">
-
-<strong>
-🚫 Table ${String(tableNumber).padStart(2,"0")} is occupied
-</strong>
-
-<br><br>
-
-Another order was created for this
-table just before yours.
-
-<br><br>
-
-Please wait or choose another table.
-
-</div>
-
-`;
-
-}
-
-else{
-
 message.innerHTML=
 `<div class="error">
-❌ Could not submit order and receipt.
-<br><br>
-Please check your information and try again.
-</div>`;
 
-}
+❌ Could not submit order and receipt.
+
+<br><br>
+
+Please try again.
+
+</div>`;
 
 button.disabled=false;
 
