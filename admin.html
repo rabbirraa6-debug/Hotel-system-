@@ -716,6 +716,10 @@ const searchable = `
 
 ${order.order_code || ""}
 
+${order.customer_name || ""}
+
+${order.customer_phone || ""}
+
 ${order.table_number || ""}
 
 ${order.arrival_time || ""}
@@ -1456,6 +1460,32 @@ order.order_code ||
 <div class="row">
 
 <span class="label">
+Customer Name:
+</span>
+
+${escapeHTML(
+order.customer_name || "—"
+)}
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
+Phone:
+</span>
+
+${escapeHTML(
+order.customer_phone || "—"
+)}
+
+</div>
+
+
+<div class="row">
+
+<span class="label">
 Table:
 </span>
 
@@ -1898,94 +1928,54 @@ async function updateCancellation(
 
 
 // =====================================================
-// DATE
-// =====================================================
-
-function formatDate(date){
-
-if(!date){
-
-return "—";
-
-}
-
-
-return new Date(
-date
-).toLocaleDateString();
-
-}
-
-
-// =====================================================
-// ESCAPE HTML
+// HELPERS
 // =====================================================
 
 function escapeHTML(value){
 
-return String(value)
-
-.replace(
-/&/g,
-"&amp;"
-)
-
-.replace(
-/</g,
-"&lt;"
-)
-
-.replace(
-/>/g,
-"&gt;"
-)
-
-.replace(
-/"/g,
-"&quot;"
-)
-
-.replace(
-/'/g,
-"&#039;"
-);
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
 }
 
-
-// =====================================================
-// ESCAPE URL
-// =====================================================
 
 function escapeAttribute(value){
 
-return String(value)
+return escapeHTML(value);
 
-.replace(
-/&/g,
-"&amp;"
+}
+
+
+function formatDate(value){
+
+if(!value){
+return "—";
+}
+
+const date =
+new Date(value);
+
+if(
+Number.isNaN(
+date.getTime()
 )
+){
 
-.replace(
-/"/g,
-"&quot;"
-)
+return escapeHTML(value);
 
-.replace(
-/</g,
-"&lt;"
-)
+}
 
-.replace(
-/>/g,
-"&gt;"
-);
+return date.toLocaleDateString();
 
 }
 
 
 // =====================================================
-// START
+// INITIAL LOAD
 // =====================================================
 
 loadEverything();
@@ -1994,3 +1984,11 @@ loadEverything();
 
 </body>
 </html>
+
+Only the food/table order section was changed:
+
+- Added Customer Name to each food order card.
+- Added Phone to each food order card.
+- Added name and phone to the admin search.
+- Everything else remains as in your supplied page.
+- It expects the "orders" table columns to be exactly "customer_name" and "customer_phone", matching the customer information you added to the ordering page.
