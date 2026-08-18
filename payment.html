@@ -66,6 +66,7 @@ h1{
   letter-spacing:2px;
   color:#222;
   margin-bottom:12px;
+  word-break:break-word;
 }
 
 .copy-button{
@@ -128,6 +129,33 @@ button:disabled{
   margin-top:18px;
   text-align:center;
   font-weight:bold;
+  line-height:1.5;
+}
+
+.error-box{
+  background:#fff0f0;
+  border:1px solid #e53935;
+  color:#b71c1c;
+  padding:14px;
+  border-radius:10px;
+  text-align:left;
+}
+
+.success-box{
+  background:#f0fff4;
+  border:1px solid #43a047;
+  color:#1b5e20;
+  padding:14px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.checking-box{
+  background:#fffaf0;
+  border:1px solid #d4af37;
+  color:#6d5700;
+  padding:14px;
+  border-radius:10px;
 }
 
 .success-actions{
@@ -169,9 +197,6 @@ button:disabled{
 💳 Payment
 </h1>
 
-
-<!-- RESERVATION CODE -->
-
 <div
   id="bookingBox"
   class="booking-box"
@@ -197,16 +222,12 @@ Loading...
 </button>
 
 <span class="check-status">
-📋 Copy this to check your
-reservation status
+📋 Copy this to check your reservation status
 </span>
 
 </div>
 
-
-<!-- RECEIPT URL -->
-
-<label>
+<label for="receiptUrl">
 Payment Receipt URL
 </label>
 
@@ -214,7 +235,8 @@ Payment Receipt URL
   id="receiptUrl"
   type="url"
   placeholder="Paste your receipt link here"
-/>
+  autocomplete="off"
+>
 
 <button
   id="submitButton"
@@ -227,9 +249,6 @@ Submit Payment
 <div id="message"></div>
 
 </div>
-
-
-<!-- SUPABASE -->
 
 <script
 src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
@@ -245,79 +264,114 @@ window.supabase.createClient(
   SUPABASE_KEY
 );
 
-
-// GET RESERVATION CODE
-
 const params =
 new URLSearchParams(
   window.location.search
 );
 
 const reservationCode =
-params.get("reservation");
+(params.get("reservation") || "").trim();
 
-let reservation=null;
+let reservation = null;
 
-
-// LOAD RESERVATION
-
-async function loadReservation(){
-
-if(!reservationCode){
-
-document.getElementById(
-  "bookingCode"
-).textContent="Missing ID";
+function showError(text){
 
 document.getElementById(
   "message"
-).textContent=
-"❌ No reservation was provided.";
+).innerHTML = `
 
+<div class="error-box">
+
+❌ ${escapeHtml(text)}
+
+</div>
+
+`;
+
+}
+
+async function loadReservation(){
+
+const bookingCode =
+document.getElementById(
+  "bookingCode"
+);
+
+const submitButton =
 document.getElementById(
   "submitButton"
-).disabled=true;
+);
+
+if(!reservationCode){
+
+bookingCode.textContent =
+"Missing ID";
+
+showError(
+"No reservation was provided."
+);
+
+submitButton.disabled=true;
 
 return;
 
 }
 
-document.getElementById(
-  "bookingCode"
-).textContent=
+bookingCode.textContent =
 reservationCode;
-
 
 const {
 data,
 error
-}=
+} =
 await supabaseClient
 
 .from("reservations")
 
-.select("*")
+.select(
+  "id,reservation_code,customer_id,room_id,check_in,check_out,total_amount,status"
+)
 
 .eq(
   "reservation_code",
   reservationCode
 )
 
-.single();
-
+.maybeSingle();
 
 if(error){
 
-console.error(error);
+console.error(
+"Reservation lookup error:",
+error
+);
 
-document.getElementById(
-  "message"
-).textContent=
-"❌ Reservation not found.";
+showError(
+"Could not load the reservation. " +
+(
+  error.message ||
+  "Please try again."
+)
+);
 
-document.getElementById(
-  "submitButton"
-).disabled=true;
+submitButton.disabled=true;
+
+return;
+
+}
+
+if(!data){
+
+console.error(
+"No reservation returned for:",
+reservationCode
+);
+
+showError(
+"Reservation not found. Please check the reservation ID."
+);
+
+submitButton.disabled=true;
 
 return;
 
@@ -325,10 +379,39 @@ return;
 
 reservation=data;
 
+if(
+reservation.status === "cancelled"
+){
+
+showError(
+"This reservation has been cancelled and cannot receive payment."
+);
+
+submitButton.disabled=true;
+
+return;
+
 }
 
+if(
+reservation.status === "confirmed"
+){
 
-// COPY BOOKING CODE
+showError(
+"This reservation is already confirmed."
+);
+
+submitButton.disabled=true;
+
+return;
+
+}
+
+document.getElementById(
+"message"
+).innerHTML="";
+
+}
 
 function copyBookingCode(){
 
@@ -336,31 +419,31 @@ if(!reservationCode){
 return;
 }
 
+if(
+navigator.clipboard &&
+navigator.clipboard.writeText
+){
+
 navigator.clipboard
-
-.writeText(
-  reservationCode
-)
-
+.writeText(reservationCode)
 .then(()=>{
 
-const button=
+const button =
 document.getElementById(
   "copyButton"
 );
 
-button.textContent=
+button.textContent =
 "✅ Copied!";
 
 setTimeout(()=>{
 
-button.textContent=
+button.textContent =
 "📋 Copy";
 
 },1500);
 
 })
-
 .catch(()=>{
 
 alert(
@@ -369,60 +452,195 @@ alert(
 
 });
 
+return;
+
 }
 
+alert(
+"Please copy the reservation ID manually: " +
+reservationCode
+);
 
-// SUBMIT PAYMENT
+}
 
 async function submitPayment(){
 
-const receiptUrl=
+const receiptUrl =
 document.getElementById(
-  "receiptUrl"
+"receiptUrl"
 ).value.trim();
 
-const message=
+const message =
 document.getElementById(
-  "message"
+"message"
 );
 
-const button=
+const button =
 document.getElementById(
-  "submitButton"
+"submitButton"
 );
-
 
 if(!receiptUrl){
 
-message.textContent=
-"❌ Please enter your receipt URL.";
+message.innerHTML = `
+
+<div class="error-box">
+
+❌ Please enter your receipt URL.
+
+</div>
+
+`;
 
 return;
 
 }
 
+try{
+
+new URL(receiptUrl);
+
+}
+catch{
+
+message.innerHTML = `
+
+<div class="error-box">
+
+❌ Please enter a valid receipt URL.
+
+</div>
+
+`;
+
+return;
+
+}
 
 if(!reservation){
 
-message.textContent=
-"❌ Reservation could not be found.";
+message.innerHTML = `
+
+<div class="error-box">
+
+❌ Reservation information is not available.
+
+</div>
+
+`;
 
 return;
 
 }
 
-
 button.disabled=true;
 
-message.textContent=
-"Submitting payment...";
+message.innerHTML = `
 
+<div class="checking-box">
 
-// CREATE PAYMENT
+Submitting payment...
+
+</div>
+
+`;
 
 const {
-error
-}=
+data:existingPayments,
+error:existingPaymentError
+} =
+await supabaseClient
+
+.from("payments")
+
+.select("id,status")
+
+.eq(
+"reservation_id",
+reservation.id
+)
+
+.limit(1);
+
+if(existingPaymentError){
+
+console.error(
+"Existing payment check error:",
+existingPaymentError
+);
+
+message.innerHTML = `
+
+<div class="error-box">
+
+❌ Could not verify the payment status.
+
+<br><br>
+
+${escapeHtml(
+existingPaymentError.message ||
+"Database error."
+)}
+
+</div>
+
+`;
+
+button.disabled=false;
+
+return;
+
+}
+
+if(
+existingPayments &&
+existingPayments.length > 0
+){
+
+message.innerHTML = `
+
+<div class="error-box">
+
+❌ A payment receipt has already been submitted for this reservation.
+
+<br><br>
+
+Please wait for the hotel to review it.
+
+<div class="success-actions">
+
+<a
+class="action-button status-button"
+href="check-status.html?reservation=${encodeURIComponent(
+reservationCode
+)}"
+>
+🔎 Check Reservation Status
+</a>
+
+<a
+class="action-button home-button"
+href="index.html"
+>
+🏠 Back to Home
+</a>
+
+</div>
+
+</div>
+
+`;
+
+button.style.display="none";
+
+return;
+
+}
+
+const {
+data:payment,
+error:paymentError
+} =
 await supabaseClient
 
 .from("payments")
@@ -441,15 +659,50 @@ receiptUrl,
 status:
 "pending"
 
-});
+})
 
+.select(
+"id,reservation_id,amount,receipt_url,status"
+)
 
-if(error){
+.single();
 
-console.error(error);
+if(paymentError){
 
-message.textContent=
-"❌ Could not submit payment.";
+console.error(
+"Payment submission error:",
+paymentError
+);
+
+message.innerHTML = `
+
+<div class="error-box">
+
+❌ <strong>
+Could not submit payment.
+</strong>
+
+<br><br>
+
+${escapeHtml(
+paymentError.message ||
+"Unknown database error."
+)}
+
+${
+paymentError.details
+?
+`
+<br><br>
+${escapeHtml(paymentError.details)}
+`
+:
+""
+}
+
+</div>
+
+`;
 
 button.disabled=false;
 
@@ -457,71 +710,63 @@ return;
 
 }
 
+if(!payment){
 
-// SUCCESS
+message.innerHTML = `
 
-message.innerHTML=`
+<div class="error-box">
 
-<div>
-
-<div
-style="
-color:#16833b;
-font-size:18px;
-margin-bottom:8px;
-"
->
-
-✅ Payment receipt submitted!
-
-</div>
-
-
-<p
-style="
-font-size:14px;
-color:#666;
-font-weight:normal;
-line-height:1.5;
-"
->
-
-Your payment receipt has been
-received successfully.
+❌ Payment could not be confirmed.
 
 <br><br>
 
+Please try again.
+
+</div>
+
+`;
+
+button.disabled=false;
+
+return;
+
+}
+
+message.innerHTML = `
+
+<div class="success-box">
+
+<strong>
+✅ Payment receipt submitted!
+</strong>
+
+<p>
+Your payment receipt has been received successfully.
+</p>
+
+<p>
 ⏳ <strong>
 Please allow 10–30 minutes
 </strong>
-for the hotel to review your
-payment and update your
-reservation status.
-
+for the hotel to review your payment and update your reservation status.
 </p>
-
 
 <div class="success-actions">
 
 <a
 class="action-button status-button"
 href="check-status.html?reservation=${encodeURIComponent(
-  reservationCode
+reservationCode
 )}"
 >
-
 🔎 Check Reservation Status
-
 </a>
-
 
 <a
 class="action-button home-button"
 href="index.html"
 >
-
 🏠 Back to Home
-
 </a>
 
 </div>
@@ -530,23 +775,49 @@ href="index.html"
 
 `;
 
-
-// DISABLE FORM
-
 document.getElementById(
-  "receiptUrl"
+"receiptUrl"
 ).disabled=true;
 
 button.style.display="none";
 
 }
 
+function escapeHtml(value){
 
-// START
+return String(value)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
 
 loadReservation();
 
 </script>
 
 </body>
+
 </html>
