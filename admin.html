@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -24,6 +25,90 @@ body{
   padding:20px;
 }
 
+/* =====================================================
+   LOGIN
+===================================================== */
+
+#loginScreen{
+  min-height:90vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.login-card{
+  width:100%;
+  max-width:400px;
+  background:white;
+  padding:30px;
+  border-radius:15px;
+  box-shadow:0 5px 25px rgba(0,0,0,.12);
+  text-align:center;
+}
+
+.login-card h1{
+  margin-top:0;
+}
+
+.login-card p{
+  color:#666;
+}
+
+#adminPin{
+  width:100%;
+  padding:14px;
+  margin-top:15px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:18px;
+  text-align:center;
+  letter-spacing:4px;
+}
+
+.login-button{
+  width:100%;
+  padding:13px;
+  margin-top:15px;
+  border:none;
+  border-radius:8px;
+  background:#333;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.login-button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.login-error{
+  color:#c62828;
+  margin-top:15px;
+  min-height:20px;
+}
+
+.login-success{
+  color:#16833b;
+  margin-top:15px;
+}
+
+
+/* =====================================================
+   ADMIN
+===================================================== */
+
+#adminApp{
+  display:none;
+}
+
+.admin-header{
+  position:relative;
+  max-width:700px;
+  margin:0 auto;
+}
+
 h1{
   text-align:center;
 }
@@ -31,6 +116,23 @@ h1{
 h2{
   margin-top:35px;
 }
+
+.logout-button{
+  display:block;
+  margin:10px auto 20px;
+  background:#c62828;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:7px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+
+/* =====================================================
+   CONTROLS
+===================================================== */
 
 .controls{
   max-width:700px;
@@ -208,113 +310,172 @@ button:disabled{
 <body>
 
 
-<h1>🏨 Hotel Admin</h1>
+<!-- =====================================================
+     ADMIN LOGIN SCREEN
+===================================================== -->
 
+<div id="loginScreen">
 
-<div class="controls">
+  <div class="login-card">
 
-<strong>
-🔎 Search
-</strong>
+    <h1>🏨 Hotel Admin</h1>
 
+    <p>
+      Enter the administrator PIN to continue.
+    </p>
 
-<input
-id="search"
-type="text"
-placeholder="Reservation ID, order ID, name, phone, room or table..."
-oninput="filterCards()"
->
+    <input
+      id="adminPin"
+      type="password"
+      inputmode="numeric"
+      autocomplete="off"
+      placeholder="Admin PIN"
+    >
 
+    <button
+      id="loginButton"
+      class="login-button"
+      onclick="adminLogin()"
+    >
+      🔐 Login
+    </button>
 
-<select
-id="statusFilter"
-onchange="filterCards()"
->
+    <div
+      id="loginMessage"
+      class="login-error"
+    ></div>
 
-<option value="all">
-All statuses
-</option>
-
-<option value="pending">
-🟡 Pending
-</option>
-
-<option value="confirmed">
-✅ Confirmed
-</option>
-
-<option value="rejected">
-❌ Rejected
-</option>
-
-<option value="approved">
-✅ Approved
-</option>
-
-<option value="cancelled">
-❌ Cancelled
-</option>
-
-</select>
-
-
-<select
-id="typeFilter"
-onchange="filterCards()"
->
-
-<option value="all">
-All Types
-</option>
-
-<option value="reservation">
-🏨 Room Reservation
-</option>
-
-<option value="payment">
-💳 Room Payment
-</option>
-
-<option value="order">
-🍽️ Food & Table Order
-</option>
-
-<option value="cancellation">
-❌ Cancellation
-</option>
-
-</select>
-
-
-<button
-class="refresh"
-onclick="loadEverything()"
->
-
-🔄 Refresh
-
-</button>
+  </div>
 
 </div>
 
 
-<h2>
-📋 Room Reservations
-</h2>
+<!-- =====================================================
+     ADMIN APPLICATION
+===================================================== -->
+
+<div id="adminApp">
+
+  <div class="admin-header">
+
+    <h1>🏨 Hotel Admin</h1>
+
+    <button
+      class="logout-button"
+      onclick="adminLogout()"
+    >
+      🚪 Logout
+    </button>
+
+  </div>
 
 
-<div id="reservations">
-Loading reservations...
-</div>
+  <div class="controls">
+
+    <strong>
+      🔎 Search
+    </strong>
 
 
-<h2>
-🍽️ Food & Table Orders
-</h2>
+    <input
+      id="search"
+      type="text"
+      placeholder="Reservation ID, order ID, name, phone, room or table..."
+      oninput="filterCards()"
+    >
 
 
-<div id="orders">
-Loading orders...
+    <select
+      id="statusFilter"
+      onchange="filterCards()"
+    >
+
+      <option value="all">
+        All statuses
+      </option>
+
+      <option value="pending">
+        🟡 Pending
+      </option>
+
+      <option value="confirmed">
+        ✅ Confirmed
+      </option>
+
+      <option value="rejected">
+        ❌ Rejected
+      </option>
+
+      <option value="approved">
+        ✅ Approved
+      </option>
+
+      <option value="cancelled">
+        ❌ Cancelled
+      </option>
+
+    </select>
+
+
+    <select
+      id="typeFilter"
+      onchange="filterCards()"
+    >
+
+      <option value="all">
+        All Types
+      </option>
+
+      <option value="reservation">
+        🏨 Room Reservation
+      </option>
+
+      <option value="payment">
+        💳 Room Payment
+      </option>
+
+      <option value="order">
+        🍽️ Food & Table Order
+      </option>
+
+      <option value="cancellation">
+        ❌ Cancellation
+      </option>
+
+    </select>
+
+
+    <button
+      class="refresh"
+      onclick="loadEverything()"
+    >
+
+      🔄 Refresh
+
+    </button>
+
+  </div>
+
+
+  <h2>
+    📋 Room Reservations
+  </h2>
+
+
+  <div id="reservations">
+    Loading reservations...
+  </div>
+
+
+  <h2>
+    🍽️ Food & Table Orders
+  </h2>
+
+
+  <div id="orders">
+    Loading orders...
+  </div>
+
 </div>
 
 
@@ -328,11 +489,25 @@ src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 <script>
 
 
+// =====================================================
+// SUPABASE
+// =====================================================
+
 const supabaseClient =
 window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
+
+
+// =====================================================
+// ADMIN LOGIN STATE
+// =====================================================
+
+let adminAuthenticated =
+sessionStorage.getItem(
+  "hotel_admin_authenticated"
+) === "true";
 
 
 let allCards = [];
@@ -341,197 +516,499 @@ let allOrders = [];
 
 
 // =====================================================
+// START APPLICATION
+// =====================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    updateAdminScreen();
+
+    const pinInput =
+      document.getElementById(
+        "adminPin"
+      );
+
+    if(pinInput){
+
+      pinInput.addEventListener(
+        "keydown",
+        function(event){
+
+          if(
+            event.key === "Enter"
+          ){
+
+            adminLogin();
+
+          }
+
+        }
+      );
+
+    }
+
+  }
+);
+
+
+// =====================================================
+// UPDATE LOGIN / ADMIN SCREEN
+// =====================================================
+
+function updateAdminScreen(){
+
+  const loginScreen =
+    document.getElementById(
+      "loginScreen"
+    );
+
+  const adminApp =
+    document.getElementById(
+      "adminApp"
+    );
+
+
+  if(adminAuthenticated){
+
+    loginScreen.style.display =
+      "none";
+
+    adminApp.style.display =
+      "block";
+
+    loadEverything();
+
+  }else{
+
+    loginScreen.style.display =
+      "flex";
+
+    adminApp.style.display =
+      "none";
+
+  }
+
+}
+
+
+// =====================================================
+// ADMIN LOGIN
+// =====================================================
+
+async function adminLogin(){
+
+  const pinInput =
+    document.getElementById(
+      "adminPin"
+    );
+
+  const loginButton =
+    document.getElementById(
+      "loginButton"
+    );
+
+  const message =
+    document.getElementById(
+      "loginMessage"
+    );
+
+
+  const pin =
+    pinInput.value.trim();
+
+
+  message.textContent = "";
+
+  message.className =
+    "login-error";
+
+
+  if(!pin){
+
+    message.textContent =
+      "Please enter the admin PIN.";
+
+    return;
+
+  }
+
+
+  loginButton.disabled =
+    true;
+
+  loginButton.textContent =
+    "🔐 Checking...";
+
+
+  try{
+
+    const result =
+      await supabaseClient.rpc(
+        "admin_login",
+        {
+          p_pin: pin
+        }
+      );
+
+
+    if(result.error){
+
+      console.error(
+        "Admin login error:",
+        result.error
+      );
+
+      message.textContent =
+        "❌ Login failed: " +
+        result.error.message;
+
+      return;
+
+    }
+
+
+    const data =
+      result.data;
+
+
+    if(
+      data &&
+      data.success === true
+    ){
+
+      // -------------------------------------------------
+      // Successful login
+      // -------------------------------------------------
+
+      adminAuthenticated =
+        true;
+
+
+      sessionStorage.setItem(
+        "hotel_admin_authenticated",
+        "true"
+      );
+
+
+      pinInput.value = "";
+
+
+      message.textContent =
+        "✅ Login successful.";
+
+      message.className =
+        "login-success";
+
+
+      updateAdminScreen();
+
+
+    }else{
+
+      message.textContent =
+        data &&
+        data.message
+
+        ?
+
+        "❌ " +
+        data.message
+
+        :
+
+        "❌ Invalid admin PIN.";
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Admin login exception:",
+      error
+    );
+
+    message.textContent =
+      "❌ Could not connect to admin login.";
+
+  }finally{
+
+    loginButton.disabled =
+      false;
+
+    loginButton.textContent =
+      "🔐 Login";
+
+  }
+
+}
+
+
+// =====================================================
+// ADMIN LOGOUT
+// =====================================================
+
+function adminLogout(){
+
+  adminAuthenticated =
+    false;
+
+
+  sessionStorage.removeItem(
+    "hotel_admin_authenticated"
+  );
+
+
+  allCards = [];
+
+  allOrders = [];
+
+
+  document.getElementById(
+    "reservations"
+  ).innerHTML = "";
+
+
+  document.getElementById(
+    "orders"
+  ).innerHTML = "";
+
+
+  document.getElementById(
+    "loginMessage"
+  ).textContent = "";
+
+
+  updateAdminScreen();
+
+}
+
+
+// =====================================================
+// SECURITY CHECK
+// =====================================================
+
+function requireAdmin(){
+
+  if(!adminAuthenticated){
+
+    adminLogout();
+
+    return false;
+
+  }
+
+  return true;
+
+}
+
+
+// =====================================================
 // LOAD EVERYTHING
 // =====================================================
 
 async function loadEverything(){
 
-document.getElementById(
-"reservations"
-).innerHTML =
-"Loading reservations...";
+  if(!requireAdmin()){
+
+    return;
+
+  }
 
 
-document.getElementById(
-"orders"
-).innerHTML =
-"Loading orders...";
+  document.getElementById(
+    "reservations"
+  ).innerHTML =
+  "Loading reservations...";
 
 
-// =====================================================
-// RESERVATIONS
-// =====================================================
-
-const reservationResult =
-await supabaseClient
-
-.from("reservations")
-
-.select(`
-*,
-customers(name,phone),
-rooms(name,room_number,available)
-`)
-
-.order(
-"created_at",
-{
-ascending:false
-}
-);
+  document.getElementById(
+    "orders"
+  ).innerHTML =
+  "Loading orders...";
 
 
-if(reservationResult.error){
+  // =====================================================
+  // RESERVATIONS
+  // =====================================================
 
-console.error(
-reservationResult.error
-);
+  const reservationResult =
+    await supabaseClient
 
-document.getElementById(
-"reservations"
-).innerHTML =
-"❌ Could not load reservations.";
+    .from("reservations")
 
-allCards=[];
+    .select(`
+      *,
+      customers(name,phone),
+      rooms(name,room_number,available)
+    `)
 
-}else{
-
-const reservations =
-reservationResult.data || [];
-
-
-// =====================================================
-// PAYMENTS
-// =====================================================
-
-const paymentResult =
-await supabaseClient
-
-.from("payments")
-
-.select("*")
-
-.order(
-"created_at",
-{
-ascending:false
-}
-);
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    );
 
 
-const payments =
-paymentResult.error
-? []
-: (
-paymentResult.data || []
-);
+  if(reservationResult.error){
+
+    console.error(
+      reservationResult.error
+    );
 
 
-// =====================================================
-// CANCELLATIONS
-// =====================================================
-
-const cancellationResult =
-await supabaseClient
-
-.from("cancellations")
-
-.select("*")
-
-.order(
-"created_at",
-{
-ascending:false
-}
-);
+    document.getElementById(
+      "reservations"
+    ).innerHTML =
+      "❌ Could not load reservations.";
 
 
-const cancellations =
-cancellationResult.error
-? []
-: (
-cancellationResult.data || []
-);
+    allCards=[];
+
+  }else{
+
+    const reservations =
+      reservationResult.data || [];
 
 
-// =====================================================
-// COMBINE RESERVATION DATA
-// =====================================================
+    // =====================================================
+    // PAYMENTS
+    // =====================================================
 
-allCards =
-reservations.map(
-reservation => {
+    const paymentResult =
+      await supabaseClient
 
-const payment =
-payments.find(
-p =>
-p.reservation_id ===
-reservation.id
-);
+      .from("payments")
 
+      .select("*")
 
-const cancellation =
-cancellations.find(
-c =>
-c.reservation_id ===
-reservation.id
-);
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
 
 
-return {
-
-reservation,
-payment,
-cancellation
-
-};
-
-});
-
-}
+    const payments =
+      paymentResult.error
+      ? []
+      : (
+        paymentResult.data || []
+      );
 
 
-// =====================================================
-// FOOD / TABLE ORDERS
-// =====================================================
+    // =====================================================
+    // CANCELLATIONS
+    // =====================================================
 
-const orderResult =
-await supabaseClient
+    const cancellationResult =
+      await supabaseClient
 
-.from("orders")
+      .from("cancellations")
 
-.select("*")
+      .select("*")
 
-.order(
-"created_at",
-{
-ascending:false
-}
-);
-
-
-if(orderResult.error){
-
-console.error(
-orderResult.error
-);
-
-document.getElementById(
-"orders"
-).innerHTML =
-"❌ Could not load food orders.";
-
-allOrders=[];
-
-}else{
-
-allOrders =
-orderResult.data || [];
-
-}
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
 
 
-filterCards();
+    const cancellations =
+      cancellationResult.error
+      ? []
+      : (
+        cancellationResult.data || []
+      );
+
+
+    // =====================================================
+    // COMBINE RESERVATION DATA
+    // =====================================================
+
+    allCards =
+      reservations.map(
+        reservation => {
+
+          const payment =
+            payments.find(
+              p =>
+                p.reservation_id ===
+                reservation.id
+            );
+
+
+          const cancellation =
+            cancellations.find(
+              c =>
+                c.reservation_id ===
+                reservation.id
+            );
+
+
+          return {
+
+            reservation,
+            payment,
+            cancellation
+
+          };
+
+        }
+      );
+
+  }
+
+
+  // =====================================================
+  // FOOD / TABLE ORDERS
+  // =====================================================
+
+  const orderResult =
+    await supabaseClient
+
+    .from("orders")
+
+    .select("*")
+
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    );
+
+
+  if(orderResult.error){
+
+    console.error(
+      orderResult.error
+    );
+
+
+    document.getElementById(
+      "orders"
+    ).innerHTML =
+      "❌ Could not load food orders.";
+
+
+    allOrders=[];
+
+  }else{
+
+    allOrders =
+      orderResult.data || [];
+
+  }
+
+
+  filterCards();
 
 }
 
@@ -542,229 +1019,258 @@ filterCards();
 
 function filterCards(){
 
-const search =
-document
-.getElementById("search")
-.value
-.toLowerCase()
-.trim();
+  if(!requireAdmin()){
 
+    return;
 
-const status =
-document
-.getElementById("statusFilter")
-.value;
+  }
 
 
-const type =
-document
-.getElementById("typeFilter")
-.value;
+  const search =
+    document
+    .getElementById("search")
+    .value
+    .toLowerCase()
+    .trim();
 
 
-// =====================================================
-// FILTER RESERVATIONS
-// =====================================================
+  const status =
+    document
+    .getElementById("statusFilter")
+    .value;
 
-const filteredReservations =
-allCards.filter(
-item => {
 
-const r =
-item.reservation;
+  const type =
+    document
+    .getElementById("typeFilter")
+    .value;
 
-const c =
-r.customers || {};
 
-const room =
-r.rooms || {};
+  // =====================================================
+  // FILTER RESERVATIONS
+  // =====================================================
 
-const p =
-item.payment;
+  const filteredReservations =
+    allCards.filter(
+      item => {
 
-const x =
-item.cancellation;
+        const r =
+          item.reservation;
 
+        const c =
+          r.customers || {};
 
-const searchable = `
+        const room =
+          r.rooms || {};
 
-${r.reservation_code || ""}
+        const p =
+          item.payment;
 
-${c.name || ""}
+        const x =
+          item.cancellation;
 
-${c.phone || ""}
 
-${room.name || ""}
+        const searchable = `
 
-${room.room_number || ""}
+          ${r.id || ""}
 
-`.toLowerCase();
+          ${r.reservation_code || ""}
 
+          ${c.name || ""}
 
-if(
-search &&
-!searchable.includes(search)
-){
+          ${c.phone || ""}
 
-return false;
+          ${room.name || ""}
 
-}
+          ${room.room_number || ""}
 
+        `.toLowerCase();
 
-// ROOM RESERVATION
 
-if(type === "reservation"){
+        if(
+          search &&
+          !searchable.includes(search)
+        ){
 
-if(status !== "all"){
+          return false;
 
-return r.status === status;
+        }
 
-}
 
-return true;
+        // ROOM RESERVATION
 
-}
+        if(
+          type === "reservation"
+        ){
 
+          if(status !== "all"){
 
-// PAYMENT
+            return r.status === status;
 
-if(type === "payment"){
+          }
 
-if(!p){
+          return true;
 
-return false;
+        }
 
-}
 
-if(status !== "all"){
+        // PAYMENT
 
-return p.status === status;
+        if(
+          type === "payment"
+        ){
 
-}
+          if(!p){
 
-return true;
+            return false;
 
-}
+          }
 
 
-// CANCELLATION
+          if(status !== "all"){
 
-if(type === "cancellation"){
+            return p.status === status;
 
-if(!x){
+          }
 
-return false;
+          return true;
 
-}
+        }
 
-if(status !== "all"){
 
-return x.status === status;
+        // CANCELLATION
 
-}
+        if(
+          type === "cancellation"
+        ){
 
-return true;
+          if(!x){
 
-}
+            return false;
 
+          }
 
-// ORDER DOES NOT BELONG HERE
 
-if(type === "order"){
+          if(status !== "all"){
 
-return false;
+            return x.status === status;
 
-}
+          }
 
+          return true;
 
-// STATUS ONLY
+        }
 
-if(status === "all"){
 
-return true;
+        // ORDER DOES NOT BELONG HERE
 
-}
+        if(
+          type === "order"
+        ){
 
+          return false;
 
-return (
+        }
 
-r.status === status ||
 
-(p && p.status === status) ||
+        // STATUS ONLY
 
-(x && x.status === status)
+        if(status === "all"){
 
-);
+          return true;
 
-});
+        }
 
 
-displayCards(
-filteredReservations
-);
+        return (
 
+          r.status === status ||
 
-// =====================================================
-// FILTER ORDERS
-// =====================================================
+          (
+            p &&
+            p.status === status
+          ) ||
 
-const filteredOrders =
-allOrders.filter(
-order => {
+          (
+            x &&
+            x.status === status
+          )
 
-const searchable = `
+        );
 
-${order.order_code || ""}
+      }
+    );
 
-${order.customer_name || ""}
 
-${order.customer_phone || ""}
+  displayCards(
+    filteredReservations
+  );
 
-${order.table_number || ""}
 
-${order.arrival_time || ""}
+  // =====================================================
+  // FILTER ORDERS
+  // =====================================================
 
-`.toLowerCase();
+  const filteredOrders =
+    allOrders.filter(
+      order => {
 
+        const searchable = `
 
-if(
-search &&
-!searchable.includes(search)
-){
+          ${order.id || ""}
 
-return false;
+          ${order.order_code || ""}
 
-}
+          ${order.customer_name || ""}
 
+          ${order.customer_phone || ""}
 
-if(
-type !== "all" &&
-type !== "order"
-){
+          ${order.table_number || ""}
 
-return false;
+          ${order.arrival_time || ""}
 
-}
+        `.toLowerCase();
 
 
-if(
-status !== "all" &&
-order.status !== status
-){
+        if(
+          search &&
+          !searchable.includes(search)
+        ){
 
-return false;
+          return false;
 
-}
+        }
 
 
-return true;
+        if(
+          type !== "all" &&
+          type !== "order"
+        ){
 
-});
+          return false;
 
+        }
 
-displayOrders(
-filteredOrders
-);
+
+        if(
+          status !== "all" &&
+          order.status !== status
+        ){
+
+          return false;
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+
+  displayOrders(
+    filteredOrders
+  );
 
 }
 
@@ -775,444 +1281,457 @@ filteredOrders
 
 function displayCards(cards){
 
-const container =
-document.getElementById(
-"reservations"
-);
+  const container =
+    document.getElementById(
+      "reservations"
+    );
 
 
-if(!cards.length){
+  if(!cards.length){
 
-container.innerHTML =
-'<div class="empty">No matching room reservations.</div>';
+    container.innerHTML =
+      '<div class="empty">No matching room reservations.</div>';
 
-return;
+    return;
 
-}
+  }
 
 
-container.innerHTML = "";
+  container.innerHTML = "";
 
 
-cards.forEach(
-item => {
+  cards.forEach(
+    item => {
 
-const r =
-item.reservation;
+      const r =
+        item.reservation;
 
-const c =
-r.customers || {};
+      const c =
+        r.customers || {};
 
-const room =
-r.rooms || {};
+      const room =
+        r.rooms || {};
 
-const p =
-item.payment;
+      const p =
+        item.payment;
 
-const x =
-item.cancellation;
+      const x =
+        item.cancellation;
 
 
-// =====================================================
-// PAYMENT HTML
-// =====================================================
+      // =====================================================
+      // PAYMENT HTML
+      // =====================================================
 
-let paymentHTML = "";
+      let paymentHTML = "";
 
 
-if(p){
+      if(p){
 
-paymentHTML = `
+        paymentHTML = `
 
-<div class="section-title">
-💳 Payment
-</div>
+          <div class="section-title">
+            💳 Payment
+          </div>
 
 
-<div class="row">
+          <div class="row">
 
-<span class="label">
-Amount:
-</span>
+            <span class="label">
+              Amount:
+            </span>
 
-${Number(
-p.amount || 0
-).toFixed(2)}
-ETB
+            ${Number(
+              p.amount || 0
+            ).toFixed(2)}
 
-</div>
+            ETB
 
+          </div>
 
-<div class="row">
 
-<span class="label">
-Status:
-</span>
+          <div class="row">
 
-<span
-class="status ${escapeHTML(p.status)}"
->
+            <span class="label">
+              Status:
+            </span>
 
-${escapeHTML(p.status)}
+            <span
+              class="status ${escapeHTML(p.status)}"
+            >
 
-</span>
+              ${escapeHTML(
+                p.status
+              )}
 
-</div>
+            </span>
 
+          </div>
 
-${
-p.receipt_url
 
-?
+          ${
+            p.receipt_url
 
-`
+            ?
 
-<a
-class="receipt"
-href="${escapeAttribute(p.receipt_url)}"
-target="_blank"
-rel="noopener"
->
+            `
 
-🔗 Open Receipt
+            <a
+              class="receipt"
+              href="${escapeAttribute(p.receipt_url)}"
+              target="_blank"
+              rel="noopener"
+            >
 
-</a>
+              🔗 Open Receipt
 
-`
+            </a>
 
-:
+            `
 
-`
+            :
 
-<div class="notice">
-No receipt URL submitted.
-</div>
+            `
 
-`
+            <div class="notice">
+              No receipt URL submitted.
+            </div>
 
-}
+            `
 
+          }
 
-${
-p.status === "pending"
 
-?
+          ${
+            p.status === "pending"
 
-`
+            ?
 
-<br>
+            `
 
-<button
-class="confirm"
-onclick="updatePayment(
-${Number(p.id)},
-${Number(r.id)},
-'confirmed'
-)"
->
+            <br>
 
-✅ Confirm Payment
+            <button
+              class="confirm"
+              onclick="updatePayment(
+                ${Number(p.id)},
+                ${Number(r.id)},
+                'confirmed'
+              )"
+            >
 
-</button>
+              ✅ Confirm Payment
 
+            </button>
 
-<button
-class="reject"
-onclick="updatePayment(
-${Number(p.id)},
-${Number(r.id)},
-'rejected'
-)"
->
 
-❌ Reject Payment
+            <button
+              class="reject"
+              onclick="updatePayment(
+                ${Number(p.id)},
+                ${Number(r.id)},
+                'rejected'
+              )"
+            >
 
-</button>
+              ❌ Reject Payment
 
-`
+            </button>
 
-:
+            `
 
-""
+            :
 
-}
+            ""
 
-`;
+          }
 
-}else{
+        `;
 
-paymentHTML = `
+      }else{
 
-<div class="section-title">
-💳 Payment
-</div>
+        paymentHTML = `
 
-<div class="notice">
-No payment submitted yet.
-</div>
+          <div class="section-title">
+            💳 Payment
+          </div>
 
-`;
+          <div class="notice">
+            No payment submitted yet.
+          </div>
 
-}
+        `;
 
+      }
 
-// =====================================================
-// CANCELLATION HTML
-// =====================================================
 
-let cancellationHTML = "";
+      // =====================================================
+      // CANCELLATION HTML
+      // =====================================================
 
+      let cancellationHTML = "";
 
-if(x){
 
-cancellationHTML = `
+      if(x){
 
-<div class="section-title">
-❌ Cancellation Request
-</div>
+        cancellationHTML = `
 
+          <div class="section-title">
+            ❌ Cancellation Request
+          </div>
 
-<div class="row">
 
-<span class="label">
-Reason:
-</span>
+          <div class="row">
 
-${escapeHTML(
-x.reason || "—"
-)}
+            <span class="label">
+              Reason:
+            </span>
 
-</div>
+            ${escapeHTML(
+              x.reason || "—"
+            )}
 
+          </div>
 
-<div class="row">
 
-<span class="label">
-Refund:
-</span>
+          <div class="row">
 
-${Number(
-x.refund_amount || 0
-).toFixed(2)}
-ETB
+            <span class="label">
+              Refund:
+            </span>
 
-</div>
+            ${Number(
+              x.refund_amount || 0
+            ).toFixed(2)}
 
+            ETB
 
-<div class="row">
+          </div>
 
-<span class="label">
-Status:
-</span>
 
-<span
-class="status ${escapeHTML(x.status)}"
->
+          <div class="row">
 
-${escapeHTML(x.status)}
+            <span class="label">
+              Status:
+            </span>
 
-</span>
+            <span
+              class="status ${escapeHTML(x.status)}"
+            >
 
-</div>
+              ${escapeHTML(
+                x.status
+              )}
 
+            </span>
 
-${
-x.status === "pending"
+          </div>
 
-?
 
-`
+          ${
+            x.status === "pending"
 
-<button
-class="confirm"
-onclick="updateCancellation(
-${Number(x.id)},
-${Number(r.id)},
-'approved'
-)"
->
+            ?
 
-✅ Approve Cancellation
+            `
 
-</button>
+            <button
+              class="confirm"
+              onclick="updateCancellation(
+                ${Number(x.id)},
+                ${Number(r.id)},
+                'approved'
+              )"
+            >
 
+              ✅ Approve Cancellation
 
-<button
-class="reject"
-onclick="updateCancellation(
-${Number(x.id)},
-${Number(r.id)},
-'rejected'
-)"
->
+            </button>
 
-❌ Reject Cancellation
 
-</button>
+            <button
+              class="reject"
+              onclick="updateCancellation(
+                ${Number(x.id)},
+                ${Number(r.id)},
+                'rejected'
+              )"
+            >
 
-`
+              ❌ Reject Cancellation
 
-:
+            </button>
 
-""
+            `
 
-}
+            :
 
-`;
+            ""
 
-}
+          }
 
+        `;
 
-// =====================================================
-// ROOM CARD
-// =====================================================
+      }
 
-container.innerHTML += `
 
-<div class="card room-card">
+      // =====================================================
+      // ROOM CARD
+      // =====================================================
 
-<h3>
+      container.innerHTML += `
 
-📋 ${escapeHTML(
-r.reservation_code ||
-"Unknown"
-)}
+        <div class="card room-card">
 
-</h3>
+          <h3>
 
+            📋 ${escapeHTML(
+              r.reservation_code ||
+              "Unknown"
+            )}
 
-<div class="row">
+          </h3>
 
-<span class="label">
-Customer:
-</span>
 
-${escapeHTML(
-c.name || "—"
-)}
+          <div class="row">
 
-</div>
+            <span class="label">
+              Customer:
+            </span>
 
+            ${escapeHTML(
+              c.name || "—"
+            )}
 
-<div class="row">
+          </div>
 
-<span class="label">
-Phone:
-</span>
 
-${escapeHTML(
-c.phone || "—"
-)}
+          <div class="row">
 
-</div>
+            <span class="label">
+              Phone:
+            </span>
 
+            ${escapeHTML(
+              c.phone || "—"
+            )}
 
-<div class="row">
+          </div>
 
-<span class="label">
-Room:
-</span>
 
-${escapeHTML(
-room.name || "—"
-)}
+          <div class="row">
 
-(
-${escapeHTML(
-room.room_number || "—"
-)}
-)
+            <span class="label">
+              Room:
+            </span>
 
-</div>
+            ${escapeHTML(
+              room.name || "—"
+            )}
 
+            (
 
-<div class="row">
+            ${escapeHTML(
+              room.room_number || "—"
+            )}
 
-<span class="label">
-Room Available:
-</span>
+            )
 
-${
-room.available === true
-?
+          </div>
 
-'<span class="status confirmed">Yes</span>'
 
-:
+          <div class="row">
 
-'<span class="status cancelled">No</span>'
+            <span class="label">
+              Room Available:
+            </span>
 
-}
+            ${
+              room.available === true
 
-</div>
+              ?
 
+              '<span class="status confirmed">Yes</span>'
 
-<div class="row">
+              :
 
-<span class="label">
-Check-in:
-</span>
+              '<span class="status cancelled">No</span>'
 
-${formatDate(
-r.check_in
-)}
+            }
 
-</div>
+          </div>
 
 
-<div class="row">
+          <div class="row">
 
-<span class="label">
-Check-out:
-</span>
+            <span class="label">
+              Check-in:
+            </span>
 
-${formatDate(
-r.check_out
-)}
+            ${formatDate(
+              r.check_in
+            )}
 
-</div>
+          </div>
 
 
-<div class="row">
+          <div class="row">
 
-<span class="label">
-Total:
-</span>
+            <span class="label">
+              Check-out:
+            </span>
 
-${Number(
-r.total_amount || 0
-).toFixed(2)}
-ETB
+            ${formatDate(
+              r.check_out
+            )}
 
-</div>
+          </div>
 
 
-<div class="row">
+          <div class="row">
 
-<span class="label">
-Reservation:
-</span>
+            <span class="label">
+              Total:
+            </span>
 
-<span
-class="status ${escapeHTML(r.status)}"
->
+            ${Number(
+              r.total_amount || 0
+            ).toFixed(2)}
 
-${escapeHTML(r.status)}
+            ETB
 
-</span>
+          </div>
 
-</div>
 
+          <div class="row">
 
-${paymentHTML}
+            <span class="label">
+              Reservation:
+            </span>
 
-${cancellationHTML}
+            <span
+              class="status ${escapeHTML(r.status)}"
+            >
 
-</div>
+              ${escapeHTML(
+                r.status
+              )}
 
-`;
+            </span>
 
-});
+          </div>
+
+
+          ${paymentHTML}
+
+          ${cancellationHTML}
+
+        </div>
+
+      `;
+
+    }
+  );
 
 }
 
@@ -1223,364 +1742,384 @@ ${cancellationHTML}
 
 function displayOrders(orders){
 
-const container =
-document.getElementById(
-"orders"
-);
+  const container =
+    document.getElementById(
+      "orders"
+    );
 
 
-if(!orders.length){
+  if(!orders.length){
 
-container.innerHTML =
-'<div class="empty">No matching food & table orders.</div>';
+    container.innerHTML =
+      '<div class="empty">No matching food & table orders.</div>';
 
-return;
+    return;
 
-}
+  }
 
 
-container.innerHTML = "";
+  container.innerHTML = "";
 
 
-orders.forEach(
-order => {
+  orders.forEach(
+    order => {
 
-const status =
-order.status ||
-"pending";
+      const status =
+        order.status ||
+        "pending";
 
 
-let items = [];
+      let items = [];
 
 
-try{
+      try{
 
-if(Array.isArray(order.items)){
+        if(
+          Array.isArray(
+            order.items
+          )
+        ){
 
-items =
-order.items;
+          items =
+            order.items;
 
-}
+        }
 
-else if(
-typeof order.items === "string"
-){
+        else if(
+          typeof order.items ===
+          "string"
+        ){
 
-items =
-JSON.parse(order.items);
+          items =
+            JSON.parse(
+              order.items
+            );
 
-}
+        }
 
-}catch(error){
+      }catch(error){
 
-console.error(
-"Could not read order items:",
-error
-);
+        console.error(
+          "Could not read order items:",
+          error
+        );
 
-items = [];
+        items = [];
 
-}
+      }
 
 
-let itemsHTML = "";
+      let itemsHTML = "";
 
 
-if(items.length){
+      if(items.length){
 
-itemsHTML = items.map(
-item => {
+        itemsHTML =
+          items.map(
+            item => {
 
-const quantity =
-Number(
-item.quantity || 0
-);
+              const quantity =
+                Number(
+                  item.quantity || 0
+                );
 
-const price =
-Number(
-item.price || 0
-);
 
-const amount =
-quantity * price;
+              const price =
+                Number(
+                  item.price || 0
+                );
 
 
-const icon =
-item.type === "drink"
-? "🥤"
-: "🍽️";
+              const amount =
+                quantity *
+                price;
 
 
-return `
+              const icon =
+                item.type === "drink"
+                ? "🥤"
+                : "🍽️";
 
-<div class="order-item">
 
-<span>
+              return `
 
-${icon}
+                <div class="order-item">
 
-${escapeHTML(
-item.name || "Item"
-)}
+                  <span>
 
-× ${quantity}
+                    ${icon}
 
-</span>
+                    ${escapeHTML(
+                      item.name ||
+                      "Item"
+                    )}
 
+                    × ${quantity}
 
-<span>
+                  </span>
 
-${amount.toFixed(2)}
-ETB
 
-</span>
+                  <span>
 
-</div>
+                    ${amount.toFixed(2)}
 
-`;
+                    ETB
 
-}).join("");
+                  </span>
 
-}else{
+                </div>
 
-itemsHTML = `
+              `;
 
-<div class="notice">
+            }
+          ).join("");
 
-No items found.
+      }else{
 
-</div>
+        itemsHTML = `
 
-`;
+          <div class="notice">
 
-}
+            No items found.
 
+          </div>
 
-// =====================================================
-// RECEIPT
-// =====================================================
+        `;
 
-const receiptHTML =
-order.receipt_url
+      }
 
-?
 
-`
+      // =====================================================
+      // RECEIPT
+      // =====================================================
 
-<a
-class="receipt"
-href="${escapeAttribute(order.receipt_url)}"
-target="_blank"
-rel="noopener"
->
+      const receiptHTML =
+        order.receipt_url
 
-🔗 Open Payment Receipt
+        ?
 
-</a>
+        `
 
-`
+        <a
+          class="receipt"
+          href="${escapeAttribute(order.receipt_url)}"
+          target="_blank"
+          rel="noopener"
+        >
 
-:
+          🔗 Open Payment Receipt
 
-`
+        </a>
 
-<div class="notice">
+        `
 
-💳 No payment receipt submitted yet.
+        :
 
-</div>
+        `
 
-`;
+        <div class="notice">
 
+          💳 No payment receipt submitted yet.
 
-// =====================================================
-// ORDER ACTIONS
-// =====================================================
+        </div>
 
-const actionHTML =
-status === "pending"
+        `;
 
-?
 
-`
+      // =====================================================
+      // ORDER ACTIONS
+      // =====================================================
 
-<button
-class="confirm"
-onclick="updateOrder(
-${Number(order.id)},
-'confirmed'
-)"
->
+      const actionHTML =
+        status === "pending"
 
-✅ Confirm Order
+        ?
 
-</button>
+        `
 
+        <button
+          class="confirm"
+          onclick="updateOrder(
+            ${Number(order.id)},
+            'confirmed'
+          )"
+        >
 
-<button
-class="reject"
-onclick="updateOrder(
-${Number(order.id)},
-'rejected'
-)"
->
+          ✅ Confirm Order
 
-❌ Reject Order
+        </button>
 
-</button>
 
-`
+        <button
+          class="reject"
+          onclick="updateOrder(
+            ${Number(order.id)},
+            'rejected'
+          )"
+        >
 
-:
+          ❌ Reject Order
 
-"";
+        </button>
 
+        `
 
-container.innerHTML += `
+        :
 
-<div class="card order-card">
+        "";
 
-<div class="badge">
 
-🍽️ FOOD & TABLE ORDER
+      container.innerHTML += `
 
-</div>
+        <div class="card order-card">
 
+          <div class="badge">
 
-<h3>
+            🍽️ FOOD & TABLE ORDER
 
-📋 ${escapeHTML(
-order.order_code ||
-"Unknown"
-)}
+          </div>
 
-</h3>
 
+          <h3>
 
-<div class="row">
+            📋 ${escapeHTML(
+              order.order_code ||
+              "Unknown"
+            )}
 
-<span class="label">
-Customer Name:
-</span>
+          </h3>
 
-${escapeHTML(
-order.customer_name || "—"
-)}
 
-</div>
+          <div class="row">
 
+            <span class="label">
+              Customer Name:
+            </span>
 
-<div class="row">
+            ${escapeHTML(
+              order.customer_name ||
+              "—"
+            )}
 
-<span class="label">
-Phone:
-</span>
+          </div>
 
-${escapeHTML(
-order.customer_phone || "—"
-)}
 
-</div>
+          <div class="row">
 
+            <span class="label">
+              Phone:
+            </span>
 
-<div class="row">
+            ${escapeHTML(
+              order.customer_phone ||
+              "—"
+            )}
 
-<span class="label">
-Table:
-</span>
+          </div>
 
-🪑 Table
 
-${escapeHTML(
-String(
-order.table_number || "—"
-)
-)}
+          <div class="row">
 
-</div>
+            <span class="label">
+              Table:
+            </span>
 
+            🪑 Table
 
-<div class="row">
+            ${escapeHTML(
+              String(
+                order.table_number ||
+                "—"
+              )
+            )}
 
-<span class="label">
-Estimated Arrival:
-</span>
+          </div>
 
-🕐
 
-${escapeHTML(
-order.arrival_time || "—"
-)}
+          <div class="row">
 
-</div>
+            <span class="label">
+              Estimated Arrival:
+            </span>
 
+            🕐
 
-<div class="row">
+            ${escapeHTML(
+              order.arrival_time ||
+              "—"
+            )}
 
-<span class="label">
-Status:
-</span>
+          </div>
 
-<span
-class="status ${escapeHTML(status)}"
->
 
-${escapeHTML(status)}
+          <div class="row">
 
-</span>
+            <span class="label">
+              Status:
+            </span>
 
-</div>
+            <span
+              class="status ${escapeHTML(status)}"
+            >
 
+              ${escapeHTML(status)}
 
-<div class="section-title">
+            </span>
 
-🍽️ Ordered Items
+          </div>
 
-</div>
 
+          <div class="section-title">
 
-<div class="items-box">
+            🍽️ Ordered Items
 
-${itemsHTML}
+          </div>
 
 
-<div class="order-total">
+          <div class="items-box">
 
-Total:
+            ${itemsHTML}
 
-${Number(
-order.total_amount || 0
-).toFixed(2)}
 
-ETB
+            <div class="order-total">
 
-</div>
+              Total:
 
-</div>
+              ${Number(
+                order.total_amount ||
+                0
+              ).toFixed(2)}
 
+              ETB
 
-<div class="section-title">
+            </div>
 
-💳 Payment
+          </div>
 
-</div>
 
+          <div class="section-title">
 
-${receiptHTML}
+            💳 Payment
 
+          </div>
 
-<div>
 
-${actionHTML}
+          ${receiptHTML}
 
-</div>
 
+          <div>
 
-</div>
+            ${actionHTML}
 
-`;
+          </div>
 
-});
+
+        </div>
+
+      `;
+
+    }
+  );
 
 }
 
@@ -1590,207 +2129,237 @@ ${actionHTML}
 // =====================================================
 
 async function updateOrder(
-orderId,
-newStatus
+  orderId,
+  newStatus
 ){
 
-const order =
-allOrders.find(
-o =>
-Number(o.id) ===
-Number(orderId)
-);
+  if(!requireAdmin()){
 
+    return;
 
-const result =
-await supabaseClient
+  }
 
-.from("orders")
 
-.update({
-status:newStatus,
-updated_at:new Date().toISOString()
-})
+  const order =
+    allOrders.find(
+      o =>
+        Number(o.id) ===
+        Number(orderId)
+    );
 
-.eq(
-"id",
-orderId
-);
 
+  const result =
+    await supabaseClient
 
-if(result.error){
+    .from("orders")
 
-console.error(
-result.error
-);
+    .update({
+      status:newStatus,
+      updated_at:
+        new Date().toISOString()
+    })
 
-alert(
-"❌ Could not update order: " +
-result.error.message
-);
+    .eq(
+      "id",
+      orderId
+    );
 
-return;
 
-}
+  if(result.error){
 
+    console.error(
+      result.error
+    );
 
-// =====================================================
-// SEND TELEGRAM ONLY WHEN CONFIRMED
-// =====================================================
 
-if(
-newStatus === "confirmed" &&
-order
-){
+    alert(
+      "❌ Could not update order: " +
+      result.error.message
+    );
 
-try{
 
-let items = [];
+    return;
 
+  }
 
-try{
 
-if(Array.isArray(order.items)){
+  // =====================================================
+  // SEND TELEGRAM ONLY WHEN CONFIRMED
+  // =====================================================
 
-items =
-order.items;
+  if(
+    newStatus === "confirmed" &&
+    order
+  ){
 
-}
+    try{
 
-else if(
-typeof order.items === "string"
-){
+      let items = [];
 
-items =
-JSON.parse(order.items);
 
-}
+      try{
 
-}catch(error){
+        if(
+          Array.isArray(
+            order.items
+          )
+        ){
 
-console.error(
-"Could not parse order items:",
-error
-);
+          items =
+            order.items;
 
-items = [];
+        }
 
-}
+        else if(
+          typeof order.items ===
+          "string"
+        ){
 
+          items =
+            JSON.parse(
+              order.items
+            );
 
-const telegramResponse =
-await fetch(
+        }
 
-"https://wmsjpbcwhqghqtytztvv.supabase.co/functions/v1/dynamic-task",
+      }catch(error){
 
-{
+        console.error(
+          "Could not parse order items:",
+          error
+        );
 
-method:"POST",
+        items = [];
 
-headers:{
+      }
 
-"Content-Type":
-"application/json",
 
-"apikey":
-SUPABASE_KEY,
+      const telegramResponse =
+        await fetch(
 
-"Authorization":
-"Bearer " + SUPABASE_KEY
+          "https://wmsjpbcwhqghqtytztvv.supabase.co/functions/v1/dynamic-task",
 
-},
+          {
 
-body:JSON.stringify({
+            method:"POST",
 
-order_code:
-order.order_code || "",
+            headers:{
 
-table_number:
-order.table_number || "",
+              "Content-Type":
+                "application/json",
 
-arrival_time:
-order.arrival_time || "",
+              "apikey":
+                SUPABASE_KEY,
 
-customer_name:
-order.customer_name || "",
+              "Authorization":
+                "Bearer " +
+                SUPABASE_KEY
 
-customer_phone:
-order.customer_phone || "",
+            },
 
-total_amount:
-Number(
-order.total_amount || 0
-),
+            body:
+              JSON.stringify({
 
-status:
-"confirmed",
+                order_code:
+                  order.order_code ||
+                  "",
 
-items:
-items
+                table_number:
+                  order.table_number ||
+                  "",
 
-})
+                arrival_time:
+                  order.arrival_time ||
+                  "",
 
-}
+                customer_name:
+                  order.customer_name ||
+                  "",
 
-);
+                customer_phone:
+                  order.customer_phone ||
+                  "",
 
+                total_amount:
+                  Number(
+                    order.total_amount ||
+                    0
+                  ),
 
-const telegramResult =
-await telegramResponse.json();
+                status:
+                  "confirmed",
 
+                items:
+                  items
 
-if(!telegramResponse.ok){
+              })
 
-console.error(
-"Telegram notification failed:",
-telegramResult
-);
+          }
 
-alert(
-"⚠️ Order confirmed, but Telegram notification failed."
-);
+        );
 
-}else{
 
-console.log(
-"✅ Telegram notification sent.",
-telegramResult
-);
+      const telegramResult =
+        await telegramResponse.json();
 
-}
 
-}catch(error){
+      if(
+        !telegramResponse.ok
+      ){
 
-console.error(
-"Telegram connection error:",
-error
-);
+        console.error(
+          "Telegram notification failed:",
+          telegramResult
+        );
 
-alert(
-"⚠️ Order confirmed, but Telegram notification could not be sent."
-);
 
-}
+        alert(
+          "⚠️ Order confirmed, but Telegram notification failed."
+        );
 
-}
+      }else{
 
+        console.log(
+          "✅ Telegram notification sent.",
+          telegramResult
+        );
 
-alert(
+      }
 
-newStatus === "confirmed"
 
-?
+    }catch(error){
 
-"✅ Food & table order confirmed."
+      console.error(
+        "Telegram connection error:",
+        error
+      );
 
-:
 
-"❌ Food & table order rejected."
+      alert(
+        "⚠️ Order confirmed, but Telegram notification could not be sent."
+      );
 
-);
+    }
 
+  }
 
-loadEverything();
+
+  alert(
+
+    newStatus === "confirmed"
+
+    ?
+
+    "✅ Food & table order confirmed."
+
+    :
+
+    "❌ Food & table order rejected."
+
+  );
+
+
+  loadEverything();
 
 }
 
@@ -1800,213 +2369,228 @@ loadEverything();
 // =====================================================
 
 async function updatePayment(
-paymentId,
-reservationId,
-newStatus
+  paymentId,
+  reservationId,
+  newStatus
 ){
 
-const paymentResult =
-await supabaseClient
+  if(!requireAdmin()){
 
-.from("payments")
+    return;
 
-.update({
-status:newStatus
-})
-
-.eq(
-"id",
-paymentId
-);
+  }
 
 
-if(paymentResult.error){
+  const paymentResult =
+    await supabaseClient
 
-console.error(
-paymentResult.error
-);
+    .from("payments")
 
-alert(
-"❌ Could not update payment: " +
-paymentResult.error.message
-);
+    .update({
+      status:newStatus
+    })
 
-return;
+    .eq(
+      "id",
+      paymentId
+    );
+
+
+  if(paymentResult.error){
+
+    console.error(
+      paymentResult.error
+    );
+
+
+    alert(
+      "❌ Could not update payment: " +
+      paymentResult.error.message
+    );
+
+
+    return;
+
+  }
+
+
+  // =====================================================
+  // UPDATE RESERVATION
+  // =====================================================
+
+  const reservationResult =
+    await supabaseClient
+
+    .from("reservations")
+
+    .update({
+      status:newStatus
+    })
+
+    .eq(
+      "id",
+      reservationId
+    );
+
+
+  if(reservationResult.error){
+
+    console.error(
+      reservationResult.error
+    );
+
+
+    alert(
+      "⚠️ Payment updated, but reservation could not be updated: " +
+      reservationResult.error.message
+    );
+
+
+    loadEverything();
+
+    return;
+
+  }
+
+
+  // =====================================================
+  // GET CUSTOMER
+  // =====================================================
+
+  const customerResult =
+    await supabaseClient
+
+    .from("reservations")
+
+    .select(`
+      customer_id,
+      reservation_code
+    `)
+
+    .eq(
+      "id",
+      reservationId
+    )
+
+    .single();
+
+
+  if(customerResult.error){
+
+    console.error(
+      customerResult.error
+    );
+
+
+    alert(
+      "⚠️ Payment updated, but customer notification could not be created."
+    );
+
+
+    loadEverything();
+
+    return;
+
+  }
+
+
+  // =====================================================
+  // NOTIFICATION
+  // =====================================================
+
+  const title =
+    newStatus === "confirmed"
+
+    ?
+
+    "💳 Payment Confirmed"
+
+    :
+
+    "💳 Payment Rejected";
+
+
+  const message =
+    newStatus === "confirmed"
+
+    ?
+
+    `Your payment for reservation ${customerResult.data.reservation_code} has been confirmed.`
+
+    :
+
+    `Your payment for reservation ${customerResult.data.reservation_code} has been rejected.`;
+
+
+  const notificationResult =
+    await supabaseClient
+
+    .from("notifications")
+
+    .insert({
+
+      customer_id:
+        customerResult.data.customer_id,
+
+      reservation_id:
+        reservationId,
+
+      type:
+        "payment",
+
+      title:
+        title,
+
+      message:
+        message,
+
+      is_read:
+        false
+
+    });
+
+
+  if(notificationResult.error){
+
+    console.error(
+      notificationResult.error
+    );
+
+
+    alert(
+      "⚠️ Payment updated, but notification could not be created."
+    );
+
+
+    loadEverything();
+
+    return;
+
+  }
+
+
+  alert(
+
+    newStatus === "confirmed"
+
+    ?
+
+    "✅ Payment confirmed and customer notified."
+
+    :
+
+    "✅ Payment rejected and customer notified."
+
+  );
+
+
+  loadEverything();
 
 }
 
 
 // =====================================================
-// UPDATE RESERVATION
-// =====================================================
-
-const reservationResult =
-await supabaseClient
-
-.from("reservations")
-
-.update({
-status:newStatus
-})
-
-.eq(
-"id",
-reservationId
-);
-
-
-if(reservationResult.error){
-
-console.error(
-reservationResult.error
-);
-
-alert(
-"⚠️ Payment updated, but reservation could not be updated: " +
-reservationResult.error.message
-);
-
-loadEverything();
-
-return;
-
-}
-
-
-// =====================================================
-// GET CUSTOMER
-// =====================================================
-
-const customerResult =
-await supabaseClient
-
-.from("reservations")
-
-.select(`
-customer_id,
-reservation_code
-`)
-
-.eq(
-"id",
-reservationId
-)
-
-.single();
-
-
-if(customerResult.error){
-
-console.error(
-customerResult.error
-);
-
-alert(
-"⚠️ Payment updated, but customer notification could not be created."
-);
-
-loadEverything();
-
-return;
-
-}
-
-
-// =====================================================
-// NOTIFICATION
-// =====================================================
-
-const title =
-newStatus === "confirmed"
-
-?
-
-"💳 Payment Confirmed"
-
-:
-
-"💳 Payment Rejected";
-
-
-const message =
-newStatus === "confirmed"
-
-?
-
-`Your payment for reservation ${customerResult.data.reservation_code} has been confirmed.`
-
-:
-
-`Your payment for reservation ${customerResult.data.reservation_code} has been rejected.`;
-
-
-const notificationResult =
-await supabaseClient
-
-.from("notifications")
-
-.insert({
-
-customer_id:
-customerResult.data.customer_id,
-
-reservation_id:
-reservationId,
-
-type:
-"payment",
-
-title:
-title,
-
-message:
-message,
-
-is_read:
-false
-
-});
-
-
-if(notificationResult.error){
-
-console.error(
-notificationResult.error
-);
-
-alert(
-"⚠️ Payment updated, but notification could not be created."
-);
-
-loadEverything();
-
-return;
-
-}
-
-
-alert(
-
-newStatus === "confirmed"
-
-?
-
-"✅ Payment confirmed and customer notified."
-
-:
-
-"✅ Payment rejected and customer notified."
-
-);
-
-
-loadEverything();
-
-}
-
-
-// =====================================================
-// UPDATED CANCELLATION FUNCTION
+// CANCELLATION
 // =====================================================
 
 async function updateCancellation(
@@ -2015,7 +2599,16 @@ async function updateCancellation(
   newStatus
 ){
 
-  if(newStatus === "approved"){
+  if(!requireAdmin()){
+
+    return;
+
+  }
+
+
+  if(
+    newStatus === "approved"
+  ){
 
     const result =
       await supabaseClient.rpc(
@@ -2033,10 +2626,12 @@ async function updateCancellation(
         result.error
       );
 
+
       alert(
         "❌ Could not approve cancellation: " +
         result.error.message
       );
+
 
       return;
 
@@ -2072,10 +2667,12 @@ async function updateCancellation(
         result.error
       );
 
+
       alert(
         "❌ Could not reject cancellation: " +
         result.error.message
       );
+
 
       return;
 
@@ -2100,79 +2697,74 @@ async function updateCancellation(
 
 function escapeHTML(value){
 
-return String(
-value ?? ""
-)
+  return String(
+    value ?? ""
+  )
 
-.replace(
-/&/g,
-"&amp;"
-)
+  .replace(
+    /&/g,
+    "&amp;"
+  )
 
-.replace(
-/</g,
-"&lt;"
-)
+  .replace(
+    /</g,
+    "&lt;"
+  )
 
-.replace(
-/>/g,
-"&gt;"
-)
+  .replace(
+    />/g,
+    "&gt;"
+  )
 
-.replace(
-/"/g,
-"&quot;"
-)
+  .replace(
+    /"/g,
+    "&quot;"
+  )
 
-.replace(
-/'/g,
-"&#039;"
-);
+  .replace(
+    /'/g,
+    "&#039;"
+  );
 
 }
 
 
 function escapeAttribute(value){
 
-return escapeHTML(
-value
-);
+  return escapeHTML(
+    value
+  );
 
 }
 
 
 function formatDate(value){
 
-if(!value){
+  if(!value){
 
-return "—";
+    return "—";
+
+  }
+
+
+  try{
+
+    return new Date(
+      value
+    ).toLocaleDateString();
+
+  }catch(error){
+
+    return escapeHTML(
+      value
+    );
+
+  }
 
 }
-
-try{
-
-return new Date(
-value
-).toLocaleDateString();
-
-}catch(error){
-
-return escapeHTML(
-value
-);
-
-}
-
-}
-
-
-// =====================================================
-// INITIAL LOAD
-// =====================================================
-
-loadEverything();
 
 </script>
 
 </body>
+
 </html>
