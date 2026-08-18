@@ -502,12 +502,15 @@ window.supabase.createClient(
 
 // =====================================================
 // ADMIN LOGIN STATE
+//
+// IMPORTANT:
+// We deliberately DO NOT read sessionStorage here.
+//
+// This means every time admin.html is loaded or refreshed,
+// the administrator must enter the PIN again.
 // =====================================================
 
-let adminAuthenticated =
-sessionStorage.getItem(
-  "hotel_admin_authenticated"
-) === "true";
+let adminAuthenticated = false;
 
 
 let allCards = [];
@@ -686,10 +689,13 @@ async function adminLogin(){
         true;
 
 
-      sessionStorage.setItem(
-        "hotel_admin_authenticated",
-        "true"
-      );
+      /*
+       * We intentionally do NOT save authentication
+       * to sessionStorage.
+       *
+       * Therefore refreshing this page will require
+       * the PIN again.
+       */
 
 
       pinInput.value = "";
@@ -755,6 +761,11 @@ function adminLogout(){
   adminAuthenticated =
     false;
 
+
+  /*
+   * Remove any old authentication value that may
+   * have been created by an older version of the page.
+   */
 
   sessionStorage.removeItem(
     "hotel_admin_authenticated"
@@ -841,7 +852,7 @@ async function loadEverything(){
 
     .select(`
       *,
-      customers(name,phone),
+      customers(name,phone,email),
       rooms(name,room_number,available)
     `)
 
@@ -1079,6 +1090,8 @@ function filterCards(){
           ${c.name || ""}
 
           ${c.phone || ""}
+
+          ${c.email || ""}
 
           ${room.name || ""}
 
@@ -1614,6 +1627,19 @@ function displayCards(cards){
 
             ${escapeHTML(
               c.phone || "—"
+            )}
+
+          </div>
+
+
+          <div class="row">
+
+            <span class="label">
+              Email:
+            </span>
+
+            ${escapeHTML(
+              c.email || "—"
             )}
 
           </div>
