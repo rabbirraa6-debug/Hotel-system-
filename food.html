@@ -428,10 +428,11 @@ Choose your food, drinks, table, arrival date and time.
 
 <div class="grid">
 
+
 <div class="card">
 
 <img
-src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80"
+src="https://images.unsplash.com/photo-1568901346375-23c9450c58bd?auto=format&fit=crop&w=600&q=80"
 alt="Burger"
 loading="lazy"
 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80';"
@@ -605,6 +606,7 @@ Maximum food: 10 items
 <h2>🥤 Drinks</h2>
 
 <div class="grid">
+
 
 <div class="card">
 
@@ -1313,8 +1315,31 @@ function updateSummary(){
 
 async function checkTableOccupied(
   tableNumber,
-  arrivalDate
+  arrivalDate,
+  arrivalTime
 ){
+
+  const table =
+  Number(tableNumber);
+
+
+  if(
+    !table ||
+    !arrivalDate ||
+    !arrivalTime
+  ){
+
+    return false;
+
+  }
+
+
+  /*
+   * Get only active orders for this table.
+   *
+   * Cancelled/completed orders do NOT block
+   * the table.
+   */
 
   const {
     data,
@@ -1324,13 +1349,17 @@ async function checkTableOccupied(
 
     .from("orders")
 
-    .select(
-      "id,status,arrival_date,arrival_time"
-    )
+    .select(`
+      id,
+      table_number,
+      arrival_date,
+      arrival_time,
+      status
+    `)
 
     .eq(
       "table_number",
-      Number(tableNumber)
+      table
     )
 
     .in(
@@ -1339,15 +1368,13 @@ async function checkTableOccupied(
         "pending",
         "confirmed"
       ]
-    )
-
-    .limit(100);
+    );
 
 
   if(error){
 
     console.error(
-      "Table occupancy check error:",
+      "Table availability error:",
       error
     );
 
@@ -1356,7 +1383,14 @@ async function checkTableOccupied(
   }
 
 
-  if(!data || data.length === 0){
+  /*
+   * No active orders.
+   */
+
+  if(
+    !data ||
+    data.length === 0
+  ){
 
     return false;
 
@@ -1364,93 +1398,116 @@ async function checkTableOccupied(
 
 
   /*
-   * Only consider another order as occupying
-   * the table if its reservation time is still
-   * active.
+   * Requested date + time.
    */
 
-  const requestedDateTime =
+  const requested =
   new Date(
-    `${arrivalDate}T00:00:00`
+    `${arrivalDate}T${arrivalTime}:00`
   );
 
 
-  for(const order of data){
+  /*
+   * Make sure requested date/time is valid.
+   */
 
-    if(!order.arrival_date){
+  if(
+    Number.isNaN(
+      requested.getTime()
+    )
+  ){
 
-      /*
-       * Old orders without arrival_date are
-       * treated as active for safety.
-       */
+    return false;
 
-      return true;
+  }
+
+
+  /*
+   * Check each active order.
+   */
+
+  for(
+    const order of data
+  ){
+
+    /*
+     * Old/incomplete orders without
+     * date/time cannot determine a
+     * reservation period.
+     *
+     * Do NOT permanently block the table.
+     */
+
+    if(
+      !order.arrival_date ||
+      !order.arrival_time
+    ){
+
+      continue;
 
     }
 
 
-    if(!order.arrival_time){
+    /*
+     * Convert existing order date/time
+     * into a JavaScript Date.
+     */
 
-      return true;
-
-    }
-
-
-    const existingDateTime =
+    const existing =
     new Date(
       `${order.arrival_date}T${order.arrival_time}`
     );
 
 
+    if(
+      Number.isNaN(
+        existing.getTime()
+      )
+    ){
+
+      continue;
+
+    }
+
+
     /*
-     * Existing order remains active until
-     * one hour after estimated arrival.
+     * Existing order occupies the table
+     * for one hour after estimated arrival.
      */
 
-    const expirationTime =
+    const existingEnd =
     new Date(
-      existingDateTime.getTime()
+      existing.getTime()
       +
       60 * 60 * 1000
     );
 
 
+    /*
+     * Requested time is inside the
+     * existing active period.
+     */
+
     if(
-      requestedDateTime.getTime()
-      === existingDateTime.getTime()
+      requested >= existing &&
+      requested < existingEnd
     ){
+
+      console.log(
+        "Table occupied by order:",
+        order.id
+      );
 
       return true;
 
     }
-
-    /*
-     * Orders are treated as occupying the table
-     * around their active period.
-     */
-
-    if(
-      Math.abs(
-        requestedDateTime.getTime()
-        -
-        existingDateTime.getTime()
-      )
-      < 60 * 60 * 1000
-    ){
-
-      return true;
-
-    }
-
-    /*
-     * Keep this reference so the expiration
-     * calculation remains explicit.
-     */
-
-    void expirationTime;
 
   }
 
+
+  /*
+   * No conflicting order found.
+   */
 
   return false;
 
@@ -1488,11 +1545,13 @@ async function showPaymentBox(){
     "continueButton"
   );
 
+
   const foodTotal =
   foodQuantities.reduce(
     (a,b)=>a+b,
     0
   );
+
 
   const drinkTotal =
   drinkQuantities.reduce(
@@ -1574,7 +1633,8 @@ async function showPaymentBox(){
     const occupied =
     await checkTableOccupied(
       tableNumber,
-      arrivalDate
+      arrivalDate,
+      arrivalTime
     );
 
 
@@ -1587,7 +1647,7 @@ async function showPaymentBox(){
           <strong>
             🚫 Table
             ${String(tableNumber).padStart(2,"0")}
-            may already be occupied
+            is occupied
           </strong>
 
           <br><br>
@@ -1595,7 +1655,7 @@ async function showPaymentBox(){
           This table already has a
           <strong>pending</strong> or
           <strong>confirmed</strong> order
-          around the selected arrival time.
+          during the selected arrival period.
 
           <br><br>
 
@@ -1619,7 +1679,10 @@ async function showPaymentBox(){
 
   catch(error){
 
-    console.error(error);
+    console.error(
+      "Table check error:",
+      error
+    );
 
     message.innerHTML = `
 
@@ -1680,6 +1743,7 @@ function generateOrderCode(){
   let code =
   "ORD-";
 
+
   for(
     let i=0;
     i<6;
@@ -1695,6 +1759,7 @@ function generateOrderCode(){
     );
 
   }
+
 
   return code;
 
@@ -1816,6 +1881,26 @@ async function submitOrder(){
   );
 
 
+  /* TABLE */
+
+  if(!tableNumber){
+
+    message.innerHTML =
+    `
+      <div class="error">
+        ❌ Please select a table number.
+      </div>
+    `;
+
+    document.getElementById(
+      "tableNumber"
+    ).focus();
+
+    return;
+
+  }
+
+
   /* DATE */
 
   if(!arrivalDate){
@@ -1850,6 +1935,38 @@ async function submitOrder(){
     document.getElementById(
       "arrivalTime"
     ).focus();
+
+    return;
+
+  }
+
+
+  /* ITEMS */
+
+  const foodTotal =
+  foodQuantities.reduce(
+    (a,b)=>a+b,
+    0
+  );
+
+  const drinkTotal =
+  drinkQuantities.reduce(
+    (a,b)=>a+b,
+    0
+  );
+
+
+  if(
+    foodTotal === 0 &&
+    drinkTotal === 0
+  ){
+
+    message.innerHTML =
+    `
+      <div class="error">
+        ❌ Please select at least one food or drink.
+      </div>
+    `;
 
     return;
 
@@ -1970,26 +2087,20 @@ async function submitOrder(){
   button.disabled = true;
 
   button.textContent =
-  "Submitting...";
+  "Checking table...";
 
 
-  const total =
-  getOrderTotal();
-
-  const items =
-  buildItems();
-
-
-  /* =========================
-     FINAL TABLE CHECK
-     ========================= */
+  /*
+   * FINAL TABLE CHECK
+   */
 
   try{
 
     const occupied =
     await checkTableOccupied(
       tableNumber,
-      arrivalDate
+      arrivalDate,
+      arrivalTime
     );
 
 
@@ -2002,14 +2113,14 @@ async function submitOrder(){
           <strong>
             🚫 Table
             ${String(tableNumber).padStart(2,"0")}
-            may already be occupied
+            is occupied
           </strong>
 
           <br><br>
 
           Another pending or confirmed
           order is already using this table
-          around the selected arrival time.
+          during the selected arrival period.
 
           <br><br>
 
@@ -2041,9 +2152,13 @@ async function submitOrder(){
     message.innerHTML =
     `
       <div class="error">
+
         ❌ Could not verify table availability.
+
         <br><br>
+
         Please try again.
+
       </div>
     `;
 
@@ -2057,17 +2172,29 @@ async function submitOrder(){
   }
 
 
-  /* =========================
-     GENERATE ORDER CODE
-     ========================= */
+  const total =
+  getOrderTotal();
+
+
+  const items =
+  buildItems();
+
+
+  /*
+   * Generate order code.
+   */
 
   const orderCode =
   generateOrderCode();
 
 
-  /* =========================
-     INSERT ORDER
-     ========================= */
+  button.textContent =
+  "Submitting...";
+
+
+  /*
+   * INSERT ORDER
+   */
 
   const {
     data,
@@ -2119,9 +2246,9 @@ async function submitOrder(){
     .single();
 
 
-  /* =========================
-     INSERT ERROR
-     ========================= */
+  /*
+   * INSERT ERROR
+   */
 
   if(error){
 
@@ -2144,8 +2271,7 @@ async function submitOrder(){
     if(
       errorText.includes("duplicate") ||
       errorText.includes("unique") ||
-      errorText.includes("overlap") ||
-      errorText.includes("orders")
+      errorText.includes("overlap")
     ){
 
       message.innerHTML = `
@@ -2155,17 +2281,18 @@ async function submitOrder(){
           <strong>
             🚫 Table
             ${String(tableNumber).padStart(2,"0")}
-            is occupied
+            is unavailable
           </strong>
 
           <br><br>
 
-          Another order has already
-          been placed for this table.
+          Another order was placed for
+          this table at the same time.
 
           <br><br>
 
-          Please wait or choose another table.
+          Please choose another table
+          or another arrival time.
 
         </div>
 
@@ -2183,8 +2310,10 @@ async function submitOrder(){
 
           <br><br>
 
-          Please check your information
-          and try again.
+          ${escapeHTML(
+            error.message ||
+            "Unknown database error."
+          )}
 
         </div>
       `;
@@ -2202,9 +2331,9 @@ async function submitOrder(){
   }
 
 
-  /* =========================
-     SUCCESS
-     ========================= */
+  /*
+   * SUCCESS
+   */
 
   document.getElementById(
     "summaryBox"
@@ -2413,4 +2542,5 @@ updateSummary();
 </script>
 
 </body>
+
 </html>
