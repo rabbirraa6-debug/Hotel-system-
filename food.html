@@ -311,36 +311,25 @@ input{
 
 .error{
   color:#c62828;
+  line-height:1.5;
 }
 
 .success{
   color:#16833b;
 }
 
-.error-box{
-  background:#fff0f0;
-  border:1px solid #e53935;
-  color:#b71c1c;
-  padding:15px;
-  border-radius:10px;
-}
-
 .occupied-box{
-  background:#fff4d6;
-  border:1px solid #d4af37;
-  color:#6b5200;
-  padding:20px;
+  background:#fff0f0;
+  border:2px solid #e53935;
+  color:#b71c1c;
+  padding:18px;
   border-radius:12px;
+  margin-top:15px;
+  line-height:1.6;
 }
 
-.occupied-title{
-  font-size:22px;
-  font-weight:bold;
-  margin-bottom:10px;
-}
-
-.occupied-box p{
-  line-height:1.5;
+.occupied-box strong{
+  font-size:18px;
 }
 
 @media(max-width:500px){
@@ -393,8 +382,10 @@ Choose your food, drinks, table and arrival time.
 <div class="card">
 
 <img
-src="https://images.unsplash.com/photo-1568901346375-23c9450c58ab?auto=format&fit=crop&w=600&q=80"
+src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=600&h=500&q=80"
 alt="Burger"
+loading="lazy"
+onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1617196030246-9d585c7f989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';"
 >
 
 <div class="card-content">
@@ -427,8 +418,9 @@ alt="Burger"
 <div class="card">
 
 <img
-src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80"
+src="https://images.unsplash.com/photo-1574071318508-1cdbab80d601?auto=format&fit=crop&w=600&q=80"
 alt="Pizza"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -463,6 +455,7 @@ alt="Pizza"
 <img
 src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=600&q=80"
 alt="Pasta"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -497,6 +490,7 @@ alt="Pasta"
 <img
 src="https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=600&q=80"
 alt="Chicken"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -531,6 +525,7 @@ alt="Chicken"
 <img
 src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80"
 alt="Salad"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -584,6 +579,7 @@ Maximum food: 10 items
 <img
 src="https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80"
 alt="Water"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -618,6 +614,7 @@ alt="Water"
 <img
 src="https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=600&q=80"
 alt="Juice"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -652,6 +649,7 @@ alt="Juice"
 <img
 src="https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80"
 alt="Cola"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -686,6 +684,7 @@ alt="Cola"
 <img
 src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80"
 alt="Coffee"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -720,6 +719,7 @@ alt="Coffee"
 <img
 src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=600&q=80"
 alt="Tea"
+loading="lazy"
 >
 
 <div class="card-content">
@@ -920,6 +920,7 @@ onclick="submitOrder()"
 <script src="config.js"></script>
 
 <script>
+
 
 const supabaseClient =
 window.supabase.createClient(
@@ -1217,10 +1218,60 @@ getOrderTotal().toFixed(2);
 
 
 /* =========================
+   CHECK TABLE OCCUPANCY
+   ========================= */
+
+async function checkTableOccupied(tableNumber){
+
+const {
+data,
+error
+} =
+await supabaseClient
+
+.from("orders")
+
+.select("id,status")
+
+.eq(
+"table_number",
+Number(tableNumber)
+)
+
+.in(
+"status",
+[
+"pending",
+"confirmed"
+]
+)
+
+.limit(1);
+
+
+if(error){
+
+console.error(
+"Table occupancy check error:",
+error
+);
+
+throw error;
+
+}
+
+
+return data &&
+data.length > 0;
+
+}
+
+
+/* =========================
    SHOW PAYMENT
    ========================= */
 
-function showPaymentBox(){
+async function showPaymentBox(){
 
 const tableNumber=
 document.getElementById(
@@ -1237,6 +1288,10 @@ document.getElementById(
 "message"
 );
 
+const continueButton=
+document.getElementById(
+"continueButton"
+);
 
 const foodTotal=
 foodQuantities.reduce(
@@ -1291,7 +1346,100 @@ return;
 }
 
 
+/* =========================
+   CHECK OCCUPIED TABLE
+   ========================= */
+
+continueButton.disabled=true;
+
+continueButton.textContent=
+"Checking table...";
+
+message.innerHTML=
+"Checking table availability...";
+
+
+try{
+
+const occupied=
+await checkTableOccupied(
+tableNumber
+);
+
+
+if(occupied){
+
+message.innerHTML=`
+
+<div class="occupied-box">
+
+<strong>
+🚫 Table ${String(tableNumber).padStart(2,"0")} is occupied
+</strong>
+
+<br><br>
+
+This table already has a
+<strong>pending</strong> or
+<strong>confirmed</strong> order.
+
+<br><br>
+
+Please wait until the current
+order is finished, or choose
+another table.
+
+</div>
+
+`;
+
+continueButton.disabled=false;
+
+continueButton.textContent=
+"💳 Continue to Payment";
+
+return;
+
+}
+
+}
+
+catch(error){
+
+message.innerHTML=`
+
+<div class="error">
+
+❌ Could not check table availability.
+
+<br><br>
+
+Please try again.
+
+</div>
+
+`;
+
+continueButton.disabled=false;
+
+continueButton.textContent=
+"💳 Continue to Payment";
+
+return;
+
+}
+
+
+/* =========================
+   TABLE IS AVAILABLE
+   ========================= */
+
 message.innerHTML="";
+
+continueButton.disabled=false;
+
+continueButton.textContent=
+"💳 Continue to Payment";
 
 
 document.getElementById(
@@ -1468,14 +1616,95 @@ button.textContent=
 "Submitting...";
 
 
-const orderCode=
-generateOrderCode();
-
 const total=
 getOrderTotal();
 
 const items=
 buildItems();
+
+
+/* =========================
+   CHECK TABLE AGAIN
+   =========================
+   
+   This second check protects
+   against someone creating an
+   order between the first check
+   and the final insert.
+*/
+
+try{
+
+const occupied=
+await checkTableOccupied(
+tableNumber
+);
+
+
+if(occupied){
+
+message.innerHTML=`
+
+<div class="occupied-box">
+
+<strong>
+🚫 Table ${String(tableNumber).padStart(2,"0")} is occupied
+</strong>
+
+<br><br>
+
+Another pending or confirmed
+order is already using this table.
+
+<br><br>
+
+Please wait or choose another table.
+
+</div>
+
+`;
+
+button.disabled=false;
+
+button.textContent=
+"✅ Submit Order & Receipt";
+
+return;
+
+}
+
+}
+
+catch(error){
+
+console.error(
+"Final table check error:",
+error
+);
+
+message.innerHTML=
+`<div class="error">
+❌ Could not verify table availability.
+<br><br>
+Please try again.
+</div>`;
+
+button.disabled=false;
+
+button.textContent=
+"✅ Submit Order & Receipt";
+
+return;
+
+}
+
+
+/* =========================
+   GENERATE ORDER CODE
+   ========================= */
+
+const orderCode=
+generateOrderCode();
 
 
 /* =========================
@@ -1523,88 +1752,55 @@ status:
 .single();
 
 
-/* =========================
-   HANDLE INSERT ERROR
-   ========================= */
-
 if(error){
 
 console.error(
-"Order error:",
+"Order insert error:",
 error
 );
 
 
-const errorText =
+/*
+ * If the database constraint
+ * catches another order at the
+ * same time, show occupied message.
+ */
+
+const errorText=
 (
-  (error.message || "") +
-  " " +
-  (error.details || "") +
-  " " +
-  (error.hint || "")
+(error.message||"")+
+" "+
+(error.details||"")+
+" "+
+(error.hint||"")
 ).toLowerCase();
 
 
-/*
- * TABLE ALREADY HAS ACTIVE ORDER
- */
-
 if(
-
-error.code === "23505" ||
-
-errorText.includes(
-"orders_one_active_per_table"
-) ||
-
-errorText.includes(
-"duplicate key"
+error.code==="23P01" ||
+errorText.includes("orders") &&
+(
+errorText.includes("overlap") ||
+errorText.includes("conflict")
 )
-
 ){
 
 message.innerHTML=`
 
 <div class="occupied-box">
 
-<div class="occupied-title">
-🪑 Table is occupied
-</div>
-
-<p>
-This table already has an active order.
-</p>
-
-<p style="margin-top:8px;">
-Please wait until the current order is
-completed, or choose another table.
-</p>
-
-</div>
-
-`;
-
-}
-
-
-/*
- * OTHER DATABASE ERROR
- */
-
-else{
-
-message.innerHTML=`
-
-<div class="error-box">
-
-❌ <strong>
-Could not submit order and receipt.
+<strong>
+🚫 Table ${String(tableNumber).padStart(2,"0")} is occupied
 </strong>
 
 <br><br>
 
-Please check your information
-and try again.
+Another order was created for this
+table just before yours.
+
+<br><br>
+
+Please wait or choose another table.
 
 </div>
 
@@ -1612,6 +1808,16 @@ and try again.
 
 }
 
+else{
+
+message.innerHTML=
+`<div class="error">
+❌ Could not submit order and receipt.
+<br><br>
+Please check your information and try again.
+</div>`;
+
+}
 
 button.disabled=false;
 
