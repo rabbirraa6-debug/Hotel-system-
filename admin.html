@@ -846,22 +846,12 @@ async function loadEverything(){
   // =====================================================
 
   const reservationResult =
-    await supabaseClient
-
-    .from("reservations")
-
-    .select(`
-      *,
-      customers(name,phone,email),
-      rooms(name,room_number,available)
-    `)
-
-    .order(
-      "created_at",
-      {
-        ascending:false
-      }
-    );
+  await supabaseClient.rpc(
+    "admin_get_reservations",
+    {
+      p_pin: adminPin
+    }
+  );
 
 
   if(reservationResult.error){
