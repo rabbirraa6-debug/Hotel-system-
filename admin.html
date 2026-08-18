@@ -1586,13 +1586,21 @@ ${actionHTML}
 
 
 // =====================================================
-// UPDATE FOOD / TABLE ORDER
+// UPDATE FOOD / TABLE ORDER + TELEGRAM
 // =====================================================
 
 async function updateOrder(
 orderId,
 newStatus
 ){
+
+const order =
+allOrders.find(
+o =>
+Number(o.id) ===
+Number(orderId)
+);
+
 
 const result =
 await supabaseClient
@@ -1622,6 +1630,147 @@ result.error.message
 );
 
 return;
+
+}
+
+
+// =====================================================
+// SEND TELEGRAM ONLY WHEN CONFIRMED
+// =====================================================
+
+if(
+newStatus === "confirmed" &&
+order
+){
+
+try{
+
+let items = [];
+
+
+try{
+
+if(Array.isArray(order.items)){
+
+items =
+order.items;
+
+}
+
+else if(
+typeof order.items === "string"
+){
+
+items =
+JSON.parse(order.items);
+
+}
+
+}catch(error){
+
+console.error(
+"Could not parse order items:",
+error
+);
+
+items = [];
+
+}
+
+
+const telegramResponse =
+await fetch(
+
+"https://wmsjpbcwhqghqtytztvv.supabase.co/functions/v1/dynamic-task",
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":
+"application/json",
+
+"apikey":
+SUPABASE_KEY,
+
+"Authorization":
+"Bearer " + SUPABASE_KEY
+
+},
+
+body:JSON.stringify({
+
+order_code:
+order.order_code || "",
+
+table_number:
+order.table_number || "",
+
+arrival_time:
+order.arrival_time || "",
+
+customer_name:
+order.customer_name || "",
+
+customer_phone:
+order.customer_phone || "",
+
+total_amount:
+Number(
+order.total_amount || 0
+),
+
+status:
+"confirmed",
+
+items:
+items
+
+})
+
+}
+
+);
+
+
+const telegramResult =
+await telegramResponse.json();
+
+
+if(!telegramResponse.ok){
+
+console.error(
+"Telegram notification failed:",
+telegramResult
+);
+
+alert(
+"⚠️ Order confirmed, but Telegram notification failed."
+);
+
+}else{
+
+console.log(
+"✅ Telegram notification sent.",
+telegramResult
+);
+
+}
+
+}catch(error){
+
+console.error(
+"Telegram connection error:",
+error
+);
+
+alert(
+"⚠️ Order confirmed, but Telegram notification could not be sent."
+);
+
+}
 
 }
 
@@ -1861,69 +2010,87 @@ loadEverything();
 // =====================================================
 
 async function updateCancellation(
-    cancellationId,
-    reservationId,
-    newStatus
+  cancellationId,
+  reservationId,
+  newStatus
 ){
 
-    if(newStatus === "approved"){
+  if(newStatus === "approved"){
 
-        const result =
-            await supabaseClient.rpc(
-                "approve_cancellation",
-                {
-                    p_cancellation_id: cancellationId
-                }
-            );
-
-        if(result.error){
-
-            console.error(result.error);
-
-            alert(
-                "❌ Could not approve cancellation: " +
-                result.error.message
-            );
-
-            return;
+    const result =
+      await supabaseClient.rpc(
+        "approve_cancellation",
+        {
+          p_cancellation_id:
+            cancellationId
         }
+      );
 
-        alert(
-            "✅ Cancellation approved. " +
-            "The reservation is cancelled and the room is available again."
-        );
 
-    }else{
+    if(result.error){
 
-        const result =
-            await supabaseClient
-                .from("cancellations")
-                .update({
-                    status: "rejected"
-                })
-                .eq(
-                    "id",
-                    cancellationId
-                );
+      console.error(
+        result.error
+      );
 
-        if(result.error){
+      alert(
+        "❌ Could not approve cancellation: " +
+        result.error.message
+      );
 
-            console.error(result.error);
+      return;
 
-            alert(
-                "❌ Could not reject cancellation: " +
-                result.error.message
-            );
-
-            return;
-        }
-
-        alert(
-            "✅ Cancellation request rejected."
-        );
     }
 
-    loadEverything();
+
+    alert(
+      "✅ Cancellation approved. " +
+      "The reservation is cancelled and the room is available again."
+    );
+
+
+  }else{
+
+    const result =
+      await supabaseClient
+
+      .from("cancellations")
+
+      .update({
+        status:"rejected"
+      })
+
+      .eq(
+        "id",
+        cancellationId
+      );
+
+
+    if(result.error){
+
+      console.error(
+        result.error
+      );
+
+      alert(
+        "❌ Could not reject cancellation: " +
+        result.error.message
+      );
+
+      return;
+
+    }
+
+
+    alert(
+      "❌ Cancellation rejected."
+    );
+
+  }
+
+
+  loadEverything();
+
 }
 
 
@@ -1933,19 +2100,43 @@ async function updateCancellation(
 
 function escapeHTML(value){
 
-return String(value ?? "")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+return String(
+value ?? ""
+)
+
+.replace(
+/&/g,
+"&amp;"
+)
+
+.replace(
+/</g,
+"&lt;"
+)
+
+.replace(
+/>/g,
+"&gt;"
+)
+
+.replace(
+/"/g,
+"&quot;"
+)
+
+.replace(
+/'/g,
+"&#039;"
+);
 
 }
 
 
 function escapeAttribute(value){
 
-return escapeHTML(value);
+return escapeHTML(
+value
+);
 
 }
 
@@ -1953,23 +2144,24 @@ return escapeHTML(value);
 function formatDate(value){
 
 if(!value){
+
 return "—";
-}
-
-const date =
-new Date(value);
-
-if(
-Number.isNaN(
-date.getTime()
-)
-){
-
-return escapeHTML(value);
 
 }
 
-return date.toLocaleDateString();
+try{
+
+return new Date(
+value
+).toLocaleDateString();
+
+}catch(error){
+
+return escapeHTML(
+value
+);
+
+}
 
 }
 
