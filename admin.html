@@ -376,6 +376,7 @@ button:disabled{
       🔎 Search
     </strong>
 
+
     <input
       id="search"
       type="text"
@@ -487,40 +488,34 @@ src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 
 <script>
 
+
 // =====================================================
 // SUPABASE
 // =====================================================
 
 const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 
 // =====================================================
 // ADMIN LOGIN STATE
 //
 // IMPORTANT:
-// This is ONLY kept in memory.
+// Authentication is deliberately NOT saved in
+// sessionStorage/localStorage.
 //
-// It is NOT saved to sessionStorage/localStorage.
+// Refreshing this page therefore requires the PIN again.
 //
-// Therefore:
-// - refresh = logged out
-// - closing page = logged out
-// - logout = PIN cleared
+// The PIN is held only in memory while this page remains
+// logged in, so it can be sent to secure admin RPCs.
 // =====================================================
 
 let adminAuthenticated = false;
 
-
-// IMPORTANT FIX:
-// We keep the successful PIN in memory so that
-// loadEverything() can send it to admin_get_reservations.
-
-let currentAdminPin = "";
-
+let adminPinValue = "";
 
 let allCards = [];
 
@@ -537,12 +532,10 @@ document.addEventListener(
 
     updateAdminScreen();
 
-
     const pinInput =
       document.getElementById(
         "adminPin"
       );
-
 
     if(pinInput){
 
@@ -577,7 +570,6 @@ function updateAdminScreen(){
     document.getElementById(
       "loginScreen"
     );
-
 
   const adminApp =
     document.getElementById(
@@ -619,12 +611,10 @@ async function adminLogin(){
       "adminPin"
     );
 
-
   const loginButton =
     document.getElementById(
       "loginButton"
     );
-
 
   const message =
     document.getElementById(
@@ -677,11 +667,9 @@ async function adminLogin(){
         result.error
       );
 
-
       message.textContent =
         "❌ Login failed: " +
         result.error.message;
-
 
       return;
 
@@ -698,20 +686,19 @@ async function adminLogin(){
     ){
 
       // -------------------------------------------------
-      // SUCCESS
+      // Successful login
       // -------------------------------------------------
 
       adminAuthenticated =
         true;
 
 
-      // IMPORTANT FIX:
-      // Keep PIN in memory for subsequent RPC calls.
-      currentAdminPin =
+      // Keep the PIN only in memory.
+      // It disappears when the page is refreshed/closed.
+      adminPinValue =
         pin;
 
 
-      // Clear the visible input.
       pinInput.value = "";
 
 
@@ -750,7 +737,6 @@ async function adminLogin(){
       error
     );
 
-
     message.textContent =
       "❌ Could not connect to admin login.";
 
@@ -777,34 +763,19 @@ function adminLogout(){
     false;
 
 
-  // IMPORTANT:
-  // Completely forget the PIN.
-
-  currentAdminPin =
+  // Forget the PIN completely.
+  adminPinValue =
     "";
 
 
-  // Remove any old authentication value that
-  // may have been created by an older version.
+  /*
+   * Remove any old authentication value that may
+   * have been created by an older version.
+   */
 
-  try{
-
-    sessionStorage.removeItem(
-      "hotel_admin_authenticated"
-    );
-
-    localStorage.removeItem(
-      "hotel_admin_authenticated"
-    );
-
-  }catch(error){
-
-    console.warn(
-      "Could not clear old storage:",
-      error
-    );
-
-  }
+  sessionStorage.removeItem(
+    "hotel_admin_authenticated"
+  );
 
 
   allCards = [];
@@ -827,11 +798,6 @@ function adminLogout(){
   ).textContent = "";
 
 
-  document.getElementById(
-    "adminPin"
-  ).value = "";
-
-
   updateAdminScreen();
 
 }
@@ -845,7 +811,7 @@ function requireAdmin(){
 
   if(
     !adminAuthenticated ||
-    !currentAdminPin
+    !adminPinValue
   ){
 
     adminLogout();
@@ -853,7 +819,6 @@ function requireAdmin(){
     return false;
 
   }
-
 
   return true;
 
@@ -873,109 +838,51 @@ async function loadEverything(){
   }
 
 
-  const reservationsContainer =
-    document.getElementById(
-      "reservations"
-    );
+  document.getElementById(
+    "reservations"
+  ).innerHTML =
+  "Loading reservations...";
 
 
-  const ordersContainer =
-    document.getElementById(
-      "orders"
-    );
-
-
-  reservationsContainer.innerHTML =
-    "Loading reservations...";
-
-
-  ordersContainer.innerHTML =
-    "Loading orders...";
+  document.getElementById(
+    "orders"
+  ).innerHTML =
+  "Loading orders...";
 
 
   // =====================================================
   // RESERVATIONS
-  //
-  // IMPORTANT FIX:
-  // Use currentAdminPin instead of undefined adminPin.
   // =====================================================
 
-  let reservationResult;
-
-
-  try{
-
-    reservationResult =
-      await supabaseClient.rpc(
-        "admin_get_reservations",
-        {
-          p_pin: currentAdminPin
-        }
-      );
-
-  }catch(error){
-
-    console.error(
-      "Reservation RPC exception:",
-      error
-    );
-
-
-    reservationsContainer.innerHTML =
-      "❌ Could not load reservations. " +
-      escapeHTML(
-        error.message || "Unknown error"
-      );
-
-
-    allCards = [];
-
-    filterCards();
-
-    return;
-
-  }
+  const reservationResult =
+  await supabaseClient.rpc(
+    "admin_get_reservations",
+    {
+      p_pin: adminPinValue
+    }
+  );
 
 
   if(reservationResult.error){
 
     console.error(
-      "admin_get_reservations error:",
+      "Reservation load error:",
       reservationResult.error
     );
 
 
-    reservationsContainer.innerHTML =
-      `
-      <div class="notice">
-
-        ❌ Could not load reservations.
-
-        <br><br>
-
-        <strong>Error:</strong>
-
-        ${escapeHTML(
-          reservationResult.error.message ||
-          "Unknown reservation error"
-        )}
-
-      </div>
-      `;
+    document.getElementById(
+      "reservations"
+    ).innerHTML =
+      "❌ Could not load reservations.";
 
 
-    allCards = [];
+    allCards=[];
 
   }else{
 
     const reservations =
       reservationResult.data || [];
-
-
-    console.log(
-      "Reservations loaded:",
-      reservations
-    );
 
 
     // =====================================================
@@ -995,16 +902,6 @@ async function loadEverything(){
           ascending:false
         }
       );
-
-
-    if(paymentResult.error){
-
-      console.warn(
-        "Could not load payments:",
-        paymentResult.error
-      );
-
-    }
 
 
     const payments =
@@ -1034,16 +931,6 @@ async function loadEverything(){
       );
 
 
-    if(cancellationResult.error){
-
-      console.warn(
-        "Could not load cancellations:",
-        cancellationResult.error
-      );
-
-    }
-
-
     const cancellations =
       cancellationResult.error
       ? []
@@ -1063,24 +950,16 @@ async function loadEverything(){
           const payment =
             payments.find(
               p =>
-                Number(
-                  p.reservation_id
-                ) ===
-                Number(
-                  reservation.id
-                )
+                p.reservation_id ===
+                reservation.id
             );
 
 
           const cancellation =
             cancellations.find(
               c =>
-                Number(
-                  c.reservation_id
-                ) ===
-                Number(
-                  reservation.id
-                )
+                c.reservation_id ===
+                reservation.id
             );
 
 
@@ -1120,31 +999,18 @@ async function loadEverything(){
   if(orderResult.error){
 
     console.error(
-      "Could not load food orders:",
+      "Food order load error:",
       orderResult.error
     );
 
 
-    ordersContainer.innerHTML =
-      `
-      <div class="notice">
-
-        ❌ Could not load food orders.
-
-        <br><br>
-
-        <strong>Error:</strong>
-
-        ${escapeHTML(
-          orderResult.error.message ||
-          "Unknown error"
-        )}
-
-      </div>
-      `;
+    document.getElementById(
+      "orders"
+    ).innerHTML =
+      "❌ Could not load food orders.";
 
 
-    allOrders = [];
+    allOrders=[];
 
   }else{
 
@@ -1203,61 +1069,14 @@ function filterCards(){
         const r =
           item.reservation;
 
-
-        // IMPORTANT:
-        // admin_get_reservations returns the customer
-        // information directly in the reservation row
-        // in your current result:
-        //
-        // customer_name
-        // customer_phone
-        // customer_email
-        //
-        // It may NOT return customers:{}.
-        //
-        // Therefore we support BOTH formats.
-
         const c =
           r.customers || {};
-
 
         const room =
           r.rooms || {};
 
-
-        const customerName =
-          r.customer_name ||
-          c.name ||
-          "";
-
-
-        const customerPhone =
-          r.customer_phone ||
-          c.phone ||
-          "";
-
-
-        const customerEmail =
-          r.customer_email ||
-          c.email ||
-          "";
-
-
-        const roomName =
-          r.room_name ||
-          room.name ||
-          "";
-
-
-        const roomNumber =
-          r.room_number ||
-          room.room_number ||
-          "";
-
-
         const p =
           item.payment;
-
 
         const x =
           item.cancellation;
@@ -1269,15 +1088,15 @@ function filterCards(){
 
           ${r.reservation_code || ""}
 
-          ${customerName}
+          ${c.name || ""}
 
-          ${customerPhone}
+          ${c.phone || ""}
 
-          ${customerEmail}
+          ${c.email || ""}
 
-          ${roomName}
+          ${room.name || ""}
 
-          ${roomNumber}
+          ${room.room_number || ""}
 
         `.toLowerCase();
 
@@ -1328,7 +1147,6 @@ function filterCards(){
 
           }
 
-
           return true;
 
         }
@@ -1352,7 +1170,6 @@ function filterCards(){
             return x.status === status;
 
           }
-
 
           return true;
 
@@ -1503,64 +1320,14 @@ function displayCards(cards){
       const r =
         item.reservation;
 
-
       const c =
         r.customers || {};
-
 
       const room =
         r.rooms || {};
 
-
-      // IMPORTANT:
-      // Support the actual columns returned by your
-      // admin reservation RPC.
-
-      const customerName =
-        r.customer_name ||
-        c.name ||
-        "—";
-
-
-      const customerPhone =
-        r.customer_phone ||
-        c.phone ||
-        "—";
-
-
-      const customerEmail =
-        r.customer_email ||
-        c.email ||
-        "—";
-
-
-      const roomName =
-        r.room_name ||
-        room.name ||
-        "—";
-
-
-      const roomNumber =
-        r.room_number ||
-        room.room_number ||
-        "—";
-
-
-      const roomAvailable =
-        typeof r.room_available === "boolean"
-
-        ?
-
-        r.room_available
-
-        :
-
-        room.available === true;
-
-
       const p =
         item.payment;
-
 
       const x =
         item.cancellation;
@@ -1847,7 +1614,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              customerName
+              c.name || "—"
             )}
 
           </div>
@@ -1860,7 +1627,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              customerPhone
+              c.phone || "—"
             )}
 
           </div>
@@ -1873,7 +1640,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              customerEmail
+              c.email || "—"
             )}
 
           </div>
@@ -1886,13 +1653,13 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              roomName
+              room.name || "—"
             )}
 
             (
 
             ${escapeHTML(
-              roomNumber
+              room.room_number || "—"
             )}
 
             )
@@ -1907,7 +1674,7 @@ function displayCards(cards){
             </span>
 
             ${
-              roomAvailable
+              room.available === true
 
               ?
 
@@ -2386,6 +2153,12 @@ function displayOrders(orders){
 
 // =====================================================
 // UPDATE FOOD / TABLE ORDER + TELEGRAM
+//
+// IMPORTANT:
+// The order status is now changed through the secure
+// PIN-verified RPC.
+//
+// We DO NOT directly update public.orders from the browser.
 // =====================================================
 
 async function updateOrder(
@@ -2408,218 +2181,356 @@ async function updateOrder(
     );
 
 
-  const result =
-    await supabaseClient
-
-    .from("orders")
-
-    .update({
-      status:newStatus,
-      updated_at:
-        new Date().toISOString()
-    })
-
-    .eq(
-      "id",
-      orderId
-    );
-
-
-  if(result.error){
-
-    console.error(
-      result.error
-    );
-
+  if(!order){
 
     alert(
-      "❌ Could not update order: " +
-      result.error.message
+      "❌ Could not find the selected order."
     );
-
 
     return;
 
   }
 
 
-  // =====================================================
-  // SEND TELEGRAM ONLY WHEN CONFIRMED
-  // =====================================================
+  // -----------------------------------------------------
+  // Confirm the action
+  // -----------------------------------------------------
 
-  if(
-    newStatus === "confirmed" &&
-    order
-  ){
-
-    try{
-
-      let items = [];
+  const actionText =
+    newStatus === "confirmed"
+    ? "confirm"
+    : "reject";
 
 
-      try{
-
-        if(
-          Array.isArray(
-            order.items
-          )
-        ){
-
-          items =
-            order.items;
-
-        }
-
-        else if(
-          typeof order.items ===
-          "string"
-        ){
-
-          items =
-            JSON.parse(
-              order.items
-            );
-
-        }
-
-      }catch(error){
-
-        console.error(
-          "Could not parse order items:",
-          error
-        );
-
-        items = [];
-
-      }
+  const confirmed =
+    window.confirm(
+      `Are you sure you want to ${actionText} order ${order.order_code || order.id}?`
+    );
 
 
-      const telegramResponse =
-        await fetch(
+  if(!confirmed){
 
-          "https://wmsjpbcwhqghqtytztvv.supabase.co/functions/v1/dynamic-task",
-
-          {
-
-            method:"POST",
-
-            headers:{
-
-              "Content-Type":
-                "application/json",
-
-              "apikey":
-                SUPABASE_KEY,
-
-              "Authorization":
-                "Bearer " +
-                SUPABASE_KEY
-
-            },
-
-            body:
-              JSON.stringify({
-
-                order_code:
-                  order.order_code ||
-                  "",
-
-                table_number:
-                  order.table_number ||
-                  "",
-
-                arrival_time:
-                  order.arrival_time ||
-                  "",
-
-                customer_name:
-                  order.customer_name ||
-                  "",
-
-                customer_phone:
-                  order.customer_phone ||
-                  "",
-
-                total_amount:
-                  Number(
-                    order.total_amount ||
-                    0
-                  ),
-
-                status:
-                  "confirmed",
-
-                items:
-                  items
-
-              })
-
-          }
-
-        );
-
-
-      const telegramResult =
-        await telegramResponse.json();
-
-
-      if(
-        !telegramResponse.ok
-      ){
-
-        console.error(
-          "Telegram notification failed:",
-          telegramResult
-        );
-
-
-        alert(
-          "⚠️ Order confirmed, but Telegram notification failed."
-        );
-
-      }else{
-
-        console.log(
-          "✅ Telegram notification sent.",
-          telegramResult
-        );
-
-      }
-
-
-    }catch(error){
-
-      console.error(
-        "Telegram connection error:",
-        error
-      );
-
-
-      alert(
-        "⚠️ Order confirmed, but Telegram notification could not be sent."
-      );
-
-    }
+    return;
 
   }
 
 
-  alert(
+  // -----------------------------------------------------
+  // Find the clicked button and disable buttons while
+  // processing so the admin cannot double-submit.
+  // -----------------------------------------------------
 
-    newStatus === "confirmed"
+  const buttons =
+    document.querySelectorAll(
+      "button"
+    );
 
-    ?
 
-    "✅ Food & table order confirmed."
+  buttons.forEach(
+    button => {
 
-    :
+      if(
+        button.classList.contains("confirm") ||
+        button.classList.contains("reject")
+      ){
 
-    "❌ Food & table order rejected."
+        button.disabled =
+          true;
 
+      }
+
+    }
   );
 
 
-  loadEverything();
+  try{
+
+    // ===================================================
+    // STEP 1 — SECURE DATABASE STATUS UPDATE
+    // ===================================================
+
+    const statusResult =
+      await supabaseClient.rpc(
+        "admin_update_order_status",
+        {
+          p_pin:
+            adminPinValue,
+
+          p_order_id:
+            Number(orderId),
+
+          p_status:
+            newStatus
+        }
+      );
+
+
+    if(statusResult.error){
+
+      console.error(
+        "Order status RPC error:",
+        statusResult.error
+      );
+
+
+      alert(
+        "❌ Could not update order status: " +
+        statusResult.error.message
+      );
+
+
+      return;
+
+    }
+
+
+    const statusData =
+      statusResult.data;
+
+
+    if(
+      !statusData ||
+      statusData.success !== true
+    ){
+
+      console.error(
+        "Order status rejected:",
+        statusData
+      );
+
+
+      alert(
+        "❌ " +
+        (
+          statusData &&
+          statusData.message
+          ?
+          statusData.message
+          :
+          "Order status could not be changed."
+        )
+      );
+
+
+      return;
+
+    }
+
+
+    // ===================================================
+    // IMPORTANT:
+    // The database has confirmed the status change.
+    // Only now do we send Telegram.
+    // ===================================================
+
+
+    // ===================================================
+    // STEP 2 — SEND TELEGRAM ONLY WHEN CONFIRMED
+    // ===================================================
+
+    if(
+      newStatus === "confirmed"
+    ){
+
+      try{
+
+        let items = [];
+
+
+        try{
+
+          if(
+            Array.isArray(
+              order.items
+            )
+          ){
+
+            items =
+              order.items;
+
+          }
+
+          else if(
+            typeof order.items ===
+            "string"
+          ){
+
+            items =
+              JSON.parse(
+                order.items
+              );
+
+          }
+
+        }catch(error){
+
+          console.error(
+            "Could not parse order items:",
+            error
+          );
+
+          items = [];
+
+        }
+
+
+        const telegramResponse =
+          await fetch(
+
+            "https://wmsjpbcwhqghqtytztvv.supabase.co/functions/v1/dynamic-task",
+
+            {
+
+              method:"POST",
+
+              headers:{
+
+                "Content-Type":
+                  "application/json",
+
+                "apikey":
+                  SUPABASE_KEY,
+
+                "Authorization":
+                  "Bearer " +
+                  SUPABASE_KEY
+
+              },
+
+              body:
+                JSON.stringify({
+
+                  order_code:
+                    order.order_code ||
+                    "",
+
+                  table_number:
+                    order.table_number ||
+                    "",
+
+                  arrival_time:
+                    order.arrival_time ||
+                    "",
+
+                  customer_name:
+                    order.customer_name ||
+                    "",
+
+                  customer_phone:
+                    order.customer_phone ||
+                    "",
+
+                  total_amount:
+                    Number(
+                      order.total_amount ||
+                      0
+                    ),
+
+                  status:
+                    "confirmed",
+
+                  items:
+                    items
+
+                })
+
+            }
+
+          );
+
+
+        const telegramResult =
+          await telegramResponse.json();
+
+
+        if(
+          !telegramResponse.ok
+        ){
+
+          console.error(
+            "Telegram notification failed:",
+            telegramResult
+          );
+
+
+          alert(
+            "✅ Order confirmed, but Telegram notification failed."
+          );
+
+        }else{
+
+          console.log(
+            "✅ Telegram notification sent.",
+            telegramResult
+          );
+
+
+          alert(
+            "✅ Food & table order confirmed and Telegram notification sent."
+          );
+
+        }
+
+
+      }catch(error){
+
+        console.error(
+          "Telegram connection error:",
+          error
+        );
+
+
+        alert(
+          "✅ Order confirmed, but Telegram notification could not be sent."
+        );
+
+      }
+
+    }else{
+
+      // =================================================
+      // REJECTED
+      // =================================================
+
+      alert(
+        "❌ Food & table order rejected."
+      );
+
+    }
+
+
+    // ===================================================
+    // STEP 3 — RELOAD FROM DATABASE
+    // ===================================================
+
+    await loadEverything();
+
+
+  }catch(error){
+
+    console.error(
+      "Order update exception:",
+      error
+    );
+
+
+    alert(
+      "❌ Could not update food order."
+    );
+
+
+  }finally{
+
+    buttons.forEach(
+      button => {
+
+        button.disabled =
+          false;
+
+      }
+    );
+
+  }
 
 }
 
