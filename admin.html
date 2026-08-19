@@ -695,6 +695,696 @@ async function adminLogin(){
 
       // Keep the PIN only in memory.
       // It disappears when the page is refreshed/closed.
+      admi<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>Hotel Admin</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f5f5f5;
+  margin:0;
+  padding:20px;
+}
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+#loginScreen{
+  min-height:90vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.login-card{
+  width:100%;
+  max-width:400px;
+  background:white;
+  padding:30px;
+  border-radius:15px;
+  box-shadow:0 5px 25px rgba(0,0,0,.12);
+  text-align:center;
+}
+
+.login-card h1{
+  margin-top:0;
+}
+
+.login-card p{
+  color:#666;
+}
+
+#adminPin{
+  width:100%;
+  padding:14px;
+  margin-top:15px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:18px;
+  text-align:center;
+  letter-spacing:4px;
+}
+
+.login-button{
+  width:100%;
+  padding:13px;
+  margin-top:15px;
+  border:none;
+  border-radius:8px;
+  background:#333;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.login-button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.login-error{
+  color:#c62828;
+  margin-top:15px;
+  min-height:20px;
+}
+
+.login-success{
+  color:#16833b;
+  margin-top:15px;
+}
+
+
+/* =====================================================
+   ADMIN
+===================================================== */
+
+#adminApp{
+  display:none;
+}
+
+.admin-header{
+  position:relative;
+  max-width:700px;
+  margin:0 auto;
+}
+
+h1{
+  text-align:center;
+}
+
+h2{
+  margin-top:35px;
+}
+
+.logout-button{
+  display:block;
+  margin:10px auto 20px;
+  background:#c62828;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:7px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+
+/* =====================================================
+   CONTROLS
+===================================================== */
+
+.controls{
+  max-width:700px;
+  margin:20px auto;
+  background:white;
+  padding:15px;
+  border-radius:12px;
+}
+
+input,
+select{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  margin:15px auto;
+  max-width:700px;
+  border-radius:12px;
+  box-shadow:0 3px 15px rgba(0,0,0,.1);
+}
+
+.row{
+  margin:8px 0;
+}
+
+.label{
+  font-weight:bold;
+}
+
+.status{
+  font-weight:bold;
+  text-transform:capitalize;
+}
+
+.pending{
+  color:#d68b00;
+}
+
+.confirmed,
+.approved{
+  color:#16833b;
+}
+
+.rejected{
+  color:#c62828;
+}
+
+.cancelled{
+  color:#c62828;
+}
+
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:7px;
+  cursor:pointer;
+  font-weight:bold;
+  margin:8px 5px 0 0;
+}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.confirm{
+  background:#2e9d50;
+  color:white;
+}
+
+.reject{
+  background:#d33;
+  color:white;
+}
+
+.refresh{
+  background:#333;
+  color:white;
+  width:100%;
+  margin-top:10px;
+}
+
+.receipt{
+  display:inline-block;
+  margin-top:8px;
+  color:#9b7b12;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.section-title{
+  font-size:17px;
+  font-weight:bold;
+  margin-top:18px;
+  padding-top:15px;
+  border-top:1px solid #eee;
+}
+
+.empty{
+  text-align:center;
+  padding:20px;
+  background:white;
+  border-radius:10px;
+  max-width:700px;
+  margin:15px auto;
+}
+
+.notice{
+  padding:12px;
+  background:#fff4d6;
+  border-radius:8px;
+  margin-top:12px;
+}
+
+.items-box{
+  background:#fafafa;
+  border:1px solid #eee;
+  border-radius:8px;
+  padding:10px;
+  margin-top:10px;
+}
+
+.order-item{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px solid #eee;
+}
+
+.order-item:last-child{
+  border-bottom:none;
+}
+
+.order-total{
+  font-size:18px;
+  font-weight:bold;
+  margin-top:12px;
+  text-align:right;
+}
+
+.order-card{
+  border-left:5px solid #d4af37;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:6px;
+  background:#fff4d6;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.room-card{
+  border-left:5px solid #555;
+}
+
+.cancel-card{
+  border-left:5px solid #c62828;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     ADMIN LOGIN SCREEN
+===================================================== -->
+
+<div id="loginScreen">
+
+  <div class="login-card">
+
+    <h1>🏨 Hotel Admin</h1>
+
+    <p>
+      Enter the administrator PIN to continue.
+    </p>
+
+    <input
+      id="adminPin"
+      type="password"
+      inputmode="numeric"
+      autocomplete="off"
+      placeholder="Admin PIN"
+    >
+
+    <button
+      id="loginButton"
+      class="login-button"
+      onclick="adminLogin()"
+    >
+      🔐 Login
+    </button>
+
+    <div
+      id="loginMessage"
+      class="login-error"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADMIN APPLICATION
+===================================================== -->
+
+<div id="adminApp">
+
+  <div class="admin-header">
+
+    <h1>🏨 Hotel Admin</h1>
+
+    <button
+      class="logout-button"
+      onclick="adminLogout()"
+    >
+      🚪 Logout
+    </button>
+
+  </div>
+
+
+  <div class="controls">
+
+    <strong>
+      🔎 Search
+    </strong>
+
+
+    <input
+      id="search"
+      type="text"
+      placeholder="Reservation ID, order ID, name, phone, room or table..."
+      oninput="filterCards()"
+    >
+
+
+    <select
+      id="statusFilter"
+      onchange="filterCards()"
+    >
+
+      <option value="all">
+        All statuses
+      </option>
+
+      <option value="pending">
+        🟡 Pending
+      </option>
+
+      <option value="confirmed">
+        ✅ Confirmed
+      </option>
+
+      <option value="rejected">
+        ❌ Rejected
+      </option>
+
+      <option value="approved">
+        ✅ Approved
+      </option>
+
+      <option value="cancelled">
+        ❌ Cancelled
+      </option>
+
+    </select>
+
+
+    <select
+      id="typeFilter"
+      onchange="filterCards()"
+    >
+
+      <option value="all">
+        All Types
+      </option>
+
+      <option value="reservation">
+        🏨 Room Reservation
+      </option>
+
+      <option value="payment">
+        💳 Room Payment
+      </option>
+
+      <option value="order">
+        🍽️ Food & Table Order
+      </option>
+
+      <option value="cancellation">
+        ❌ Cancellation
+      </option>
+
+    </select>
+
+
+    <button
+      class="refresh"
+      onclick="loadEverything()"
+    >
+
+      🔄 Refresh
+
+    </button>
+
+  </div>
+
+
+  <h2>
+    📋 Room Reservations
+  </h2>
+
+
+  <div id="reservations">
+    Loading reservations...
+  </div>
+
+
+  <h2>
+    🍽️ Food & Table Orders
+  </h2>
+
+
+  <div id="orders">
+    Loading orders...
+  </div>
+
+</div>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<script src="config.js"></script>
+
+
+<script>
+
+
+// =====================================================
+// SUPABASE
+// =====================================================
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+// =====================================================
+// ADMIN LOGIN STATE
+//
+// IMPORTANT:
+// Authentication is deliberately NOT saved in
+// sessionStorage/localStorage.
+//
+// Refreshing this page therefore requires the PIN again.
+//
+// The PIN is held only in memory while this page remains
+// logged in, so it can be sent to secure admin RPCs.
+// =====================================================
+
+let adminAuthenticated = false;
+
+let adminPinValue = "";
+
+let allCards = [];
+
+let allOrders = [];
+
+
+// =====================================================
+// START APPLICATION
+// =====================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    updateAdminScreen();
+
+    const pinInput =
+      document.getElementById(
+        "adminPin"
+      );
+
+    if(pinInput){
+
+      pinInput.addEventListener(
+        "keydown",
+        function(event){
+
+          if(
+            event.key === "Enter"
+          ){
+
+            adminLogin();
+
+          }
+
+        }
+      );
+
+    }
+
+  }
+);
+
+
+// =====================================================
+// UPDATE LOGIN / ADMIN SCREEN
+// =====================================================
+
+function updateAdminScreen(){
+
+  const loginScreen =
+    document.getElementById(
+      "loginScreen"
+    );
+
+  const adminApp =
+    document.getElementById(
+      "adminApp"
+    );
+
+
+  if(adminAuthenticated){
+
+    loginScreen.style.display =
+      "none";
+
+    adminApp.style.display =
+      "block";
+
+    loadEverything();
+
+  }else{
+
+    loginScreen.style.display =
+      "flex";
+
+    adminApp.style.display =
+      "none";
+
+  }
+
+}
+
+
+// =====================================================
+// ADMIN LOGIN
+// =====================================================
+
+async function adminLogin(){
+
+  const pinInput =
+    document.getElementById(
+      "adminPin"
+    );
+
+  const loginButton =
+    document.getElementById(
+      "loginButton"
+    );
+
+  const message =
+    document.getElementById(
+      "loginMessage"
+    );
+
+
+  const pin =
+    pinInput.value.trim();
+
+
+  message.textContent = "";
+
+  message.className =
+    "login-error";
+
+
+  if(!pin){
+
+    message.textContent =
+      "Please enter the admin PIN.";
+
+    return;
+
+  }
+
+
+  loginButton.disabled =
+    true;
+
+  loginButton.textContent =
+    "🔐 Checking...";
+
+
+  try{
+
+    const result =
+      await supabaseClient.rpc(
+        "admin_login",
+        {
+          p_pin: pin
+        }
+      );
+
+
+    if(result.error){
+
+      console.error(
+        "Admin login error:",
+        result.error
+      );
+
+      message.textContent =
+        "❌ Login failed: " +
+        result.error.message;
+
+      return;
+
+    }
+
+
+    const data =
+      result.data;
+
+
+    if(
+      data &&
+      data.success === true
+    ){
+
+      adminAuthenticated =
+        true;
+
       adminPinValue =
         pin;
 
@@ -763,15 +1453,9 @@ function adminLogout(){
     false;
 
 
-  // Forget the PIN completely.
   adminPinValue =
     "";
 
-
-  /*
-   * Remove any old authentication value that may
-   * have been created by an older version.
-   */
 
   sessionStorage.removeItem(
     "hotel_admin_authenticated"
@@ -1069,11 +1753,24 @@ function filterCards(){
         const r =
           item.reservation;
 
-        const c =
-          r.customers || {};
 
-        const room =
-          r.rooms || {};
+        // FIX:
+        // admin_get_reservations returns flat fields,
+        // not nested customers/rooms objects.
+
+        const c = {
+          name: r.customer_name,
+          phone: r.customer_phone,
+          email: r.customer_email
+        };
+
+
+        const room = {
+          name: r.room_name,
+          room_number: r.room_number,
+          available: r.room_available
+        };
+
 
         const p =
           item.payment;
@@ -1320,11 +2017,24 @@ function displayCards(cards){
       const r =
         item.reservation;
 
-      const c =
-        r.customers || {};
 
-      const room =
-        r.rooms || {};
+      // FIX:
+      // admin_get_reservations returns these values
+      // directly from the RPC.
+
+      const c = {
+        name: r.customer_name,
+        phone: r.customer_phone,
+        email: r.customer_email
+      };
+
+
+      const room = {
+        name: r.room_name,
+        room_number: r.room_number,
+        available: r.room_available
+      };
+
 
       const p =
         item.payment;
@@ -1388,16 +2098,7 @@ function displayCards(cards){
 
             ?
 
-            `
-
-            <a
-              class="receipt"
-              href="${escapeAttribute(p.receipt_url)}"
-              target="_blank"
-              rel="noopener"
-            >
-
-              🔗 Open Receipt
+            🔗 Open Receipt
 
             </a>
 
