@@ -25,702 +25,6 @@ body{
   padding:20px;
 }
 
-/* =====================================================
-   LOGIN
-===================================================== */
-
-#loginScreen{
-  min-height:90vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.login-card{
-  width:100%;
-  max-width:400px;
-  background:white;
-  padding:30px;
-  border-radius:15px;
-  box-shadow:0 5px 25px rgba(0,0,0,.12);
-  text-align:center;
-}
-
-.login-card h1{
-  margin-top:0;
-}
-
-.login-card p{
-  color:#666;
-}
-
-#adminPin{
-  width:100%;
-  padding:14px;
-  margin-top:15px;
-  border:1px solid #ccc;
-  border-radius:8px;
-  font-size:18px;
-  text-align:center;
-  letter-spacing:4px;
-}
-
-.login-button{
-  width:100%;
-  padding:13px;
-  margin-top:15px;
-  border:none;
-  border-radius:8px;
-  background:#333;
-  color:white;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.login-button:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
-
-.login-error{
-  color:#c62828;
-  margin-top:15px;
-  min-height:20px;
-}
-
-.login-success{
-  color:#16833b;
-  margin-top:15px;
-}
-
-
-/* =====================================================
-   ADMIN
-===================================================== */
-
-#adminApp{
-  display:none;
-}
-
-.admin-header{
-  position:relative;
-  max-width:700px;
-  margin:0 auto;
-}
-
-h1{
-  text-align:center;
-}
-
-h2{
-  margin-top:35px;
-}
-
-.logout-button{
-  display:block;
-  margin:10px auto 20px;
-  background:#c62828;
-  color:white;
-  border:none;
-  padding:10px 16px;
-  border-radius:7px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-
-/* =====================================================
-   CONTROLS
-===================================================== */
-
-.controls{
-  max-width:700px;
-  margin:20px auto;
-  background:white;
-  padding:15px;
-  border-radius:12px;
-}
-
-input,
-select{
-  width:100%;
-  padding:12px;
-  margin-top:8px;
-  border:1px solid #ccc;
-  border-radius:8px;
-  font-size:16px;
-}
-
-.card{
-  background:white;
-  padding:20px;
-  margin:15px auto;
-  max-width:700px;
-  border-radius:12px;
-  box-shadow:0 3px 15px rgba(0,0,0,.1);
-}
-
-.row{
-  margin:8px 0;
-}
-
-.label{
-  font-weight:bold;
-}
-
-.status{
-  font-weight:bold;
-  text-transform:capitalize;
-}
-
-.pending{
-  color:#d68b00;
-}
-
-.confirmed,
-.approved{
-  color:#16833b;
-}
-
-.rejected{
-  color:#c62828;
-}
-
-.cancelled{
-  color:#c62828;
-}
-
-button{
-  padding:10px 15px;
-  border:none;
-  border-radius:7px;
-  cursor:pointer;
-  font-weight:bold;
-  margin:8px 5px 0 0;
-}
-
-button:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
-
-.confirm{
-  background:#2e9d50;
-  color:white;
-}
-
-.reject{
-  background:#d33;
-  color:white;
-}
-
-.refresh{
-  background:#333;
-  color:white;
-  width:100%;
-  margin-top:10px;
-}
-
-.receipt{
-  display:inline-block;
-  margin-top:8px;
-  color:#9b7b12;
-  font-weight:bold;
-  text-decoration:none;
-}
-
-.section-title{
-  font-size:17px;
-  font-weight:bold;
-  margin-top:18px;
-  padding-top:15px;
-  border-top:1px solid #eee;
-}
-
-.empty{
-  text-align:center;
-  padding:20px;
-  background:white;
-  border-radius:10px;
-  max-width:700px;
-  margin:15px auto;
-}
-
-.notice{
-  padding:12px;
-  background:#fff4d6;
-  border-radius:8px;
-  margin-top:12px;
-}
-
-.items-box{
-  background:#fafafa;
-  border:1px solid #eee;
-  border-radius:8px;
-  padding:10px;
-  margin-top:10px;
-}
-
-.order-item{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  padding:7px 0;
-  border-bottom:1px solid #eee;
-}
-
-.order-item:last-child{
-  border-bottom:none;
-}
-
-.order-total{
-  font-size:18px;
-  font-weight:bold;
-  margin-top:12px;
-  text-align:right;
-}
-
-.order-card{
-  border-left:5px solid #d4af37;
-}
-
-.badge{
-  display:inline-block;
-  padding:5px 9px;
-  border-radius:6px;
-  background:#fff4d6;
-  font-size:13px;
-  font-weight:bold;
-  margin-bottom:10px;
-}
-
-.room-card{
-  border-left:5px solid #555;
-}
-
-.cancel-card{
-  border-left:5px solid #c62828;
-}
-
-</style>
-
-</head>
-
-<body>
-
-
-<!-- =====================================================
-     ADMIN LOGIN SCREEN
-===================================================== -->
-
-<div id="loginScreen">
-
-  <div class="login-card">
-
-    <h1>🏨 Hotel Admin</h1>
-
-    <p>
-      Enter the administrator PIN to continue.
-    </p>
-
-    <input
-      id="adminPin"
-      type="password"
-      inputmode="numeric"
-      autocomplete="off"
-      placeholder="Admin PIN"
-    >
-
-    <button
-      id="loginButton"
-      class="login-button"
-      onclick="adminLogin()"
-    >
-      🔐 Login
-    </button>
-
-    <div
-      id="loginMessage"
-      class="login-error"
-    ></div>
-
-  </div>
-
-</div>
-
-
-<!-- =====================================================
-     ADMIN APPLICATION
-===================================================== -->
-
-<div id="adminApp">
-
-  <div class="admin-header">
-
-    <h1>🏨 Hotel Admin</h1>
-
-    <button
-      class="logout-button"
-      onclick="adminLogout()"
-    >
-      🚪 Logout
-    </button>
-
-  </div>
-
-
-  <div class="controls">
-
-    <strong>
-      🔎 Search
-    </strong>
-
-
-    <input
-      id="search"
-      type="text"
-      placeholder="Reservation ID, order ID, name, phone, room or table..."
-      oninput="filterCards()"
-    >
-
-
-    <select
-      id="statusFilter"
-      onchange="filterCards()"
-    >
-
-      <option value="all">
-        All statuses
-      </option>
-
-      <option value="pending">
-        🟡 Pending
-      </option>
-
-      <option value="confirmed">
-        ✅ Confirmed
-      </option>
-
-      <option value="rejected">
-        ❌ Rejected
-      </option>
-
-      <option value="approved">
-        ✅ Approved
-      </option>
-
-      <option value="cancelled">
-        ❌ Cancelled
-      </option>
-
-    </select>
-
-
-    <select
-      id="typeFilter"
-      onchange="filterCards()"
-    >
-
-      <option value="all">
-        All Types
-      </option>
-
-      <option value="reservation">
-        🏨 Room Reservation
-      </option>
-
-      <option value="payment">
-        💳 Room Payment
-      </option>
-
-      <option value="order">
-        🍽️ Food & Table Order
-      </option>
-
-      <option value="cancellation">
-        ❌ Cancellation
-      </option>
-
-    </select>
-
-
-    <button
-      class="refresh"
-      onclick="loadEverything()"
-    >
-
-      🔄 Refresh
-
-    </button>
-
-  </div>
-
-
-  <h2>
-    📋 Room Reservations
-  </h2>
-
-
-  <div id="reservations">
-    Loading reservations...
-  </div>
-
-
-  <h2>
-    🍽️ Food & Table Orders
-  </h2>
-
-
-  <div id="orders">
-    Loading orders...
-  </div>
-
-</div>
-
-
-<script
-src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
-
-<script src="config.js"></script>
-
-
-<script>
-
-
-// =====================================================
-// SUPABASE
-// =====================================================
-
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-
-// =====================================================
-// ADMIN LOGIN STATE
-//
-// IMPORTANT:
-// Authentication is deliberately NOT saved in
-// sessionStorage/localStorage.
-//
-// Refreshing this page therefore requires the PIN again.
-//
-// The PIN is held only in memory while this page remains
-// logged in, so it can be sent to secure admin RPCs.
-// =====================================================
-
-let adminAuthenticated = false;
-
-let adminPinValue = "";
-
-let allCards = [];
-
-let allOrders = [];
-
-
-// =====================================================
-// START APPLICATION
-// =====================================================
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
-
-    updateAdminScreen();
-
-    const pinInput =
-      document.getElementById(
-        "adminPin"
-      );
-
-    if(pinInput){
-
-      pinInput.addEventListener(
-        "keydown",
-        function(event){
-
-          if(
-            event.key === "Enter"
-          ){
-
-            adminLogin();
-
-          }
-
-        }
-      );
-
-    }
-
-  }
-);
-
-
-// =====================================================
-// UPDATE LOGIN / ADMIN SCREEN
-// =====================================================
-
-function updateAdminScreen(){
-
-  const loginScreen =
-    document.getElementById(
-      "loginScreen"
-    );
-
-  const adminApp =
-    document.getElementById(
-      "adminApp"
-    );
-
-
-  if(adminAuthenticated){
-
-    loginScreen.style.display =
-      "none";
-
-    adminApp.style.display =
-      "block";
-
-    loadEverything();
-
-  }else{
-
-    loginScreen.style.display =
-      "flex";
-
-    adminApp.style.display =
-      "none";
-
-  }
-
-}
-
-
-// =====================================================
-// ADMIN LOGIN
-// =====================================================
-
-async function adminLogin(){
-
-  const pinInput =
-    document.getElementById(
-      "adminPin"
-    );
-
-  const loginButton =
-    document.getElementById(
-      "loginButton"
-    );
-
-  const message =
-    document.getElementById(
-      "loginMessage"
-    );
-
-
-  const pin =
-    pinInput.value.trim();
-
-
-  message.textContent = "";
-
-  message.className =
-    "login-error";
-
-
-  if(!pin){
-
-    message.textContent =
-      "Please enter the admin PIN.";
-
-    return;
-
-  }
-
-
-  loginButton.disabled =
-    true;
-
-  loginButton.textContent =
-    "🔐 Checking...";
-
-
-  try{
-
-    const result =
-      await supabaseClient.rpc(
-        "admin_login",
-        {
-          p_pin: pin
-        }
-      );
-
-
-    if(result.error){
-
-      console.error(
-        "Admin login error:",
-        result.error
-      );
-
-      message.textContent =
-        "❌ Login failed: " +
-        result.error.message;
-
-      return;
-
-    }
-
-
-    const data =
-      result.data;
-
-
-    if(
-      data &&
-      data.success === true
-    ){
-
-      // -------------------------------------------------
-      // Successful login
-      // -------------------------------------------------
-
-      adminAuthenticated =
-        true;
-
-
-      // Keep the PIN only in memory.
-      // It disappears when the page is refreshed/closed.
-      admi<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
-
-<title>Hotel Admin</title>
-
-<style>
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  font-family:Arial,sans-serif;
-  background:#f5f5f5;
-  margin:0;
-  padding:20px;
-}
 
 /* =====================================================
    LOGIN
@@ -1004,6 +308,7 @@ button:disabled{
 
 </head>
 
+
 <body>
 
 
@@ -1073,14 +378,12 @@ button:disabled{
       🔎 Search
     </strong>
 
-
     <input
       id="search"
       type="text"
       placeholder="Reservation ID, order ID, name, phone, room or table..."
       oninput="filterCards()"
     >
-
 
     <select
       id="statusFilter"
@@ -1146,9 +449,7 @@ button:disabled{
       class="refresh"
       onclick="loadEverything()"
     >
-
       🔄 Refresh
-
     </button>
 
   </div>
@@ -1158,7 +459,6 @@ button:disabled{
     📋 Room Reservations
   </h2>
 
-
   <div id="reservations">
     Loading reservations...
   </div>
@@ -1167,7 +467,6 @@ button:disabled{
   <h2>
     🍽️ Food & Table Orders
   </h2>
-
 
   <div id="orders">
     Loading orders...
@@ -1199,15 +498,6 @@ window.supabase.createClient(
 
 // =====================================================
 // ADMIN LOGIN STATE
-//
-// IMPORTANT:
-// Authentication is deliberately NOT saved in
-// sessionStorage/localStorage.
-//
-// Refreshing this page therefore requires the PIN again.
-//
-// The PIN is held only in memory while this page remains
-// logged in, so it can be sent to secure admin RPCs.
 // =====================================================
 
 let adminAuthenticated = false;
@@ -1388,9 +678,7 @@ async function adminLogin(){
       adminPinValue =
         pin;
 
-
       pinInput.value = "";
-
 
       message.textContent =
         "✅ Login successful.";
@@ -1452,15 +740,12 @@ function adminLogout(){
   adminAuthenticated =
     false;
 
-
   adminPinValue =
     "";
-
 
   sessionStorage.removeItem(
     "hotel_admin_authenticated"
   );
-
 
   allCards = [];
 
@@ -1516,9 +801,7 @@ function requireAdmin(){
 async function loadEverything(){
 
   if(!requireAdmin()){
-
     return;
-
   }
 
 
@@ -1534,9 +817,9 @@ async function loadEverything(){
   "Loading orders...";
 
 
-  // =====================================================
+  // ===================================================
   // RESERVATIONS
-  // =====================================================
+  // ===================================================
 
   const reservationResult =
   await supabaseClient.rpc(
@@ -1561,7 +844,7 @@ async function loadEverything(){
       "❌ Could not load reservations.";
 
 
-    allCards=[];
+    allCards = [];
 
   }else{
 
@@ -1569,17 +852,32 @@ async function loadEverything(){
       reservationResult.data || [];
 
 
-    // =====================================================
+    /*
+     * Keep the RPC response exactly as returned.
+     *
+     * The display code below supports both:
+     *
+     * customers: {...}
+     * rooms: {...}
+     *
+     * AND flat fields such as:
+     *
+     * customer_name
+     * customer_phone
+     * customer_email
+     * room_name
+     * room_number
+     */
+
+
+    // ===================================================
     // PAYMENTS
-    // =====================================================
+    // ===================================================
 
     const paymentResult =
       await supabaseClient
-
       .from("payments")
-
       .select("*")
-
       .order(
         "created_at",
         {
@@ -1591,22 +889,20 @@ async function loadEverything(){
     const payments =
       paymentResult.error
       ? []
-      : (
+      :
+      (
         paymentResult.data || []
       );
 
 
-    // =====================================================
+    // ===================================================
     // CANCELLATIONS
-    // =====================================================
+    // ===================================================
 
     const cancellationResult =
       await supabaseClient
-
       .from("cancellations")
-
       .select("*")
-
       .order(
         "created_at",
         {
@@ -1618,14 +914,15 @@ async function loadEverything(){
     const cancellations =
       cancellationResult.error
       ? []
-      : (
+      :
+      (
         cancellationResult.data || []
       );
 
 
-    // =====================================================
+    // ===================================================
     // COMBINE RESERVATION DATA
-    // =====================================================
+    // ===================================================
 
     allCards =
       reservations.map(
@@ -1634,23 +931,25 @@ async function loadEverything(){
           const payment =
             payments.find(
               p =>
-                p.reservation_id ===
-                reservation.id
+                String(p.reservation_id) ===
+                String(reservation.id)
             );
 
 
           const cancellation =
             cancellations.find(
               c =>
-                c.reservation_id ===
-                reservation.id
+                String(c.reservation_id) ===
+                String(reservation.id)
             );
 
 
           return {
 
             reservation,
+
             payment,
+
             cancellation
 
           };
@@ -1667,11 +966,8 @@ async function loadEverything(){
 
   const orderResult =
     await supabaseClient
-
     .from("orders")
-
     .select("*")
-
     .order(
       "created_at",
       {
@@ -1694,7 +990,7 @@ async function loadEverything(){
       "❌ Could not load food orders.";
 
 
-    allOrders=[];
+    allOrders = [];
 
   }else{
 
@@ -1716,9 +1012,7 @@ async function loadEverything(){
 function filterCards(){
 
   if(!requireAdmin()){
-
     return;
-
   }
 
 
@@ -1751,29 +1045,59 @@ function filterCards(){
       item => {
 
         const r =
-          item.reservation;
+          item.reservation || {};
 
 
-        // FIX:
-        // admin_get_reservations returns flat fields,
-        // not nested customers/rooms objects.
-
-        const c = {
-          name: r.customer_name,
-          phone: r.customer_phone,
-          email: r.customer_email
-        };
+        const c =
+          r.customers ||
+          r.customer ||
+          {};
 
 
-        const room = {
-          name: r.room_name,
-          room_number: r.room_number,
-          available: r.room_available
-        };
+        const room =
+          r.rooms ||
+          r.room ||
+          {};
+
+
+        const customerName =
+          c.name ||
+          r.customer_name ||
+          r.name ||
+          "";
+
+
+        const customerPhone =
+          c.phone ||
+          c.phone_number ||
+          r.customer_phone ||
+          r.phone ||
+          "";
+
+
+        const customerEmail =
+          c.email ||
+          r.customer_email ||
+          r.email ||
+          "";
+
+
+        const roomName =
+          room.name ||
+          r.room_name ||
+          "";
+
+
+        const roomNumber =
+          room.room_number ||
+          room.number ||
+          r.room_number ||
+          "";
 
 
         const p =
           item.payment;
+
 
         const x =
           item.cancellation;
@@ -1785,15 +1109,15 @@ function filterCards(){
 
           ${r.reservation_code || ""}
 
-          ${c.name || ""}
+          ${customerName}
 
-          ${c.phone || ""}
+          ${customerPhone}
 
-          ${c.email || ""}
+          ${customerEmail}
 
-          ${room.name || ""}
+          ${roomName}
 
-          ${room.room_number || ""}
+          ${roomNumber}
 
         `.toLowerCase();
 
@@ -1832,9 +1156,7 @@ function filterCards(){
         ){
 
           if(!p){
-
             return false;
-
           }
 
 
@@ -1856,9 +1178,7 @@ function filterCards(){
         ){
 
           if(!x){
-
             return false;
-
           }
 
 
@@ -1887,9 +1207,7 @@ function filterCards(){
         // STATUS ONLY
 
         if(status === "all"){
-
           return true;
-
         }
 
 
@@ -2015,37 +1333,82 @@ function displayCards(cards){
     item => {
 
       const r =
-        item.reservation;
+        item.reservation || {};
 
 
-      // FIX:
-      // admin_get_reservations returns these values
-      // directly from the RPC.
+      // =================================================
+      // CUSTOMER DATA
+      //
+      // Supports BOTH nested and flat RPC responses.
+      // =================================================
 
-      const c = {
-        name: r.customer_name,
-        phone: r.customer_phone,
-        email: r.customer_email
-      };
+      const c =
+        r.customers ||
+        r.customer ||
+        {};
 
 
-      const room = {
-        name: r.room_name,
-        room_number: r.room_number,
-        available: r.room_available
-      };
+      const customerName =
+        c.name ||
+        r.customer_name ||
+        r.name ||
+        "";
+
+
+      const customerPhone =
+        c.phone ||
+        c.phone_number ||
+        r.customer_phone ||
+        r.phone ||
+        "";
+
+
+      const customerEmail =
+        c.email ||
+        r.customer_email ||
+        r.email ||
+        "";
+
+
+      // =================================================
+      // ROOM DATA
+      // =================================================
+
+      const room =
+        r.rooms ||
+        r.room ||
+        {};
+
+
+      const roomName =
+        room.name ||
+        r.room_name ||
+        "";
+
+
+      const roomNumber =
+        room.room_number ||
+        room.number ||
+        r.room_number ||
+        "";
+
+
+      const roomAvailable =
+        room.available === true ||
+        r.room_available === true;
 
 
       const p =
         item.payment;
 
+
       const x =
         item.cancellation;
 
 
-      // =====================================================
+      // =================================================
       // PAYMENT HTML
-      // =====================================================
+      // =================================================
 
       let paymentHTML = "";
 
@@ -2098,7 +1461,16 @@ function displayCards(cards){
 
             ?
 
-            🔗 Open Receipt
+            `
+
+            <a
+              class="receipt"
+              href="${escapeAttribute(p.receipt_url)}"
+              target="_blank"
+              rel="noopener"
+            >
+
+              🔗 Open Receipt
 
             </a>
 
@@ -2113,7 +1485,6 @@ function displayCards(cards){
             </div>
 
             `
-
           }
 
 
@@ -2158,7 +1529,6 @@ function displayCards(cards){
             :
 
             ""
-
           }
 
         `;
@@ -2180,9 +1550,9 @@ function displayCards(cards){
       }
 
 
-      // =====================================================
+      // =================================================
       // CANCELLATION HTML
-      // =====================================================
+      // =================================================
 
       let cancellationHTML = "";
 
@@ -2282,7 +1652,6 @@ function displayCards(cards){
             :
 
             ""
-
           }
 
         `;
@@ -2290,9 +1659,9 @@ function displayCards(cards){
       }
 
 
-      // =====================================================
+      // =================================================
       // ROOM CARD
-      // =====================================================
+      // =================================================
 
       container.innerHTML += `
 
@@ -2315,7 +1684,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              c.name || "—"
+              customerName || "—"
             )}
 
           </div>
@@ -2328,7 +1697,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              c.phone || "—"
+              customerPhone || "—"
             )}
 
           </div>
@@ -2341,7 +1710,7 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              c.email || "—"
+              customerEmail || "—"
             )}
 
           </div>
@@ -2354,13 +1723,13 @@ function displayCards(cards){
             </span>
 
             ${escapeHTML(
-              room.name || "—"
+              roomName || "—"
             )}
 
             (
 
             ${escapeHTML(
-              room.room_number || "—"
+              roomNumber || "—"
             )}
 
             )
@@ -2375,7 +1744,7 @@ function displayCards(cards){
             </span>
 
             ${
-              room.available === true
+              roomAvailable
 
               ?
 
@@ -2384,7 +1753,6 @@ function displayCards(cards){
               :
 
               '<span class="status cancelled">No</span>'
-
             }
 
           </div>
@@ -2617,9 +1985,9 @@ function displayOrders(orders){
       }
 
 
-      // =====================================================
+      // =================================================
       // RECEIPT
-      // =====================================================
+      // =================================================
 
       const receiptHTML =
         order.receipt_url
@@ -2654,9 +2022,9 @@ function displayOrders(orders){
         `;
 
 
-      // =====================================================
+      // =================================================
       // ORDER ACTIONS
-      // =====================================================
+      // =================================================
 
       const actionHTML =
         status === "pending"
@@ -2854,12 +2222,6 @@ function displayOrders(orders){
 
 // =====================================================
 // UPDATE FOOD / TABLE ORDER + TELEGRAM
-//
-// IMPORTANT:
-// The order status is now changed through the secure
-// PIN-verified RPC.
-//
-// We DO NOT directly update public.orders from the browser.
 // =====================================================
 
 async function updateOrder(
@@ -2868,9 +2230,7 @@ async function updateOrder(
 ){
 
   if(!requireAdmin()){
-
     return;
-
   }
 
 
@@ -2893,10 +2253,6 @@ async function updateOrder(
   }
 
 
-  // -----------------------------------------------------
-  // Confirm the action
-  // -----------------------------------------------------
-
   const actionText =
     newStatus === "confirmed"
     ? "confirm"
@@ -2910,16 +2266,9 @@ async function updateOrder(
 
 
   if(!confirmed){
-
     return;
-
   }
 
-
-  // -----------------------------------------------------
-  // Find the clicked button and disable buttons while
-  // processing so the admin cannot double-submit.
-  // -----------------------------------------------------
 
   const buttons =
     document.querySelectorAll(
@@ -2945,10 +2294,6 @@ async function updateOrder(
 
 
   try{
-
-    // ===================================================
-    // STEP 1 — SECURE DATABASE STATUS UPDATE
-    // ===================================================
 
     const statusResult =
       await supabaseClient.rpc(
@@ -3018,16 +2363,9 @@ async function updateOrder(
     }
 
 
-    // ===================================================
-    // IMPORTANT:
-    // The database has confirmed the status change.
-    // Only now do we send Telegram.
-    // ===================================================
-
-
-    // ===================================================
-    // STEP 2 — SEND TELEGRAM ONLY WHEN CONFIRMED
-    // ===================================================
+    // =================================================
+    // TELEGRAM
+    // =================================================
 
     if(
       newStatus === "confirmed"
@@ -3189,20 +2527,12 @@ async function updateOrder(
 
     }else{
 
-      // =================================================
-      // REJECTED
-      // =================================================
-
       alert(
         "❌ Food & table order rejected."
       );
 
     }
 
-
-    // ===================================================
-    // STEP 3 — RELOAD FROM DATABASE
-    // ===================================================
 
     await loadEverything();
 
@@ -3247,21 +2577,16 @@ async function updatePayment(
 ){
 
   if(!requireAdmin()){
-
     return;
-
   }
 
 
   const paymentResult =
     await supabaseClient
-
     .from("payments")
-
     .update({
       status:newStatus
     })
-
     .eq(
       "id",
       paymentId
@@ -3286,19 +2611,12 @@ async function updatePayment(
   }
 
 
-  // =====================================================
-  // UPDATE RESERVATION
-  // =====================================================
-
   const reservationResult =
     await supabaseClient
-
     .from("reservations")
-
     .update({
       status:newStatus
     })
-
     .eq(
       "id",
       reservationId
@@ -3325,25 +2643,17 @@ async function updatePayment(
   }
 
 
-  // =====================================================
-  // GET CUSTOMER
-  // =====================================================
-
   const customerResult =
     await supabaseClient
-
     .from("reservations")
-
     .select(`
       customer_id,
       reservation_code
     `)
-
     .eq(
       "id",
       reservationId
     )
-
     .single();
 
 
@@ -3365,10 +2675,6 @@ async function updatePayment(
 
   }
 
-
-  // =====================================================
-  // NOTIFICATION
-  // =====================================================
 
   const title =
     newStatus === "confirmed"
@@ -3396,9 +2702,7 @@ async function updatePayment(
 
   const notificationResult =
     await supabaseClient
-
     .from("notifications")
-
     .insert({
 
       customer_id:
@@ -3472,9 +2776,7 @@ async function updateCancellation(
 ){
 
   if(!requireAdmin()){
-
     return;
-
   }
 
 
@@ -3520,13 +2822,10 @@ async function updateCancellation(
 
     const result =
       await supabaseClient
-
       .from("cancellations")
-
       .update({
         status:"rejected"
       })
-
       .eq(
         "id",
         cancellationId
@@ -3613,9 +2912,7 @@ function escapeAttribute(value){
 function formatDate(value){
 
   if(!value){
-
     return "—";
-
   }
 
 
